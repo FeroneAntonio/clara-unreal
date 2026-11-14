@@ -42,6 +42,7 @@ public:
     FString GetCableKind() const { return CableKind; }
     void OpenDevice(AClaraNetworkDevice* Device);
     void OpenFirstDevice();
+    void SelectDevicePort(const FString& Id);
     void CloseDevice();
     bool IsDeviceOpen() const { return DevicePreview != nullptr; }
     void OrbitDevice(float X, float Y);

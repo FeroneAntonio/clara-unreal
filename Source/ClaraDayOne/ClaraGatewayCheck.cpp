@@ -1,5 +1,6 @@
 #include "ClaraGatewayCheck.h"
 #include "ClaraGateway.h"
+#include "ClaraStoryDirector.h"
 #include "Containers/Ticker.h"
 #include "Engine/World.h"
 #include "HAL/FileManager.h"
@@ -157,4 +158,38 @@ void RunClaraGatewayCheck(UWorld* World)
 {
     if(!World){UE_LOG(LogTemp,Error,TEXT("CLARA_GATEWAY_LIVE_FAIL: no Unreal world"));FPlatformMisc::RequestExitWithStatus(false,1);return;}
     MakeShared<FClaraGatewayCheck>()->Start(World);
+}
+
+void RunClaraGatewayPortCheck(UWorld* World,AClaraStoryDirector* Story)
+{
+    struct FState {double Start=0,Retry=0;int32 Attempts=0;bool Waiting=false;};
+    auto State=MakeShared<FState>();State->Start=FPlatformTime::Seconds();
+    TWeakObjectPtr<AClaraStoryDirector> Weak(Story);
+    const bool StaticPass=AClaraStoryDirector::RunGatewayPortRepairSelfTest();
+    FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([State,Weak,StaticPass](float)
+    {
+        const double Now=FPlatformTime::Seconds();
+        bool Done=false,Pass=false;
+        if(!StaticPass||!Weak.IsValid()||Now-State->Start>130)Done=true;
+        else
+        {
+            auto* D=Weak.Get();
+            if(State->Waiting&&!D->IsGatewayPortRepairPending())
+            {
+                if(D->IsGatewayPortConfirmed(TEXT("sw-1"),true))Done=Pass=true;
+                else if(State->Attempts>=5)Done=true;
+                else {State->Waiting=false;State->Retry=Now+5;D->GatewayRefresh();}
+            }
+            if(!Done&&!State->Waiting&&Now>=State->Retry&&D->IsGatewayLive())
+            {++State->Attempts;State->Waiting=true;D->GatewayPatchPort(TEXT("sw-1"),true);}
+        }
+        if(!Done)return true;
+        auto Report=MakeShared<FJsonObject>();Report->SetBoolField(TEXT("passed"),Pass);Report->SetNumberField(TEXT("attempts"),State->Attempts);
+        Report->SetStringField(TEXT("scope"),TEXT("Idempotent enable of office Ethernet0/1 via game gateway adapter; no shutdown or topology rewiring."));
+        if(Weak.IsValid()){Report->SetStringField(TEXT("proof_method"),Weak->GetGatewayPortProofMethod(TEXT("sw-1")));Report->SetStringField(TEXT("evidence"),Weak->GetGatewayResult());Weak->GatewayShutdown();}
+        FString JSON;FJsonSerializer::Serialize(Report,TJsonWriterFactory<>::Create(&JSON));
+        FFileHelper::SaveStringToFile(JSON,*(FPaths::ProjectSavedDir()/TEXT("Logs/GatewayPortRepairReport.json")));
+        UE_LOG(LogTemp,Display,TEXT("CLARA_GATEWAY_PORT_LIVE_%s: real office Ethernet0/1; attempts=%d"),Pass?TEXT("PASS"):TEXT("FAIL"),State->Attempts);
+        FPlatformMisc::RequestExitWithStatus(false,Pass?0:1);return false;
+    }),.25f);
 }

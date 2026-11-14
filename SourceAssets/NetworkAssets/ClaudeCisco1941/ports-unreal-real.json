@@ -1,0 +1,132 @@
+{
+  "model": "Cisco1941",
+  "units": "centimeters",
+  "origin": "center XY, bottom of feet Z; front -Y, rear +Y (Unreal axes after standard FBX import)",
+  "size": [
+    34.3,
+    29.8,
+    8.9
+  ],
+  "ports": [
+    {
+      "id": "Power",
+      "label": "AC POWER IEC C14",
+      "kind": "power",
+      "position": [
+        -3.1,
+        14.84,
+        6.75
+      ],
+      "normal": [
+        -0.0,
+        1.0,
+        -0.0
+      ]
+    },
+    {
+      "id": "Aux",
+      "label": "AUX",
+      "kind": "aux",
+      "position": [
+        9.9,
+        14.66,
+        3.55
+      ],
+      "normal": [
+        -0.0,
+        1.0,
+        -0.0
+      ]
+    },
+    {
+      "id": "Console",
+      "label": "CONSOLE RJ-45",
+      "kind": "console",
+      "position": [
+        9.9,
+        14.66,
+        1.95
+      ],
+      "normal": [
+        -0.0,
+        1.0,
+        -0.0
+      ]
+    },
+    {
+      "id": "USBConsole",
+      "label": "USB mini-B console",
+      "kind": "usb",
+      "position": [
+        7.8,
+        14.66,
+        1.96
+      ],
+      "normal": [
+        -0.0,
+        1.0,
+        -0.0
+      ]
+    },
+    {
+      "id": "Gi0/0",
+      "label": "GigabitEthernet0/0",
+      "kind": "ethernet",
+      "position": [
+        14.9,
+        14.66,
+        4.15
+      ],
+      "normal": [
+        -0.0,
+        1.0,
+        -0.0
+      ]
+    },
+    {
+      "id": "Gi0/1",
+      "label": "GigabitEthernet0/1",
+      "kind": "ethernet",
+      "position": [
+        12.0,
+        14.66,
+        1.95
+      ],
+      "normal": [
+        -0.0,
+        1.0,
+        -0.0
+      ]
+    },
+    {
+      "id": "USB0",
+      "label": "USB Type-A 0",
+      "kind": "usb",
+      "position": [
+        14.9,
+        14.66,
+        1.8
+      ],
+      "normal": [
+        -0.0,
+        1.0,
+        -0.0
+      ]
+    },
+    {
+      "id": "USB1",
+      "label": "USB Type-A 1",
+      "kind": "usb",
+      "position": [
+        14.9,
+        14.66,
+        2.55
+      ],
+      "normal": [
+        -0.0,
+        1.0,
+        -0.0
+      ]
+    }
+  ]
+}

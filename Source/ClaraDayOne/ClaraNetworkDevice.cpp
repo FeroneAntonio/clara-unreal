@@ -177,9 +177,10 @@ void AClaraNetworkDevice::SetLaptopCarried(bool Carried)
         Body->SetRelativeLocation(FVector(-Bounds.GetCenter().X*S.X,-Bounds.GetCenter().Y*S.Y,-Bounds.Min.Z*S.Z));
     }
     Body->SetCollisionEnabled(Carried?ECollisionEnabled::QueryOnly:ECollisionEnabled::QueryAndPhysics);
-    Body->SetCollisionResponseToChannel(ECC_Visibility,Carried?ECR_Ignore:ECR_Block);
+    const bool IgnoreWorldPicking=Carried&&!bIsPreview;
+    Body->SetCollisionResponseToChannel(ECC_Visibility,IgnoreWorldPicking?ECR_Ignore:ECR_Block);
     TArray<UBoxComponent*> PortBoxes;GetComponents(PortBoxes);
-    for(auto* Box:PortBoxes)Box->SetCollisionResponseToChannel(ECC_Visibility,Carried?ECR_Ignore:ECR_Block);
+    for(auto* Box:PortBoxes)Box->SetCollisionResponseToChannel(ECC_Visibility,IgnoreWorldPicking?ECR_Ignore:ECR_Block);
 }
 bool AClaraNetworkDevice::IsCableCompatible(const FString& CableKind,const FString& KindA,const FString& KindB)
 {
@@ -297,6 +298,22 @@ bool RunClaraNetworkDeviceSelfTest(UWorld* World)
     Passed=Passed&&!AClaraNetworkDevice::ConnectPorts(A,Console,B,BP,TEXT("ethernet"),Error);
     Passed=Passed&&!AClaraNetworkDevice::ConnectPorts(A,TEXT("missing-port"),B,BP,TEXT("ethernet"),Error);
     Passed=Passed&&!AClaraNetworkDevice::ConnectPorts(A,AP,A,AP,TEXT("ethernet"),Error);
+    auto* Laptop=World->SpawnActor<AClaraNetworkDevice>(FVector(0,200,50000),FRotator::ZeroRotator);
+    auto* LaptopPreview=World->SpawnActor<AClaraNetworkDevice>(FVector(200,200,50000),FRotator::ZeroRotator);
+    Laptop->Initialize(TEXT("Laptop"));Laptop->SetLaptopCarried(true);
+    LaptopPreview->Initialize(TEXT("Laptop"),true);LaptopPreview->SetPreviewSource(Laptop);
+    bool Pickable=true;
+    for(const FString Id:{TEXT("Ethernet"),TEXT("ConsoleUSB")})
+    {
+        const FVector P=LaptopPreview->GetPortWorldLocation(Id),N=LaptopPreview->GetPortWorldNormal(Id);FHitResult Hit;
+        const bool Trace=World->LineTraceSingleByChannel(Hit,P+N*40,P-N*2,ECC_Visibility);
+        Pickable&=Trace&&Hit.GetActor()==LaptopPreview&&LaptopPreview->PortIdForComponent(Hit.GetComponent())==Id;
+        const FVector W=Laptop->GetPortWorldLocation(Id),WN=Laptop->GetPortWorldNormal(Id);FHitResult WorldHit;
+        Pickable&=!World->LineTraceSingleByChannel(WorldHit,W+WN*40,W-WN*2,ECC_Visibility);
+    }
+    Passed&=Pickable;
+    UE_LOG(LogTemp,Display,TEXT("CLARA_CARRIED_LAPTOP_PORT_PICKING_%s: Ethernet and console selectable in inspector, ignored while carried in world"),Pickable?TEXT("PASS"):TEXT("FAIL"));
+    Laptop->Destroy();LaptopPreview->Destroy();
     A->Destroy();B->Destroy();Preview->Destroy();
     UE_LOG(LogTemp,Display,TEXT("CLARA_NETWORK_DEVICE_SELFTEST_%s: reciprocal ports, preview state, occupancy and compatibility."),Passed?TEXT("PASS"):TEXT("FAIL"));
     return Passed;

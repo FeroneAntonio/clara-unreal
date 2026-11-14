@@ -77,3 +77,13 @@ Il 14 novembre 2026 le API `/api/rooms` e `/api/room/office/topology` presenti n
 `POST /api/rack/patch` con `sw-1`, `connected: true` ha restituito `mode: live_cml`, ma `node: SW-CORE-01` e `link_id: null`. SW-CORE-01 non è il nodo office verificato. **Questa risposta non conferma alcun cavo remoto**: il client richiede nome del nodo corretto, identificativo link non vuoto ed esito coerente prima di registrare la patch. Per il cablaggio 1:1 va aggiornato il gateway al gestore stanze del branch o corretto il suo adattatore delle porte. Il client non ha accesso amministrativo al server per effettuare quel deploy.
 
 Durante il boot, la console può rispondere `SW-PIANO1# (OK)` senza dati del comando: anche questo segnaposto viene rifiutato. La prova HTTP ripete soltanto la lettura IOS ogni cinque secondi, massimo sedici tentativi ed entro 110 secondi complessivi; non ripete bootstrap o cambi stanza durante il boot.
+
+## Correzione del cablaggio e adattatore IOS
+
+Il primo piano del portatile trasportato conserva ora le proprie prese cliccabili: solo il modello tenuto in mano nella stanza ignora il puntamento. La selezione ripetuta dello stesso tipo di cavo conserva il primo capo; la camera inquadra direttamente il lato Ethernet o console del portatile.
+
+Quando il patch endpoint legacy non identifica un link sul nodo corretto, il client può impostare lo stato amministrativo della porta di SW-PIANO1 tramite IOS e verificarlo con una lettura successiva. Una sequenza di controllo preparata e limitata alle quattro interfacce esposte viene inviata in un unico pacchetto, per ridurre le interferenze tra richieste della console condivisa; non è un lock del server. È previsto un solo tentativo di riaggancio al percorso console office conosciuto, qualora il gateway resti su TermServ.
+
+La conferma è marcata `IOS_ADMIN`, distinta da `CML_LINK`. Non ricabla la topologia e non viene contata come un nuovo collegamento fisico nella verifica rack. Comandi interattivi e cambi stanza di questo client attendono la fine dell’operazione. Le modifiche di altri client possono ancora interferire con la console server condivisa.
+
+Prova dedicata: `-ClaraGatewayPortCheck -game -nullrhi -unattended`, abilitazione idempotente di Ethernet0/1 con output e lettura IOS registrati localmente in `Saved/Logs/GatewayPortRepairReport.json`.

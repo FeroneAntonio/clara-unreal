@@ -142,6 +142,43 @@ namespace ClaraStoryUI
     private:TWeakObjectPtr<AClaraStoryDirector> Director;
     };
 
+    const FLinearColor TerminalBackground(FColor(14,17,20));
+    const FLinearColor TerminalText(FColor(221,225,228));
+    const FLinearColor TerminalMuted(FColor(147,157,165));
+    const FLinearColor TerminalPrompt(FColor(112,200,149));
+    const FButtonStyle& TerminalButtonStyle()
+    {
+        static const FButtonStyle Style=FButtonStyle()
+            .SetNormal(FSlateColorBrush(FLinearColor(1,1,1,0)))
+            .SetHovered(FSlateColorBrush(FLinearColor(1,1,1,.065f)))
+            .SetPressed(FSlateColorBrush(FLinearColor(1,1,1,.10f)))
+            .SetNormalPadding(FMargin(8,5)).SetPressedPadding(FMargin(8,5));
+        return Style;
+    }
+    const FEditableTextBoxStyle& TerminalInputStyle()
+    {
+        static const FEditableTextBoxStyle Style=FEditableTextBoxStyle()
+            .SetBackgroundImageNormal(FSlateColorBrush(TerminalBackground))
+            .SetBackgroundImageHovered(FSlateColorBrush(TerminalBackground))
+            .SetBackgroundImageFocused(FSlateColorBrush(TerminalBackground))
+            .SetBackgroundImageReadOnly(FSlateColorBrush(TerminalBackground))
+            .SetBackgroundColor(FLinearColor::White).SetForegroundColor(TerminalText)
+            .SetFocusedForegroundColor(TerminalText).SetReadOnlyForegroundColor(TerminalText)
+            .SetPadding(FMargin(1,4)).SetFont(TerminalFont(18));
+        return Style;
+    }
+    TSharedRef<SWidget> TerminalLive(TFunction<FString()> Getter,int32 Size=18,FLinearColor Color=TerminalText)
+    {
+        return SNew(STextBlock).Text_Lambda([Getter=MoveTemp(Getter)]{return FText::FromString(Getter());})
+            .Font(TerminalFont(Size)).ColorAndOpacity(Color).AutoWrapText(true);
+    }
+    TSharedRef<SWidget> TerminalButton(const FString& Label,TFunction<void()> Action,bool Primary=false)
+    {
+        return SNew(SButton).ButtonStyle(&TerminalButtonStyle()).ContentPadding(FMargin(8,5))
+            .OnClicked_Lambda([Action=MoveTemp(Action)]{Action();return FReply::Handled();})
+            [Text(Label,14,Primary?TerminalPrompt:TerminalMuted)];
+    }
+
     class STerminal final:public SCompoundWidget
     {
     public:
@@ -154,59 +191,50 @@ namespace ClaraStoryUI
             if(Director.IsValid()&&Director->GetPhase()==109){Sessions.Add(TEXT("SW-A"));Sessions.Add(TEXT("SW-B"));}
             else Sessions.Add(Director.IsValid()&&Director->GetDay()==2?TEXT("SW-PROVA"):TEXT("SW1"));
             for(const FString& Id:Sessions)
-            {
-                Targets->AddSlot().AutoWidth().Padding(0,0,7,0)[Button(Id,[this,Id]{if(Director.IsValid()){Director->SelectTerminalTarget(Id);Help.Reset();}FocusInput();})];
-            }
+                Targets->AddSlot().AutoWidth().Padding(0,0,12,0)[TerminalButton(Id==TEXT("LAPTOP")?TEXT("PC · Linux"):TEXT("Console · ")+Id,
+                    [this,Id]{if(Director.IsValid()){Director->SelectTerminalTarget(Id);Help.Reset();}FocusInput();})];
             const auto D=Director;
-            TSharedRef<SEditableTextBox> PortAnswer=AnswerInput(D,20);
-            ChildSlot[
+            TSharedRef<SEditableTextBox> PortAnswer=AnswerInput(D,16);
+            PortAnswer->SetStyle(&TerminalInputStyle());
+            ChildSlot[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(TerminalBackground).Padding(0)[
                 SNew(SVerticalBox)
-                +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,12)[Live([this]{return Director.IsValid()?Director->GetTerminalTitle():TEXT("Terminale");},17,Ink,true)]
-                +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,10)[Targets]
+                +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,12)[SNew(SHorizontalBox)
+                    +SHorizontalBox::Slot().FillWidth(1)[Targets]
+                    +SHorizontalBox::Slot().AutoWidth()[TerminalButton(TEXT("Manuale"),[this]{if(Director.IsValid())Help=Director->CommandHelp(TEXT(""));FocusInput();})]
+                ]
                 +SVerticalBox::Slot().FillHeight(1.f)[
-                    SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Night).Padding(18)[
-                        SAssignNew(Scroll,SScrollBox)+SScrollBox::Slot()[
-                            SNew(STextBlock).Text_Lambda([this]{return FText::FromString(Director.IsValid()?Director->GetTranscript():FString());})
-                            .Font(TerminalFont(18)).ColorAndOpacity(FLinearColor(.77f,.91f,.82f,1)).AutoWrapText(true)
-                        ]
+                    SAssignNew(Scroll,SScrollBox)+SScrollBox::Slot()[
+                        SNew(STextBlock).Text_Lambda([this]{return FText::FromString(Director.IsValid()?Director->GetTranscript():FString());})
+                        .Font(TerminalFont(18)).ColorAndOpacity(TerminalText).AutoWrapText(true)
                     ]
                 ]
                 +SVerticalBox::Slot().AutoHeight().Padding(0,9,0,7)[
                     SNew(SBox).MaxDesiredHeight(125).Visibility_Lambda([this]{return Help.IsEmpty()?EVisibility::Collapsed:EVisibility::Visible;})[
-                        SNew(SScrollBox)+SScrollBox::Slot()[Live([this]{return Help;},18,Muted)]
+                        SNew(SScrollBox)+SScrollBox::Slot()[TerminalLive([this]{return Help;},16,TerminalMuted)]
                     ]
                 ]
-                +SVerticalBox::Slot().AutoHeight()[
-                    SNew(SHorizontalBox)
-                    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,12,0)[Live([this]{return Director.IsValid()?Director->GetTerminalPrompt():TEXT(">");},20,Teal,true)]
+                +SVerticalBox::Slot().AutoHeight()[SNew(SHorizontalBox)
+                    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,8,0)[TerminalLive([this]{return Director.IsValid()?Director->GetTerminalPrompt():TEXT(">");},18,TerminalPrompt)]
                     +SHorizontalBox::Slot().FillWidth(1.f)[
-                        SAssignNew(Input,SEditableTextBox).Font(TerminalFont(20)).MinDesiredWidth(250).ClearKeyboardFocusOnCommit(false)
-                        .HintText(FText::FromString(TEXT("Scrivi un comando · ? aiuto · Tab completa")))
+                        SAssignNew(Input,SEditableTextBox).Style(&TerminalInputStyle()).Font(TerminalFont(18)).MinDesiredWidth(250).ClearKeyboardFocusOnCommit(false)
+                        .HintText(FText::FromString(TEXT("")))
                         .OnTextCommitted(this,&STerminal::Commit)
                         .OnTextChanged(this,&STerminal::Changed)
                         .OnKeyDownHandler(this,&STerminal::KeyDown)
                     ]
-                    +SHorizontalBox::Slot().AutoWidth().Padding(9,0,0,0)[Button(TEXT("Invio"),[this]{Submit();},true)]
-                ]
-                +SVerticalBox::Slot().AutoHeight().Padding(0,12,0,0)[
-                    SNew(SHorizontalBox)
-                    +SHorizontalBox::Slot().AutoWidth().Padding(0,0,8,0)[Button(TEXT("Scheda comandi"),[this]{if(Director.IsValid())Help=Director->CommandHelp(TEXT(""));FocusInput();})]
-                    +SHorizontalBox::Slot().AutoWidth().Padding(0,0,8,0)[Button(TEXT("ip addr"),[this]{Fill(TEXT("ip addr"));})]
-                    +SHorizontalBox::Slot().AutoWidth().Padding(0,0,8,0)[Button(TEXT("ping <indirizzo>"),[this]{Fill(TEXT("ping "));})]
-                    +SHorizontalBox::Slot().AutoWidth()[Button(TEXT("help"),[this]{Fill(TEXT("help"));})]
                 ]
                 +SVerticalBox::Slot().AutoHeight().Padding(0,14,0,0)[
                     SNew(SBox).Visibility_Lambda([D]{return D.IsValid()&&(D->GetPhase()==10||D->GetPhase()==15)&&!D->GetQuestion().IsEmpty()?EVisibility::Visible:EVisibility::Collapsed;})[
                         SNew(SVerticalBox)
-                        +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,7)[Live([D]{return D.IsValid()?D->GetQuestion():FString();},18,Teal,true)]
+                        +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,6)[TerminalLive([D]{return D.IsValid()?D->GetQuestion():FString();},16,TerminalMuted)]
                         +SVerticalBox::Slot().AutoHeight()[SNew(SHorizontalBox)
-                            +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,10,0)[Text(TEXT("Porta del portatile"),18,Ink,true)]
+                            +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,10,0)[Text(TEXT("Porta >"),16,TerminalPrompt)]
                             +SHorizontalBox::Slot().FillWidth(1)[PortAnswer]
-                            +SHorizontalBox::Slot().AutoWidth().Padding(10,0,0,0)[Button(TEXT("Verifica porta"),[D,PortAnswer]{if(D.IsValid()){D->SubmitAnswer(PortAnswer->GetText().ToString());PortAnswer->SetText(FText::GetEmpty());}},true)]
+                            +SHorizontalBox::Slot().AutoWidth().Padding(10,0,0,0)[TerminalButton(TEXT("Verifica"),[D,PortAnswer]{if(D.IsValid()){D->SubmitAnswer(PortAnswer->GetText().ToString());PortAnswer->SetText(FText::GetEmpty());}},true)]
                         ]
                     ]
                 ]
-            ];
+            ]];
         }
         void Tick(const FGeometry& G,const double Time,const float Delta)override
         {
@@ -699,17 +727,17 @@ namespace ClaraStoryUI
             TSharedRef<SHorizontalBox> Tabs=SNew(SHorizontalBox);
             for(const auto& Tab:TArray<TPair<FString,FString>>{{TEXT("console"),TEXT("Console")},{TEXT("verify"),TEXT("Verifiche")},{TEXT("security"),TEXT("Sicurezza")},{TEXT("scenario"),TEXT("Scenario")}})
                 Tabs->AddSlot().AutoWidth().Padding(0,0,7,0)[SNew(SButton)
-                    .ButtonColorAndOpacity(GatewayTab==Tab.Key?Teal:FLinearColor(.81f,.85f,.83f))
-                    .ForegroundColor(GatewayTab==Tab.Key?FLinearColor::White:Ink).ContentPadding(FMargin(13,8))
+                    .ButtonColorAndOpacity(GatewayTab==Tab.Key?FLinearColor(.06f,.11f,.09f):TerminalBackground)
+                    .ButtonStyle(&TerminalButtonStyle()).ForegroundColor(TerminalText).ContentPadding(FMargin(8,5))
                     .OnClicked_Lambda([this,Id=Tab.Key]{GatewayTab=Id;Rebuild();return FReply::Handled();})
-                    [Text(Tab.Value,16,GatewayTab==Tab.Key?FLinearColor::White:Ink,true)]];
+                    [Text(Tab.Value,16,GatewayTab==Tab.Key?TerminalPrompt:TerminalMuted,true)]];
             TSharedRef<SVerticalBox> Content=SNew(SVerticalBox);
             if(GatewayTab==TEXT("console"))
             {
-                TSharedRef<SEditableTextBox> Node=SNew(SEditableTextBox).Font(Font(17))
+                TSharedRef<SEditableTextBox> Node=SNew(SEditableTextBox).Style(&TerminalInputStyle()).Font(Font(17))
                     .Text(FText::FromString(D->GetGatewayNode())).HintText(FText::FromString(TEXT("Nome nodo · SW-PIANO1")));
                 auto WeakCommand=MakeShared<TWeakPtr<SEditableTextBox>>();
-                TSharedRef<SEditableTextBox> Command=SNew(SEditableTextBox).Font(TerminalFont(18)).ClearKeyboardFocusOnCommit(false)
+                TSharedRef<SEditableTextBox> Command=SNew(SEditableTextBox).Style(&TerminalInputStyle()).Font(TerminalFont(18)).ClearKeyboardFocusOnCommit(false)
                     .HintText(FText::FromString(TEXT("Comando sul nodo selezionato")))
                     .OnTextCommitted_Lambda([D,WeakCommand](const FText& Value,ETextCommit::Type Type)
                     {
@@ -719,66 +747,66 @@ namespace ClaraStoryUI
                     });
                 *WeakCommand=Command;
                 Content->AddSlot().AutoHeight().Padding(0,0,0,10)[SNew(SHorizontalBox)
-                    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,12,0)[Text(TEXT("Nodo CML"),16,Muted)]
+                    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,12,0)[Text(TEXT("Nodo CML"),16,TerminalMuted)]
                     +SHorizontalBox::Slot().FillWidth(1)[Node]
-                    +SHorizontalBox::Slot().AutoWidth().Padding(8,0,0,0)[Button(TEXT("Seleziona"),[D,Node]{if(D.IsValid())D->GatewaySetNode(Node->GetText().ToString());})]
+                    +SHorizontalBox::Slot().AutoWidth().Padding(8,0,0,0)[TerminalButton(TEXT("Seleziona"),[D,Node]{if(D.IsValid())D->GatewaySetNode(Node->GetText().ToString());})]
                 ];
-                Content->AddSlot().FillHeight(1)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Night).Padding(14)[
-                    SNew(SScrollBox)+SScrollBox::Slot()[SNew(STextBlock).Text_Lambda([D]{return FText::FromString(D.IsValid()?D->GetGatewayTranscript():FString());}).Font(TerminalFont(17)).ColorAndOpacity(FLinearColor(.77f,.91f,.82f)).AutoWrapText(true)]
+                Content->AddSlot().FillHeight(1)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(TerminalBackground).Padding(14)[
+                    SNew(SScrollBox)+SScrollBox::Slot()[SNew(STextBlock).Text_Lambda([D]{return FText::FromString(D.IsValid()?D->GetGatewayTranscript():FString());}).Font(TerminalFont(17)).ColorAndOpacity(TerminalText).AutoWrapText(true)]
                 ]];
                 Content->AddSlot().AutoHeight().Padding(0,10,0,0)[SNew(SHorizontalBox)
                     +SHorizontalBox::Slot().FillWidth(1)[Command]
-                    +SHorizontalBox::Slot().AutoWidth().Padding(8,0,0,0)[Button(TEXT("Invio"),[D,Command]{if(D.IsValid()){D->RunGatewayCommand(Command->GetText().ToString());Command->SetText(FText::GetEmpty());}},true)]
+                    +SHorizontalBox::Slot().AutoWidth().Padding(8,0,0,0)[TerminalButton(TEXT("Invio"),[D,Command]{if(D.IsValid()){D->RunGatewayCommand(Command->GetText().ToString());Command->SetText(FText::GetEmpty());}},true)]
                 ];
             }
             else
             {
                 if(GatewayTab==TEXT("verify"))
                 {
-                    Content->AddSlot().AutoHeight().Padding(0,0,0,12)[Text(TEXT("Verifica una missione sul laboratorio collegato."),18,Ink)];
+                    Content->AddSlot().AutoHeight().Padding(0,0,0,12)[Text(TEXT("Verifica una missione sul laboratorio collegato."),18,TerminalText)];
                     TSharedRef<SUniformGridPanel> Missions=SNew(SUniformGridPanel).SlotPadding(FMargin(0,0,10,10));
                     const TArray<TPair<FString,FString>> Tests={{TEXT("rack"),TEXT("Rack e collegamenti")},{TEXT("terminal"),TEXT("Console e configurazione")},{TEXT("umbrella"),TEXT("Protezione Umbrella")},{TEXT("wireshark"),TEXT("Analisi Wireshark")}};
-                    for(int32 I=0;I<Tests.Num();++I)Missions->AddSlot(I%2,I/2)[Button(Tests[I].Value,[D,Id=Tests[I].Key]{if(D.IsValid())D->GatewayVerifyMission(Id);})];
+                    for(int32 I=0;I<Tests.Num();++I)Missions->AddSlot(I%2,I/2)[TerminalButton(Tests[I].Value,[D,Id=Tests[I].Key]{if(D.IsValid())D->GatewayVerifyMission(Id);})];
                     Content->AddSlot().AutoHeight()[Missions];
-                    Content->AddSlot().AutoHeight().Padding(0,0,0,12)[Button(TEXT("Chiedi un indizio"),[D]{if(D.IsValid())D->GatewayHint();})];
+                    Content->AddSlot().AutoHeight().Padding(0,0,0,12)[TerminalButton(TEXT("Chiedi un indizio"),[D]{if(D.IsValid())D->GatewayHint();})];
                 }
                 else if(GatewayTab==TEXT("security"))
                 {
-                    TSharedRef<SEditableTextBox> Domain=SNew(SEditableTextBox).Font(Font(19)).HintText(FText::FromString(TEXT("Dominio · esempio.test")));
-                    Content->AddSlot().AutoHeight().Padding(0,0,0,12)[Text(TEXT("Politica del dominio nel laboratorio"),20,Ink,true)];
+                    TSharedRef<SEditableTextBox> Domain=SNew(SEditableTextBox).Style(&TerminalInputStyle()).Font(Font(19)).HintText(FText::FromString(TEXT("Dominio · esempio.test")));
+                    Content->AddSlot().AutoHeight().Padding(0,0,0,12)[Text(TEXT("Politica del dominio nel laboratorio"),20,TerminalText,true)];
                     Content->AddSlot().AutoHeight().Padding(0,0,0,12)[Domain];
                     Content->AddSlot().AutoHeight().Padding(0,0,0,14)[SNew(SHorizontalBox)
-                        +SHorizontalBox::Slot().AutoWidth().Padding(0,0,10,0)[Button(TEXT("Blocca dominio"),[D,Domain]{if(D.IsValid())D->GatewayBlockDomain(Domain->GetText().ToString(),true);},true)]
-                        +SHorizontalBox::Slot().AutoWidth()[Button(TEXT("Rimuovi blocco"),[D,Domain]{if(D.IsValid())D->GatewayBlockDomain(Domain->GetText().ToString(),false);})]
+                        +SHorizontalBox::Slot().AutoWidth().Padding(0,0,10,0)[TerminalButton(TEXT("Blocca dominio"),[D,Domain]{if(D.IsValid())D->GatewayBlockDomain(Domain->GetText().ToString(),true);},true)]
+                        +SHorizontalBox::Slot().AutoWidth()[TerminalButton(TEXT("Rimuovi blocco"),[D,Domain]{if(D.IsValid())D->GatewayBlockDomain(Domain->GetText().ToString(),false);})]
                     ];
-                    TSharedRef<SEditableTextBox> Port=SNew(SEditableTextBox).Font(Font(17)).HintText(FText::FromString(TEXT("Identificativo porta o collegamento")));
+                    TSharedRef<SEditableTextBox> Port=SNew(SEditableTextBox).Style(&TerminalInputStyle()).Font(Font(17)).HintText(FText::FromString(TEXT("Identificativo porta o collegamento")));
                     Content->AddSlot().AutoHeight().Padding(0,0,0,10)[SNew(SHorizontalBox)
                         +SHorizontalBox::Slot().FillWidth(1)[Port]
-                        +SHorizontalBox::Slot().AutoWidth().Padding(8,0,0,0)[Button(TEXT("Abilita porta"),[D,Port]{if(D.IsValid())D->GatewayPatchPort(Port->GetText().ToString(),true);})]
-                        +SHorizontalBox::Slot().AutoWidth().Padding(8,0,0,0)[Button(TEXT("Disabilita"),[D,Port]{if(D.IsValid())D->GatewayPatchPort(Port->GetText().ToString(),false);})]
+                        +SHorizontalBox::Slot().AutoWidth().Padding(8,0,0,0)[TerminalButton(TEXT("Abilita porta"),[D,Port]{if(D.IsValid())D->GatewayPatchPort(Port->GetText().ToString(),true);})]
+                        +SHorizontalBox::Slot().AutoWidth().Padding(8,0,0,0)[TerminalButton(TEXT("Disabilita"),[D,Port]{if(D.IsValid())D->GatewayPatchPort(Port->GetText().ToString(),false);})]
                     ];
                 }
                 else if(GatewayTab==TEXT("scenario"))
                 {
-                    ScenarioInput=SNew(SEditableTextBox).Font(Font(18)).Text(FText::FromString(ScenarioPrompt)).HintText(FText::FromString(TEXT("Descrivi la rete o la prova da generare")))
+                    ScenarioInput=SNew(SEditableTextBox).Style(&TerminalInputStyle()).Font(Font(18)).Text(FText::FromString(ScenarioPrompt)).HintText(FText::FromString(TEXT("Descrivi la rete o la prova da generare")))
                         .OnTextChanged_Lambda([this](const FText& Value){ScenarioPrompt=Value.ToString();});
-                    Content->AddSlot().AutoHeight().Padding(0,0,0,12)[Text(TEXT("Prepara uno scenario"),20,Ink,true)];
+                    Content->AddSlot().AutoHeight().Padding(0,0,0,12)[Text(TEXT("Prepara uno scenario"),20,TerminalText,true)];
                     Content->AddSlot().AutoHeight().Padding(0,0,0,12)[ScenarioInput.ToSharedRef()];
                     Content->AddSlot().AutoHeight().Padding(0,0,0,12)[SNew(SHorizontalBox)
-                        +SHorizontalBox::Slot().AutoWidth().Padding(0,0,10,0)[Button(TEXT("Genera anteprima"),[this,D]{if(D.IsValid())D->GatewayGenerate(ScenarioInput->GetText().ToString(),false);},true)]
-                        +SHorizontalBox::Slot().AutoWidth()[Button(TEXT("Applica al laboratorio"),[this,D]{if(D.IsValid())D->GatewayGenerate(ScenarioInput->GetText().ToString(),true);})]
+                        +SHorizontalBox::Slot().AutoWidth().Padding(0,0,10,0)[TerminalButton(TEXT("Genera anteprima"),[this,D]{if(D.IsValid())D->GatewayGenerate(ScenarioInput->GetText().ToString(),false);},true)]
+                        +SHorizontalBox::Slot().AutoWidth()[TerminalButton(TEXT("Applica al laboratorio"),[this,D]{if(D.IsValid())D->GatewayGenerate(ScenarioInput->GetText().ToString(),true);})]
                     ];
-                    Content->AddSlot().AutoHeight().Padding(0,0,0,12)[Text(TEXT("Genera l’anteprima per leggere il risultato; applica lo scenario con il pulsante dedicato."),16,Muted)];
+                    Content->AddSlot().AutoHeight().Padding(0,0,0,12)[Text(TEXT("Genera l’anteprima per leggere il risultato; applica lo scenario con il pulsante dedicato."),16,TerminalMuted)];
                 }
-                Content->AddSlot().FillHeight(1)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(FLinearColor(.89f,.91f,.88f)).Padding(14)[
-                    SNew(SScrollBox)+SScrollBox::Slot()[Live([D]{return D.IsValid()?D->GetGatewayResult():FString();},17,Ink)]
+                Content->AddSlot().FillHeight(1)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(TerminalBackground).Padding(14)[
+                    SNew(SScrollBox)+SScrollBox::Slot()[Live([D]{return D.IsValid()?D->GetGatewayResult():FString();},17,TerminalText)]
                 ]];
             }
             return SNew(SVerticalBox)
                 +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,10)[SNew(SHorizontalBox)
-                    +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[Live([D]{return D.IsValid()?D->GetGatewayStatus():TEXT("Gateway non verificato");},16,Teal,true)]
-                    +SHorizontalBox::Slot().AutoWidth().Padding(8,0,0,0)[Button(TEXT("Aggiorna"),[D]{if(D.IsValid())D->GatewayRefresh();})]
-                    +SHorizontalBox::Slot().AutoWidth().Padding(8,0,0,0)[Button(TEXT("Prepara lab"),[D]{if(D.IsValid())D->GatewayBootstrap();})]
+                    +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[Live([D]{return D.IsValid()?D->GetGatewayStatus():TEXT("Gateway non verificato");},15,TerminalPrompt)]
+                    +SHorizontalBox::Slot().AutoWidth().Padding(8,0,0,0)[TerminalButton(TEXT("Aggiorna"),[D]{if(D.IsValid())D->GatewayRefresh();})]
+                    +SHorizontalBox::Slot().AutoWidth().Padding(8,0,0,0)[TerminalButton(TEXT("Prepara lab"),[D]{if(D.IsValid())D->GatewayBootstrap();})]
                 ]
                 +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,14)[Tabs]
                 +SVerticalBox::Slot().FillHeight(1)[Content];
@@ -816,7 +844,7 @@ namespace ClaraStoryUI
                     +SHorizontalBox::Slot().AutoWidth()[DesktopButton(WindowMaximized?TEXT("❐"):TEXT("□"),[this]{WindowMaximized=!WindowMaximized;Rebuild();},TEXT("Ingrandisci / ripristina"))]
                     +SHorizontalBox::Slot().AutoWidth()[DesktopButton(TEXT("×"),[this]{OpenApp(TEXT("desktop"));},TEXT("Chiudi la finestra"))]
                 ]]
-                +SVerticalBox::Slot().FillHeight(1)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Paper).Padding(16)[Body()]]
+                +SVerticalBox::Slot().FillHeight(1)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Page==TEXT("terminal")||Page==TEXT("gateway")?TerminalBackground:Paper).Padding(Page==TEXT("terminal")?12:16)[Body()]]
             ];
         }
         void Rebuild()
