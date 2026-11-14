@@ -99,9 +99,42 @@ void AClaraStoryNPC::Initialize(const FString& Id, const FString& Name, const FS
         }
     }
     if(Id==TEXT("Alessia")) ConfigureSeatedPose(Mesh,Scale);
+    AttachMetaHuman(Id==TEXT("Jonny") ? TEXT("Jonathan") : Id, SeatedPose ? static_cast<USkinnedMeshComponent*>(SeatedPose.Get()) : Mannequin.Get());
 #if WITH_EDITOR
-    SetActorLabel(Name + TEXT(" - manichino storia provvisorio"));
+    SetActorLabel(Name + (MetaHuman ? TEXT(" - MetaHuman") : TEXT(" - manichino storia provvisorio")));
 #endif
+}
+
+void AClaraStoryNPC::AttachMetaHuman(const FString& AssetName, USkinnedMeshComponent* Leader)
+{
+    const FString ClassPath = FString::Printf(TEXT("/Game/MetaHumans/%s/BP_%s.BP_%s_C"), *AssetName, *AssetName, *AssetName);
+    UClass* Class = StaticLoadClass(AActor::StaticClass(), nullptr, *ClassPath, nullptr, LOAD_NoWarn | LOAD_Quiet);
+    if (!Class || !Leader) return; // MetaHuman non generato localmente: resta il manichino.
+    FActorSpawnParameters Parameters;
+    Parameters.Owner = this;
+    Parameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    MetaHuman = GetWorld()->SpawnActor<AActor>(Class, Leader->GetComponentTransform(), Parameters);
+    if (!MetaHuman) return;
+    MetaHuman->AttachToComponent(Leader, FAttachmentTransformRules::SnapToTargetIncludingScale);
+    TInlineComponentArray<UPrimitiveComponent*> Primitives(MetaHuman.Get());
+    for (UPrimitiveComponent* Primitive : Primitives) Primitive->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    TInlineComponentArray<USkeletalMeshComponent*> Meshes(MetaHuman.Get());
+    bool bDriven = false;
+    for (USkeletalMeshComponent* Part : Meshes)
+        if (Part->GetFName() == TEXT("Body")) { Part->SetLeaderPoseComponent(Leader, true); bDriven = true; }
+    // The hidden mannequin keeps animating and drives the MetaHuman skeleton (same UE5 bone names).
+    Mannequin->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
+    Leader->SetVisibility(false);
+    Mannequin->SetVisibility(false);
+    Tags.Remove(TEXT("StoryPlaceholder"));
+    Nameplate->SetText(FText::FromString(DisplayName + TEXT("\n") + RoleDescription));
+    UE_LOG(LogTemp, Display, TEXT("CLARA_METAHUMAN: %s -> %s; pose driven=%s"), *CharacterId, *ClassPath, bDriven ? TEXT("yes") : TEXT("no"));
+}
+
+void AClaraStoryNPC::EndPlay(const EEndPlayReason::Type Reason)
+{
+    if (MetaHuman) MetaHuman->Destroy();
+    Super::EndPlay(Reason);
 }
 
 
@@ -224,6 +257,7 @@ void AClaraStoryNPC::SetStoryVisible(bool bVisible)
 {
     SetActorHiddenInGame(!bVisible);
     SetActorEnableCollision(bVisible);
+    if (MetaHuman) MetaHuman->SetActorHiddenInGame(!bVisible);
 }
 
 AClaraStoryProp::AClaraStoryProp()
@@ -451,6 +485,8 @@ void AClaraStoryCast::BeginPlay()
     }
     Badge = GetWorld()->SpawnActor<AClaraStoryProp>(FVector(245, 330, 82), FRotator::ZeroRotator, Parameters);
     if (Badge) Badge->Initialize(TEXT("Badge"), TEXT("Badge del nuovo collega"));
-    UE_LOG(LogTemp, Display, TEXT("CLARA_STORY_CAST_READY: %d Epic mannequins; badge=%s; floor plan unchanged."),
-        Colleagues.Num(), Badge ? TEXT("yes") : TEXT("no"));
+    int32 MetaHumans = 0;
+    for (const auto& NPC : Colleagues) MetaHumans += NPC->HasMetaHuman() ? 1 : 0;
+    UE_LOG(LogTemp, Display, TEXT("CLARA_STORY_CAST_READY: %d colleagues, %d MetaHuman; badge=%s; floor plan unchanged."),
+        Colleagues.Num(), MetaHumans, Badge ? TEXT("yes") : TEXT("no"));
 }

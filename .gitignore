@@ -49,6 +49,9 @@
 
 # Distribuzione pubblica: risorse Epic da installare localmente, nessuna foto privata
 /Content/Characters/Mannequins/
+# MetaHuman generati localmente da Scripts/setup_metahuman_cast.py (contenuti Epic)
+/Content/Characters/MetaHumans/
+/Content/MetaHumans/
 /SourceAssets/ChairMaterials/
 /Content/OfficeAssets/ChairMaterials/
 /LEGGIMI.md

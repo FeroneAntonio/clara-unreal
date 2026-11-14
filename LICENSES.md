@@ -14,6 +14,10 @@ Manny, Quinn, scheletro, materiali, texture e animazioni Epic **non vengono incl
 
 Il manifesto `Content/Characters/mannequin-template-manifest.json` contiene soltanto nomi e dimensioni; non incorpora gli asset. Lo script non scarica file Epic e non modifica le loro condizioni di utilizzo. I file locali restano soggetti ai termini Epic applicabili e non diventano CC0.
 
+## MetaHuman — generati localmente, esclusi dalla pubblicazione
+
+Alessia (preset Jelena), Luca (preset Lorenzo) e Jonathan/Jonny (preset Mateo) sono MetaHuman ricavati dai preset gratuiti inclusi nel plugin MetaHumanCharacter di Unreal Engine 5.8. Rig e texture vengono generati dal servizio cloud MetaHuman con l'account Epic di chi lancia `Scripts/setup_metahuman_cast.py`. Le cartelle `Content/Characters/MetaHumans` e `Content/MetaHumans` sono escluse da Git: il repository contiene solo lo script e il codice che usa i personaggi quando sono presenti. Senza di essi il gioco torna ai manichini Epic provvisori. I file locali restano soggetti ai termini Epic/MetaHuman applicabili.
+
 ## Poly Haven
 
 Gli asset e le texture Poly Haven sono accompagnati da manifesti che indicano **CC0-1.0**, autori, URL e hash quando disponibili. Cartelle interessate: `SourceAssets/OfficeAssets`, `SourceAssets/PolyHaven` e relativi importati in `Content/OfficeAssets` / `Content/Textures`. Conservare i manifesti quando si sostituiscono o aggiornano i file.
