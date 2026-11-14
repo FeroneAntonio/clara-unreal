@@ -1,0 +1,131 @@
+{
+  "name": "OfficeTaskChair",
+  "triangles": 8488,
+  "materials": [
+    "Base, mechanism, back frame and arms, black nylon",
+    "Caster wheels, black",
+    "Gas-lift column, chrome",
+    "Back, dark grey mesh",
+    "Seat upholstery, dark grey fabric"
+  ],
+  "components_before_join": [
+    {
+      "name": "Back frame, lumbar support and back posts",
+      "blender_world_min_cm": [
+        -24.38463866710663,
+        20.74579894542694,
+        35.73308885097504
+      ],
+      "blender_world_max_cm": [
+        24.386148154735565,
+        40.29078185558319,
+        110.08880138397217
+      ]
+    },
+    {
+      "name": "Caster housings",
+      "blender_world_min_cm": [
+        -31.666871905326843,
+        -27.417469024658203,
+        4.30000014603138
+      ],
+      "blender_world_max_cm": [
+        31.666871905326843,
+        33.000001311302185,
+        8.20000022649765
+      ]
+    },
+    {
+      "name": "Caster wheels (60 mm)",
+      "blender_world_min_cm": [
+        -33.40098559856415,
+        -28.932443261146545,
+        0.0
+      ],
+      "blender_world_max_cm": [
+        33.40098559856415,
+        34.60000157356262,
+        6.000000238418579
+      ]
+    },
+    {
+      "name": "Column sleeve",
+      "blender_world_min_cm": [
+        -2.500000037252903,
+        -2.499999850988388,
+        11.800000816583633
+      ],
+      "blender_world_max_cm": [
+        2.500000037252903,
+        2.499999850988388,
+        24.000000953674316
+      ]
+    },
+    {
+      "name": "Five-star base",
+      "blender_world_min_cm": [
+        -30.67622184753418,
+        -26.54964029788971,
+        6.800000369548798
+      ],
+      "blender_world_max_cm": [
+        30.67622184753418,
+        31.800001859664917,
+        12.200000882148743
+      ]
+    },
+    {
+      "name": "Gas-lift column",
+      "blender_world_min_cm": [
+        -1.4000000432133675,
+        -1.4000000432133675,
+        11.800000816583633
+      ],
+      "blender_world_max_cm": [
+        1.4000000432133675,
+        1.4000000432133675,
+        35.00000238418579
+      ]
+    },
+    {
+      "name": "Mesh back panel",
+      "blender_world_min_cm": [
+        -23.306214809417725,
+        21.50000035762787,
+        53.00000309944153
+      ],
+      "blender_world_max_cm": [
+        23.306214809417725,
+        39.50316905975342,
+        109.00000333786011
+      ]
+    },
+    {
+      "name": "Seat cushion",
+      "blender_world_min_cm": [
+        -25.0,
+        -24.500000476837158,
+        39.100003242492676
+      ],
+      "blender_world_max_cm": [
+        25.0,
+        24.500000476837158,
+        47.00000286102295
+      ]
+    },
+    {
+      "name": "Tilt mechanism, spine and levers",
+      "blender_world_min_cm": [
+        -12.000000476837158,
+        -11.600000411272049,
+        32.0000022649765
+      ],
+      "blender_world_max_cm": [
+        19.297684729099274,
+        26.000002026557922,
+        40.00000059604645
+      ]
+    }
+  ],
+  "coordinate_note": "Bounds here are Blender world axes, meters converted to cm. Native Unreal bounds will be checked after import."
+}

@@ -1,0 +1,56 @@
+{
+  "id": "metal_office_desk",
+  "unreal_name": "OfficeDesk",
+  "name": "Metal Office Desk",
+  "author": {
+    "Ulan Cabanilla": "All"
+  },
+  "license": "CC0-1.0",
+  "license_url": "https://polyhaven.com/license",
+  "source_url": "https://polyhaven.com/a/metal_office_desk",
+  "resolution": "2k",
+  "catalog_dimensions_mm": [
+    2000.0003576278687,
+    947.2135305404663,
+    787.5000089406967
+  ],
+  "catalog_polygons": 6898,
+  "files": [
+    {
+      "relative_path": "metal_office_desk_2k.gltf",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/metal_office_desk/metal_office_desk_2k.gltf",
+      "bytes": 13510,
+      "md5": "f8b7985eb522e5c3508ccff43c05d922"
+    },
+    {
+      "relative_path": "metal_office_desk.fbx",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/fbx/2k/metal_office_desk/metal_office_desk_2k.fbx",
+      "bytes": 239676,
+      "md5": "120c3f6b13339438000a18579862b769"
+    },
+    {
+      "relative_path": "textures/metal_office_desk_nor_gl_2k.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/metal_office_desk/metal_office_desk_nor_gl_2k.jpg",
+      "bytes": 490814,
+      "md5": "b4bd4cd202f44d16a26e70c3fb6e611c"
+    },
+    {
+      "relative_path": "textures/metal_office_desk_diff_2k.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/metal_office_desk/metal_office_desk_diff_2k.jpg",
+      "bytes": 1787420,
+      "md5": "62e40035b94716516bd932f83e76ba0c"
+    },
+    {
+      "relative_path": "textures/metal_office_desk_arm_2k.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/metal_office_desk/metal_office_desk_arm_2k.jpg",
+      "bytes": 2724325,
+      "md5": "69cfca0d98399bbc5dc62c007f1f2a4a"
+    },
+    {
+      "relative_path": "metal_office_desk.bin",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/metal_office_desk/metal_office_desk.bin",
+      "bytes": 229700,
+      "md5": "96f258b9a64d36ca011f44de23da7c65"
+    }
+  ]
+}

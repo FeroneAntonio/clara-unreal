@@ -1,0 +1,278 @@
+{
+  "status": "complete",
+  "assets": [
+    {
+      "id": "modern_arm_chair_01",
+      "mesh": "/Game/OfficeAssets/SM_OfficeArmchair.SM_OfficeArmchair",
+      "size_cm": [
+        82.03444290161133,
+        98.65617370605469,
+        102.2852030955255
+      ],
+      "bounds_origin_cm": [
+        0.3363475799560547,
+        -8.217090606689453,
+        51.18076271004975
+      ],
+      "bounds_extent_cm": [
+        41.017221450805664,
+        49.328086853027344,
+        51.14260154776275
+      ],
+      "source_catalog_size_cm": [
+        82.03444182872772,
+        98.65616858005524,
+        102.28520567470696
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "imported_slot_name": "modern_arm_chair_01_legs",
+          "material": "/Game/OfficeAssets/M_modern_arm_chair_01_legs.M_modern_arm_chair_01_legs"
+        },
+        {
+          "slot": 1,
+          "imported_slot_name": "modern_arm_chair_01_pillow",
+          "material": "/Game/OfficeAssets/M_modern_arm_chair_01_pillow.M_modern_arm_chair_01_pillow"
+        }
+      ],
+      "license": "CC0-1.0",
+      "source_url": "https://polyhaven.com/a/modern_arm_chair_01",
+      "pbr_validation": [
+        {
+          "material": "/Game/OfficeAssets/M_modern_arm_chair_01_legs.M_modern_arm_chair_01_legs",
+          "two_sided": true,
+          "blend_mode": "<BlendMode.BLEND_OPAQUE: 0>",
+          "inputs": {
+            "base_color": {
+              "texture": "/Game/OfficeAssets/T_modern_arm_chair_01_legs_diff_2k.T_modern_arm_chair_01_legs_diff_2k",
+              "output": "RGB"
+            },
+            "normal": {
+              "texture": "/Game/OfficeAssets/T_modern_arm_chair_01_legs_nor_gl_2k.T_modern_arm_chair_01_legs_nor_gl_2k",
+              "output": "RGB"
+            },
+            "roughness": {
+              "texture": "/Game/OfficeAssets/T_modern_arm_chair_01_legs_arm_2k.T_modern_arm_chair_01_legs_arm_2k",
+              "output": "G"
+            }
+          }
+        },
+        {
+          "material": "/Game/OfficeAssets/M_modern_arm_chair_01_pillow.M_modern_arm_chair_01_pillow",
+          "two_sided": true,
+          "blend_mode": "<BlendMode.BLEND_OPAQUE: 0>",
+          "inputs": {
+            "base_color": {
+              "texture": "/Game/OfficeAssets/T_modern_arm_chair_01_pillow_diff_2k.T_modern_arm_chair_01_pillow_diff_2k",
+              "output": "RGB"
+            },
+            "normal": {
+              "texture": "/Game/OfficeAssets/T_modern_arm_chair_01_pillow_nor_gl_2k.T_modern_arm_chair_01_pillow_nor_gl_2k",
+              "output": "RGB"
+            },
+            "roughness": {
+              "texture": "/Game/OfficeAssets/T_modern_arm_chair_01_pillow_arm_2k.T_modern_arm_chair_01_pillow_arm_2k",
+              "output": "G"
+            }
+          }
+        }
+      ],
+      "visual_validation": "requires_scene_render_after_import",
+      "orientation_note": "Front inferred +Y in native Unreal coordinates from upper-backrest geometry; up +Z. Yaw +90 turns front toward world -X. Scene render verification pending."
+    },
+    {
+      "id": "metal_office_desk",
+      "mesh": "/Game/OfficeAssets/SM_OfficeDesk.SM_OfficeDesk",
+      "size_cm": [
+        200.00003814697266,
+        94.72135162353516,
+        78.75000772049955
+      ],
+      "bounds_origin_cm": [
+        -0.000125885009765625,
+        0.4496574401855469,
+        39.37500376914476
+      ],
+      "bounds_extent_cm": [
+        100.00001907348633,
+        47.36067581176758,
+        39.37500386024978
+      ],
+      "source_catalog_size_cm": [
+        200.00003576278687,
+        94.72135305404663,
+        78.75000089406967
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "imported_slot_name": "metal_office_desk",
+          "material": "/Game/OfficeAssets/M_metal_office_desk.M_metal_office_desk"
+        }
+      ],
+      "license": "CC0-1.0",
+      "source_url": "https://polyhaven.com/a/metal_office_desk",
+      "pbr_validation": [
+        {
+          "material": "/Game/OfficeAssets/M_metal_office_desk.M_metal_office_desk",
+          "two_sided": true,
+          "blend_mode": "<BlendMode.BLEND_OPAQUE: 0>",
+          "inputs": {
+            "base_color": {
+              "texture": "/Game/OfficeAssets/T_metal_office_desk_diff_2k.T_metal_office_desk_diff_2k",
+              "output": "RGB"
+            },
+            "normal": {
+              "texture": "/Game/OfficeAssets/T_metal_office_desk_nor_gl_2k.T_metal_office_desk_nor_gl_2k",
+              "output": "RGB"
+            },
+            "roughness": {
+              "texture": "/Game/OfficeAssets/T_metal_office_desk_arm_2k.T_metal_office_desk_arm_2k",
+              "output": "G"
+            }
+          }
+        }
+      ],
+      "visual_validation": "requires_scene_render_after_import",
+      "orientation_note": "Drawer fronts extend toward native +Y; up +Z. Yaw +90 turns drawer front toward world -X."
+    },
+    {
+      "id": "potted_plant_02",
+      "mesh": "/Game/OfficeAssets/SM_OfficePlant.SM_OfficePlant",
+      "size_cm": [
+        70.11570358276367,
+        65.7386589050293,
+        84.11787434387952
+      ],
+      "bounds_origin_cm": [
+        -4.608152389526367,
+        -9.161935806274414,
+        42.06423177337274
+      ],
+      "bounds_extent_cm": [
+        35.057851791381836,
+        32.86932945251465,
+        42.05893717193976
+      ],
+      "source_catalog_size_cm": [
+        70.11570334434509,
+        65.73865860700607,
+        84.11787391305552
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "imported_slot_name": "potted_plant_02_pot",
+          "material": "/Game/OfficeAssets/M_potted_plant_02_pot.M_potted_plant_02_pot"
+        },
+        {
+          "slot": 1,
+          "imported_slot_name": "potted_plant_02_leaves",
+          "material": "/Game/OfficeAssets/M_potted_plant_02_leaves.M_potted_plant_02_leaves"
+        }
+      ],
+      "license": "CC0-1.0",
+      "source_url": "https://polyhaven.com/a/potted_plant_02",
+      "pbr_validation": [
+        {
+          "material": "/Game/OfficeAssets/M_potted_plant_02_pot.M_potted_plant_02_pot",
+          "two_sided": true,
+          "blend_mode": "<BlendMode.BLEND_OPAQUE: 0>",
+          "inputs": {
+            "base_color": {
+              "texture": "/Game/OfficeAssets/T_potted_plant_02_pot_diff_2k.T_potted_plant_02_pot_diff_2k",
+              "output": "RGB"
+            },
+            "normal": {
+              "texture": "/Game/OfficeAssets/T_potted_plant_02_pot_nor_gl_2k.T_potted_plant_02_pot_nor_gl_2k",
+              "output": "RGB"
+            },
+            "roughness": {
+              "texture": "/Game/OfficeAssets/T_potted_plant_02_pot_rough_2k.T_potted_plant_02_pot_rough_2k",
+              "output": "G"
+            }
+          }
+        },
+        {
+          "material": "/Game/OfficeAssets/M_potted_plant_02_leaves.M_potted_plant_02_leaves",
+          "two_sided": true,
+          "blend_mode": "<BlendMode.BLEND_MASKED: 1>",
+          "inputs": {
+            "base_color": {
+              "texture": "/Game/OfficeAssets/T_potted_plant_02_leaves_diff_2k.T_potted_plant_02_leaves_diff_2k",
+              "output": "RGB"
+            },
+            "normal": {
+              "texture": "/Game/OfficeAssets/T_potted_plant_02_leaves_nor_gl_2k.T_potted_plant_02_leaves_nor_gl_2k",
+              "output": "RGB"
+            },
+            "roughness": {
+              "texture": "/Game/OfficeAssets/T_potted_plant_02_leaves_rough_2k.T_potted_plant_02_leaves_rough_2k",
+              "output": "G"
+            }
+          }
+        }
+      ],
+      "visual_validation": "requires_scene_render_after_import",
+      "orientation_note": "Up +Z; no critical front direction."
+    },
+    {
+      "id": "modern_coffee_table_01",
+      "mesh": "/Game/OfficeAssets/SM_CoffeeTable.SM_CoffeeTable",
+      "size_cm": [
+        120.18300247192383,
+        60.000009536743164,
+        39.000008480623364
+      ],
+      "bounds_origin_cm": [
+        0.024599075317382812,
+        -1.811981201171875e-05,
+        19.488486818037927
+      ],
+      "bounds_extent_cm": [
+        60.091501235961914,
+        30.000004768371582,
+        19.500004240311682
+      ],
+      "source_catalog_size_cm": [
+        120.18300294876099,
+        60.00000834465027,
+        38.999998569488525
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "imported_slot_name": "modern_coffee_table_01",
+          "material": "/Game/OfficeAssets/M_modern_coffee_table_01.M_modern_coffee_table_01"
+        }
+      ],
+      "license": "CC0-1.0",
+      "source_url": "https://polyhaven.com/a/modern_coffee_table_01",
+      "pbr_validation": [
+        {
+          "material": "/Game/OfficeAssets/M_modern_coffee_table_01.M_modern_coffee_table_01",
+          "two_sided": true,
+          "blend_mode": "<BlendMode.BLEND_OPAQUE: 0>",
+          "inputs": {
+            "base_color": {
+              "texture": "/Game/OfficeAssets/T_modern_coffee_table_01_diff_2k.T_modern_coffee_table_01_diff_2k",
+              "output": "RGB"
+            },
+            "normal": {
+              "texture": "/Game/OfficeAssets/T_modern_coffee_table_01_nor_gl_2k.T_modern_coffee_table_01_nor_gl_2k",
+              "output": "RGB"
+            },
+            "roughness": {
+              "texture": "/Game/OfficeAssets/T_modern_coffee_table_01_rough_2k.T_modern_coffee_table_01_rough_2k",
+              "output": "G"
+            }
+          }
+        }
+      ],
+      "visual_validation": "requires_scene_render_after_import",
+      "orientation_note": "Up +Z. No critical front direction; long table axis +X."
+    }
+  ],
+  "errors": []
+}

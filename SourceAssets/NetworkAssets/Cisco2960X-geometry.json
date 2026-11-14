@@ -1,0 +1,17 @@
+{
+  "triangles": 130014,
+  "vertices": 69653,
+  "materials": [
+    "CaseGrey",
+    "Black",
+    "SwitchFace",
+    "CaseGrey",
+    "Steel",
+    "Gold",
+    "LedOff",
+    "DarkInk",
+    "ConsoleBlue",
+    "White"
+  ],
+  "ports": 35
+}

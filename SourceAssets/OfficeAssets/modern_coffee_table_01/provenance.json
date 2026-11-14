@@ -1,0 +1,56 @@
+{
+  "id": "modern_coffee_table_01",
+  "unreal_name": "CoffeeTable",
+  "name": "Modern Coffee Table 01",
+  "author": {
+    "Amin": "All"
+  },
+  "license": "CC0-1.0",
+  "license_url": "https://polyhaven.com/license",
+  "source_url": "https://polyhaven.com/a/modern_coffee_table_01",
+  "resolution": "2k",
+  "catalog_dimensions_mm": [
+    1201.8300294876099,
+    600.0000834465027,
+    389.99998569488525
+  ],
+  "catalog_polygons": 4504,
+  "files": [
+    {
+      "relative_path": "modern_coffee_table_01_2k.gltf",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/modern_coffee_table_01/modern_coffee_table_01_2k.gltf",
+      "bytes": 2771,
+      "md5": "5e8490b726b706acffbed17d6174471b"
+    },
+    {
+      "relative_path": "modern_coffee_table_01.fbx",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/fbx/2k/modern_coffee_table_01/modern_coffee_table_01_2k.fbx",
+      "bytes": 158780,
+      "md5": "9cf447bae6bee1bc723ca6ce807d3103"
+    },
+    {
+      "relative_path": "textures/modern_coffee_table_01_rough_2k.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/modern_coffee_table_01/modern_coffee_table_01_rough_2k.jpg",
+      "bytes": 1476681,
+      "md5": "48093edf08c1f4ddd85f995bcddc90f7"
+    },
+    {
+      "relative_path": "modern_coffee_table_01.bin",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/modern_coffee_table_01/modern_coffee_table_01.bin",
+      "bytes": 154864,
+      "md5": "6e8f65bff935af308eab9eff062f6daa"
+    },
+    {
+      "relative_path": "textures/modern_coffee_table_01_diff_2k.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/modern_coffee_table_01/modern_coffee_table_01_diff_2k.jpg",
+      "bytes": 1571631,
+      "md5": "0e4e0c7fa75c2ba6e3f244fafd12190c"
+    },
+    {
+      "relative_path": "textures/modern_coffee_table_01_nor_gl_2k.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/modern_coffee_table_01/modern_coffee_table_01_nor_gl_2k.jpg",
+      "bytes": 1495294,
+      "md5": "475d7a37185a8f32318896a08188430e"
+    }
+  ]
+}

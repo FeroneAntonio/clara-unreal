@@ -1,0 +1,201 @@
+{
+  "status": "complete_with_runtime_scale_requirement",
+  "assets": [
+    {
+      "id": "office-task-chair-with-mesh-back-armless-dba987cc",
+      "mesh": "/Game/OfficeAssets/SM_OfficeTaskChair.SM_OfficeTaskChair",
+      "native_uasset_bytes": 436444,
+      "bounds_size_native_unreal_units": [
+        0.668019711971283,
+        0.6922322809696198,
+        1.1008880138397217
+      ],
+      "physical_size_cm": [
+        66.802,
+        69.223,
+        110.089
+      ],
+      "placement_requirement": "Normalize current StaticMesh bounds to desired physical size; do not assume 1:1 native units.",
+      "front_axis_native": "+Y",
+      "yaw_to_face_world_minus_y": 180,
+      "material_graphs_and_slot_mapping": "passed before dimensions-only assertion in second import pass",
+      "recorded_material_slots": [
+        {
+          "slot": 0,
+          "source_name": "Base_ mechanism_ back frame and arms_ black nylon",
+          "material": "/Game/OfficeAssets/M_OfficeTaskChair_00.M_OfficeTaskChair_00",
+          "graph_checks": {
+            "base_color": "MaterialExpressionTextureSample",
+            "roughness": "MaterialExpressionConstant",
+            "metallic": "MaterialExpressionConstant"
+          }
+        },
+        {
+          "slot": 1,
+          "source_name": "Caster wheels_ black",
+          "material": "/Game/OfficeAssets/M_OfficeTaskChair_01.M_OfficeTaskChair_01",
+          "graph_checks": {
+            "base_color": "MaterialExpressionTextureSample",
+            "roughness": "MaterialExpressionConstant",
+            "metallic": "MaterialExpressionConstant"
+          }
+        },
+        {
+          "slot": 2,
+          "source_name": "Gas-lift column_ chrome",
+          "material": "/Game/OfficeAssets/M_OfficeTaskChair_02.M_OfficeTaskChair_02",
+          "graph_checks": {
+            "base_color": "MaterialExpressionTextureSample",
+            "roughness": "MaterialExpressionConstant",
+            "metallic": "MaterialExpressionConstant"
+          }
+        },
+        {
+          "slot": 3,
+          "source_name": "Back_ dark grey mesh",
+          "material": "/Game/OfficeAssets/M_OfficeTaskChair_03.M_OfficeTaskChair_03",
+          "graph_checks": {
+            "base_color": "MaterialExpressionTextureSample",
+            "roughness": "MaterialExpressionConstant",
+            "metallic": "MaterialExpressionConstant"
+          }
+        },
+        {
+          "slot": 4,
+          "source_name": "Seat upholstery_ dark grey fabric",
+          "material": "/Game/OfficeAssets/M_OfficeTaskChair_04.M_OfficeTaskChair_04",
+          "graph_checks": {
+            "base_color": "MaterialExpressionTextureSample",
+            "roughness": "MaterialExpressionConstant",
+            "metallic": "MaterialExpressionConstant"
+          }
+        }
+      ],
+      "source_material_count": 5,
+      "source_url": "https://www.innerscene.com/tools/library/3d-parts/office-task-chair-with-mesh-back-armless-dba987cc",
+      "license": "CC0-1.0",
+      "visual_validation": "pending scene render",
+      "source_conversion": "Original GLB preserved; extracted PBR textures and FBX conversion alongside. Later baked-centimeter FBX source was not reimported."
+    },
+    {
+      "id": "work-tower-desktop-pc-1e7897c7",
+      "mesh": "/Game/OfficeAssets/SM_DesktopTower.SM_DesktopTower",
+      "native_uasset_bytes": 407539,
+      "bounds_size_native_unreal_units": [
+        0.20500005036592484,
+        0.4165000319480896,
+        0.4739999771118164
+      ],
+      "physical_size_cm": [
+        20.5,
+        41.65,
+        47.4
+      ],
+      "placement_requirement": "Normalize current StaticMesh bounds to desired physical size; do not assume 1:1 native units.",
+      "front_axis_native": "+Y",
+      "yaw_to_face_world_minus_y": 180,
+      "material_graphs_and_slot_mapping": "passed before dimensions-only assertion in second import pass",
+      "recorded_material_slots": [
+        {
+          "slot": 0,
+          "source_name": "Fastener socket recess",
+          "material": "/Game/OfficeAssets/M_DesktopTower_00.M_DesktopTower_00",
+          "graph_checks": {
+            "base_color": "MaterialExpressionTextureSample",
+            "roughness": "MaterialExpressionConstant",
+            "metallic": "MaterialExpressionConstant"
+          }
+        },
+        {
+          "slot": 1,
+          "source_name": "Black molded polymer",
+          "material": "/Game/OfficeAssets/M_DesktopTower_01.M_DesktopTower_01",
+          "graph_checks": {
+            "base_color": "MaterialExpressionTextureSample",
+            "roughness": "MaterialExpressionConstant",
+            "metallic": "MaterialExpressionConstant"
+          }
+        },
+        {
+          "slot": 2,
+          "source_name": "Charcoal fine-textured powdercoat",
+          "material": "/Game/OfficeAssets/M_DesktopTower_02.M_DesktopTower_02",
+          "graph_checks": {
+            "base_color": "MaterialExpressionTextureSample",
+            "roughness": "MaterialExpressionConstant",
+            "metallic": "MaterialExpressionConstant"
+          }
+        },
+        {
+          "slot": 3,
+          "source_name": "Black felt floor glides",
+          "material": "/Game/OfficeAssets/M_DesktopTower_03.M_DesktopTower_03",
+          "graph_checks": {
+            "base_color": "MaterialExpressionTextureSample",
+            "roughness": "MaterialExpressionConstant",
+            "metallic": "MaterialExpressionConstant"
+          }
+        },
+        {
+          "slot": 4,
+          "source_name": "Satin galvanized steel",
+          "material": "/Game/OfficeAssets/M_DesktopTower_04.M_DesktopTower_04",
+          "graph_checks": {
+            "base_color": "MaterialExpressionTextureSample",
+            "roughness": "MaterialExpressionConstant",
+            "metallic": "MaterialExpressionConstant"
+          }
+        },
+        {
+          "slot": 5,
+          "source_name": "Clear glass",
+          "material": "/Game/OfficeAssets/M_DesktopTower_05.M_DesktopTower_05",
+          "graph_checks": {
+            "base_color": "MaterialExpressionTextureSample",
+            "roughness": "MaterialExpressionConstant",
+            "metallic": "MaterialExpressionConstant"
+          }
+        }
+      ],
+      "source_material_count": 6,
+      "source_url": "https://www.innerscene.com/tools/library/3d-parts/work-tower-desktop-pc-1e7897c7",
+      "license": "CC0-1.0",
+      "visual_validation": "pending scene render",
+      "source_conversion": "Original GLB preserved; extracted PBR textures and FBX conversion alongside. Later baked-centimeter FBX source was not reimported."
+    },
+    {
+      "id": "desktop-monitor-24-inch-326dfa17",
+      "mesh": "/Game/OfficeAssets/SM_DesktopMonitor.SM_DesktopMonitor",
+      "native_uasset_bytes": 309063,
+      "bounds_size_native_unreal_units": [
+        0.5408848524093628,
+        0.18000004813075066,
+        0.41637277603149414
+      ],
+      "physical_size_cm": [
+        54.088,
+        18.0,
+        41.637
+      ],
+      "placement_requirement": "Normalize current StaticMesh bounds to desired physical size; do not assume 1:1 native units.",
+      "front_axis_native": "+Y",
+      "yaw_to_face_world_minus_y": 180,
+      "material_graphs_and_slot_mapping": "passed before dimensions-only assertion in second import pass",
+      "recorded_material_slots": null,
+      "source_material_count": 6,
+      "source_url": "https://www.innerscene.com/tools/library/3d-parts/desktop-monitor-24-inch-326dfa17",
+      "license": "CC0-1.0",
+      "visual_validation": "pending scene render",
+      "source_conversion": "Original GLB preserved; extracted PBR textures and FBX conversion alongside. Later baked-centimeter FBX source was not reimported."
+    }
+  ],
+  "unresolved_import_scale": true,
+  "no_engine_process_left_by_import": true,
+  "notes": [
+    "All three native StaticMesh assets were created and their material assignments saved.",
+    "The second pass validated material graphs and mappings before its strict dimensions check rejected the small source-unit bounds.",
+    "The final optional attempt to edit import_uniform_scale stopped before reimport because these assets use InterchangeAssetImportData.",
+    "Native coordinate values remain meter-sized while Unreal interprets units as centimetres. Runtime placement must use existing AutoAsset bounding-box normalization.",
+    "No further editor imports or source changes are pending from this task."
+  ]
+}

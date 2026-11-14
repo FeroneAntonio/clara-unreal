@@ -1,0 +1,867 @@
+{
+  "asset": {
+    "generator": "Khronos glTF Blender I/O v5.2.40",
+    "version": "2.0",
+    "copyright": "Authored by Innerscene Corp (innerscene.com). Public domain: dedicated under CC0 1.0 Universal, https://creativecommons.org/publicdomain/zero/1.0/. Free to use, modify and redistribute for any purpose, with no credit required."
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Scene",
+      "nodes": [
+        9
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "mesh": 0,
+      "name": "Back frame, lumbar support and back posts"
+    },
+    {
+      "mesh": 1,
+      "name": "Caster housings"
+    },
+    {
+      "mesh": 2,
+      "name": "Caster wheels (60 mm)"
+    },
+    {
+      "mesh": 3,
+      "name": "Column sleeve"
+    },
+    {
+      "mesh": 4,
+      "name": "Five-star base"
+    },
+    {
+      "mesh": 5,
+      "name": "Gas-lift column"
+    },
+    {
+      "mesh": 6,
+      "name": "Mesh back panel"
+    },
+    {
+      "mesh": 7,
+      "name": "Seat cushion"
+    },
+    {
+      "mesh": 8,
+      "name": "Tilt mechanism, spine and levers"
+    },
+    {
+      "children": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "extras": {
+        "license": "CC0-1.0",
+        "original_design": true
+      },
+      "name": "Office task chair with mesh back, armless"
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "name": "Base, mechanism, back frame and arms, black nylon",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 0
+        },
+        "metallicFactor": 0,
+        "roughnessFactor": 0.5
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "Caster wheels, black",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 1
+        },
+        "metallicFactor": 0,
+        "roughnessFactor": 0.6000000238418579
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "Gas-lift column, chrome",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 2
+        },
+        "roughnessFactor": 0.2199999988079071
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "Back, dark grey mesh",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 3
+        },
+        "metallicFactor": 0,
+        "roughnessFactor": 0.8199999928474426
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "Seat upholstery, dark grey fabric",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 4
+        },
+        "metallicFactor": 0,
+        "roughnessFactor": 0.8799999952316284
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Back frame, lumbar support and back posts",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0
+        }
+      ]
+    },
+    {
+      "name": "Caster housings",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 4,
+            "NORMAL": 5,
+            "TEXCOORD_0": 6
+          },
+          "indices": 7,
+          "material": 0
+        }
+      ]
+    },
+    {
+      "name": "Caster wheels (60 mm)",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 8,
+            "NORMAL": 9,
+            "TEXCOORD_0": 10
+          },
+          "indices": 11,
+          "material": 1
+        }
+      ]
+    },
+    {
+      "name": "Column sleeve",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 12,
+            "NORMAL": 13,
+            "TEXCOORD_0": 14
+          },
+          "indices": 15,
+          "material": 0
+        }
+      ]
+    },
+    {
+      "name": "Five-star base",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 16,
+            "NORMAL": 17,
+            "TEXCOORD_0": 18
+          },
+          "indices": 19,
+          "material": 0
+        }
+      ]
+    },
+    {
+      "name": "Gas-lift column",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 20,
+            "NORMAL": 21,
+            "TEXCOORD_0": 22
+          },
+          "indices": 23,
+          "material": 2
+        }
+      ]
+    },
+    {
+      "name": "Mesh back panel",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 24,
+            "NORMAL": 25,
+            "TEXCOORD_0": 26
+          },
+          "indices": 27,
+          "material": 3
+        }
+      ]
+    },
+    {
+      "name": "Seat cushion",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 28,
+            "NORMAL": 29,
+            "TEXCOORD_0": 30
+          },
+          "indices": 31,
+          "material": 4
+        }
+      ]
+    },
+    {
+      "name": "Tilt mechanism, spine and levers",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 32,
+            "NORMAL": 33,
+            "TEXCOORD_0": 34
+          },
+          "indices": 35,
+          "material": 0
+        }
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    },
+    {
+      "sampler": 0,
+      "source": 1
+    },
+    {
+      "sampler": 0,
+      "source": 2
+    },
+    {
+      "sampler": 0,
+      "source": 3
+    },
+    {
+      "sampler": 0,
+      "source": 4
+    }
+  ],
+  "images": [
+    {
+      "bufferView": 4,
+      "mimeType": "image/png",
+      "name": "73f3074f41fe117f"
+    },
+    {
+      "bufferView": 13,
+      "mimeType": "image/png",
+      "name": "65b209b821773e17"
+    },
+    {
+      "bufferView": 26,
+      "mimeType": "image/png",
+      "name": "af8f60ba22a145ed"
+    },
+    {
+      "bufferView": 31,
+      "mimeType": "image/png",
+      "name": "5ea3b3143ec752d3"
+    },
+    {
+      "bufferView": 36,
+      "mimeType": "image/png",
+      "name": "3e47111696b8cb15"
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 1356,
+      "max": [
+        0.24386148154735565,
+        1.1008880138397217,
+        -0.2074579894542694
+      ],
+      "min": [
+        -0.24384638667106628,
+        0.35733088850975037,
+        -0.4029078185558319
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 1356,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 1356,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5123,
+      "count": 5484,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 5,
+      "componentType": 5126,
+      "count": 1386,
+      "max": [
+        0.31666871905326843,
+        0.0820000022649765,
+        0.27417469024658203
+      ],
+      "min": [
+        -0.31666871905326843,
+        0.0430000014603138,
+        -0.33000001311302185
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 6,
+      "componentType": 5126,
+      "count": 1386,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 7,
+      "componentType": 5126,
+      "count": 1386,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 8,
+      "componentType": 5123,
+      "count": 5220,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 9,
+      "componentType": 5126,
+      "count": 2508,
+      "max": [
+        0.3340098559856415,
+        0.06000000238418579,
+        0.28932443261146545
+      ],
+      "min": [
+        -0.3340098559856415,
+        0,
+        -0.3460000157356262
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 10,
+      "componentType": 5126,
+      "count": 2508,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 11,
+      "componentType": 5126,
+      "count": 2508,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 12,
+      "componentType": 5123,
+      "count": 6720,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 14,
+      "componentType": 5126,
+      "count": 138,
+      "max": [
+        0.02500000037252903,
+        0.24000000953674316,
+        0.02499999850988388
+      ],
+      "min": [
+        -0.02500000037252903,
+        0.11800000816583633,
+        -0.02499999850988388
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 15,
+      "componentType": 5126,
+      "count": 138,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 16,
+      "componentType": 5126,
+      "count": 138,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 17,
+      "componentType": 5123,
+      "count": 384,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 18,
+      "componentType": 5126,
+      "count": 368,
+      "max": [
+        0.3067622184753418,
+        0.12200000882148743,
+        0.2654964029788971
+      ],
+      "min": [
+        -0.3067622184753418,
+        0.06800000369548798,
+        -0.31800001859664917
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 19,
+      "componentType": 5126,
+      "count": 368,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 20,
+      "componentType": 5126,
+      "count": 368,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 21,
+      "componentType": 5123,
+      "count": 996,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 22,
+      "componentType": 5126,
+      "count": 134,
+      "max": [
+        0.014000000432133675,
+        0.3500000238418579,
+        0.014000000432133675
+      ],
+      "min": [
+        -0.014000000432133675,
+        0.11800000816583633,
+        -0.014000000432133675
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 23,
+      "componentType": 5126,
+      "count": 134,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 24,
+      "componentType": 5126,
+      "count": 134,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 25,
+      "componentType": 5123,
+      "count": 384,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 27,
+      "componentType": 5126,
+      "count": 638,
+      "max": [
+        0.23306214809417725,
+        1.090000033378601,
+        -0.2150000035762787
+      ],
+      "min": [
+        -0.23306214809417725,
+        0.5300000309944153,
+        -0.3950316905975342
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 28,
+      "componentType": 5126,
+      "count": 638,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 29,
+      "componentType": 5126,
+      "count": 638,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 30,
+      "componentType": 5123,
+      "count": 3048,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 32,
+      "componentType": 5126,
+      "count": 228,
+      "max": [
+        0.25,
+        0.4700000286102295,
+        0.24500000476837158
+      ],
+      "min": [
+        -0.25,
+        0.39100003242492676,
+        -0.24500000476837158
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 33,
+      "componentType": 5126,
+      "count": 228,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 34,
+      "componentType": 5126,
+      "count": 228,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 35,
+      "componentType": 5123,
+      "count": 852,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 37,
+      "componentType": 5126,
+      "count": 624,
+      "max": [
+        0.19297684729099274,
+        0.4000000059604645,
+        0.11600000411272049
+      ],
+      "min": [
+        -0.12000000476837158,
+        0.320000022649765,
+        -0.2600000202655792
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 38,
+      "componentType": 5126,
+      "count": 624,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 39,
+      "componentType": 5126,
+      "count": 624,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 40,
+      "componentType": 5123,
+      "count": 2376,
+      "type": "SCALAR"
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 16272,
+      "byteOffset": 0,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 16272,
+      "byteOffset": 16272,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 10848,
+      "byteOffset": 32544,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 10968,
+      "byteOffset": 43392,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 36834,
+      "byteOffset": 54360
+    },
+    {
+      "buffer": 0,
+      "byteLength": 16632,
+      "byteOffset": 91196,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 16632,
+      "byteOffset": 107828,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 11088,
+      "byteOffset": 124460,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 10440,
+      "byteOffset": 135548,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 30096,
+      "byteOffset": 145988,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 30096,
+      "byteOffset": 176084,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 20064,
+      "byteOffset": 206180,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 13440,
+      "byteOffset": 226244,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 36834,
+      "byteOffset": 239684
+    },
+    {
+      "buffer": 0,
+      "byteLength": 1656,
+      "byteOffset": 276520,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 1656,
+      "byteOffset": 278176,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 1104,
+      "byteOffset": 279832,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 768,
+      "byteOffset": 280936,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 4416,
+      "byteOffset": 281704,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 4416,
+      "byteOffset": 286120,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 2944,
+      "byteOffset": 290536,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 1992,
+      "byteOffset": 293480,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 1608,
+      "byteOffset": 295472,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 1608,
+      "byteOffset": 297080,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 1072,
+      "byteOffset": 298688,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 768,
+      "byteOffset": 299760,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 36835,
+      "byteOffset": 300528
+    },
+    {
+      "buffer": 0,
+      "byteLength": 7656,
+      "byteOffset": 337364,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 7656,
+      "byteOffset": 345020,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 5104,
+      "byteOffset": 352676,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 6096,
+      "byteOffset": 357780,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 36836,
+      "byteOffset": 363876
+    },
+    {
+      "buffer": 0,
+      "byteLength": 2736,
+      "byteOffset": 400712,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 2736,
+      "byteOffset": 403448,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 1824,
+      "byteOffset": 406184,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 1704,
+      "byteOffset": 408008,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 36836,
+      "byteOffset": 409712
+    },
+    {
+      "buffer": 0,
+      "byteLength": 7488,
+      "byteOffset": 446548,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 7488,
+      "byteOffset": 454036,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 4992,
+      "byteOffset": 461524,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 4752,
+      "byteOffset": 466516,
+      "target": 34963
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 471268
+    }
+  ]
+}

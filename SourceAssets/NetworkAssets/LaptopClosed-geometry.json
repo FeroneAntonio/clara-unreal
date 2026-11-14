@@ -1,0 +1,12 @@
+{
+  "triangles": 19928,
+  "vertices": 10176,
+  "materials": [
+    "Steel",
+    "Black",
+    "CaseGrey",
+    "Gold",
+    "Rubber"
+  ],
+  "ports": 0
+}

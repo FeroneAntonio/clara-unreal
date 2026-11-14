@@ -1,0 +1,104 @@
+{
+  "source": "Unreal Engine 5.8 shipped template resources (Epic mannequin assets)",
+  "purpose": "Temporary neutral Manny/Quinn story actors; not replicas of real people",
+  "assets": [
+    {
+      "asset": "/Game/Characters/Mannequins/Anims/Unarmed/MM_Idle",
+      "bytes": 1436554
+    },
+    {
+      "asset": "/Game/Characters/Mannequins/Meshes/SK_Mannequin",
+      "bytes": 191198
+    },
+    {
+      "asset": "/Game/Characters/Mannequins/Meshes/SKM_Quinn_Simple",
+      "bytes": 16252577
+    },
+    {
+      "asset": "/Game/Characters/Mannequins/Rigs/PA_Mannequin",
+      "bytes": 301538
+    },
+    {
+      "asset": "/Game/Characters/Mannequins/Meshes/SKM_Manny_Simple",
+      "bytes": 15825101
+    },
+    {
+      "asset": "/Game/Characters/Mannequins/Materials/Manny/MI_Manny_02_New",
+      "bytes": 18706
+    },
+    {
+      "asset": "/Game/Characters/Mannequins/Materials/Manny/MI_Manny_01_New",
+      "bytes": 17963
+    },
+    {
+      "asset": "/Game/Characters/Mannequins/Materials/M_Mannequin",
+      "bytes": 59292
+    },
+    {
+      "asset": "/Game/Characters/Mannequins/Textures/Shared/T_UE_Logo_M",
+      "bytes": 59927
+    },
+    {
+      "asset": "/Game/Characters/Mannequins/Textures/Manny/T_Manny_01_MRA",
+      "bytes": 712594
+    },
+    {
+      "asset": "/Game/Characters/Mannequins/Textures/Manny/T_Manny_01_D",
+      "bytes": 699555
+    },
+    {
+      "asset": "/Game/Characters/Mannequins/Textures/Manny/T_Manny_01_BN",
+      "bytes": 1422785
+    },
+    {
+      "asset": "/Game/Characters/Mannequins/Textures/Manny/T_Manny_02_MRA",
+      "bytes": 1059559
+    },
+    {
+      "asset": "/Game/Characters/Mannequins/Textures/Manny/T_Manny_02_D",
+      "bytes": 1036712
+    },
+    {
+      "asset": "/Game/Characters/Mannequins/Textures/Manny/T_Manny_02_BN",
+      "bytes": 20999487
+    },
+    {
+      "asset": "/Game/Characters/Mannequins/Rigs/CR_Mannequin_Body",
+      "bytes": 17057558
+    },
+    {
+      "asset": "/Game/Characters/Mannequins/Materials/Quinn/MI_Quinn_02",
+      "bytes": 10718
+    },
+    {
+      "asset": "/Game/Characters/Mannequins/Materials/Quinn/MI_Quinn_01",
+      "bytes": 11184
+    },
+    {
+      "asset": "/Game/Characters/Mannequins/Textures/Quinn/T_Quinn_01_N",
+      "bytes": 1263741
+    },
+    {
+      "asset": "/Game/Characters/Mannequins/Textures/Quinn/T_Quinn_01_MRA",
+      "bytes": 791597
+    },
+    {
+      "asset": "/Game/Characters/Mannequins/Textures/Quinn/T_Quinn_01_D",
+      "bytes": 674768
+    },
+    {
+      "asset": "/Game/Characters/Mannequins/Textures/Quinn/T_Quinn_02_N",
+      "bytes": 1524635
+    },
+    {
+      "asset": "/Game/Characters/Mannequins/Textures/Quinn/T_Quinn_02_MRA",
+      "bytes": 974099
+    },
+    {
+      "asset": "/Game/Characters/Mannequins/Textures/Quinn/T_Quinn_02_D",
+      "bytes": 943331
+    }
+  ],
+  "missing_character_package_references": [],
+  "total_bytes": 83345179
+}

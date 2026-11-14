@@ -1,0 +1,267 @@
+{
+  "assets": [
+    {
+      "id": "modern_arm_chair_01",
+      "unreal_name": "OfficeArmchair",
+      "name": "Modern Arm Chair 01",
+      "author": {
+        "Vibrant Nordic": "All"
+      },
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "source_url": "https://polyhaven.com/a/modern_arm_chair_01",
+      "resolution": "2k",
+      "catalog_dimensions_mm": [
+        820.3444182872772,
+        986.5616858005524,
+        1022.8520567470696
+      ],
+      "catalog_polygons": 8916,
+      "files": [
+        {
+          "relative_path": "modern_arm_chair_01_2k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/modern_arm_chair_01/modern_arm_chair_01_2k.gltf",
+          "bytes": 5121,
+          "md5": "1fec9694d156cbed5dc8757576cd16a5"
+        },
+        {
+          "relative_path": "modern_arm_chair_01.fbx",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/fbx/2k/modern_arm_chair_01/modern_arm_chair_01_2k.fbx",
+          "bytes": 300028,
+          "md5": "39589b8db3330e60e266799d5b71ab4a"
+        },
+        {
+          "relative_path": "textures/modern_arm_chair_01_pillow_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/modern_arm_chair_01/modern_arm_chair_01_pillow_diff_2k.jpg",
+          "bytes": 843013,
+          "md5": "c3def4cb2bcef8ee07c90c55c20a637e"
+        },
+        {
+          "relative_path": "textures/modern_arm_chair_01_pillow_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/modern_arm_chair_01/modern_arm_chair_01_pillow_nor_gl_2k.jpg",
+          "bytes": 1074878,
+          "md5": "2549b1d93eb4ec13e8ad9edd1327d2f0"
+        },
+        {
+          "relative_path": "modern_arm_chair_01.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/modern_arm_chair_01/modern_arm_chair_01.bin",
+          "bytes": 240728,
+          "md5": "5a8f2ea1c79ea484140e484b2a621670"
+        },
+        {
+          "relative_path": "textures/modern_arm_chair_01_legs_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/modern_arm_chair_01/modern_arm_chair_01_legs_diff_2k.jpg",
+          "bytes": 1660925,
+          "md5": "cfed247a17cafd9f59a7f01ed01fdbf4"
+        },
+        {
+          "relative_path": "textures/modern_arm_chair_01_legs_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/modern_arm_chair_01/modern_arm_chair_01_legs_arm_2k.jpg",
+          "bytes": 2144468,
+          "md5": "a62c231c4f42be2f85f6b42a7cc1fc8e"
+        },
+        {
+          "relative_path": "textures/modern_arm_chair_01_legs_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/modern_arm_chair_01/modern_arm_chair_01_legs_nor_gl_2k.jpg",
+          "bytes": 2076117,
+          "md5": "52c08726e839e2c1c87863e6f5a87411"
+        },
+        {
+          "relative_path": "textures/modern_arm_chair_01_pillow_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/modern_arm_chair_01/modern_arm_chair_01_pillow_arm_2k.jpg",
+          "bytes": 1176399,
+          "md5": "1984906adcaef79cefe2d20cb5be4c7e"
+        }
+      ]
+    },
+    {
+      "id": "metal_office_desk",
+      "unreal_name": "OfficeDesk",
+      "name": "Metal Office Desk",
+      "author": {
+        "Ulan Cabanilla": "All"
+      },
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "source_url": "https://polyhaven.com/a/metal_office_desk",
+      "resolution": "2k",
+      "catalog_dimensions_mm": [
+        2000.0003576278687,
+        947.2135305404663,
+        787.5000089406967
+      ],
+      "catalog_polygons": 6898,
+      "files": [
+        {
+          "relative_path": "metal_office_desk_2k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/metal_office_desk/metal_office_desk_2k.gltf",
+          "bytes": 13510,
+          "md5": "f8b7985eb522e5c3508ccff43c05d922"
+        },
+        {
+          "relative_path": "metal_office_desk.fbx",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/fbx/2k/metal_office_desk/metal_office_desk_2k.fbx",
+          "bytes": 239676,
+          "md5": "120c3f6b13339438000a18579862b769"
+        },
+        {
+          "relative_path": "textures/metal_office_desk_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/metal_office_desk/metal_office_desk_nor_gl_2k.jpg",
+          "bytes": 490814,
+          "md5": "b4bd4cd202f44d16a26e70c3fb6e611c"
+        },
+        {
+          "relative_path": "textures/metal_office_desk_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/metal_office_desk/metal_office_desk_diff_2k.jpg",
+          "bytes": 1787420,
+          "md5": "62e40035b94716516bd932f83e76ba0c"
+        },
+        {
+          "relative_path": "textures/metal_office_desk_arm_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/metal_office_desk/metal_office_desk_arm_2k.jpg",
+          "bytes": 2724325,
+          "md5": "69cfca0d98399bbc5dc62c007f1f2a4a"
+        },
+        {
+          "relative_path": "metal_office_desk.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/metal_office_desk/metal_office_desk.bin",
+          "bytes": 229700,
+          "md5": "96f258b9a64d36ca011f44de23da7c65"
+        }
+      ]
+    },
+    {
+      "id": "potted_plant_02",
+      "unreal_name": "OfficePlant",
+      "name": "Potted Plant 02",
+      "author": {
+        "Rico Cilliers": "All"
+      },
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "source_url": "https://polyhaven.com/a/potted_plant_02",
+      "resolution": "2k",
+      "catalog_dimensions_mm": [
+        701.1570334434509,
+        657.3865860700607,
+        841.1787391305552
+      ],
+      "catalog_polygons": 69806,
+      "files": [
+        {
+          "relative_path": "potted_plant_02_2k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/potted_plant_02/potted_plant_02_2k.gltf",
+          "bytes": 6653,
+          "md5": "9161f84da94065f5b3888347c0f275ce"
+        },
+        {
+          "relative_path": "potted_plant_02.fbx",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/fbx/2k/potted_plant_02/potted_plant_02_2k.fbx",
+          "bytes": 2209468,
+          "md5": "311a35750f1f85d168d10db2dd0265df"
+        },
+        {
+          "relative_path": "textures/potted_plant_02_leaves_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/potted_plant_02/potted_plant_02_leaves_diff_2k.jpg",
+          "bytes": 584084,
+          "md5": "96aa3bba976e762eedced66d9832c2a5"
+        },
+        {
+          "relative_path": "textures/potted_plant_02_leaves_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/potted_plant_02/potted_plant_02_leaves_nor_gl_2k.jpg",
+          "bytes": 481780,
+          "md5": "c187345d2875a28be93e61db4dd61558"
+        },
+        {
+          "relative_path": "textures/potted_plant_02_pot_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/potted_plant_02/potted_plant_02_pot_diff_2k.jpg",
+          "bytes": 596006,
+          "md5": "d7c6055680866af21f73e14a57bbd7d3"
+        },
+        {
+          "relative_path": "potted_plant_02.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/potted_plant_02/potted_plant_02.bin",
+          "bytes": 1852244,
+          "md5": "cdbd4619b2596c9c469ad34676085fa8"
+        },
+        {
+          "relative_path": "textures/potted_plant_02_leaves_rough_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/potted_plant_02/potted_plant_02_leaves_rough_2k.jpg",
+          "bytes": 435284,
+          "md5": "0b1e1d0c38da3a5d73dc1274fc739fa0"
+        },
+        {
+          "relative_path": "textures/potted_plant_02_pot_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/potted_plant_02/potted_plant_02_pot_nor_gl_2k.jpg",
+          "bytes": 494387,
+          "md5": "0b333cfc921defac311dc9232f2f01b9"
+        },
+        {
+          "relative_path": "textures/potted_plant_02_pot_rough_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/potted_plant_02/potted_plant_02_pot_rough_2k.jpg",
+          "bytes": 426559,
+          "md5": "08a89ef59d4fd0b19a925cc4d2c512af"
+        }
+      ]
+    },
+    {
+      "id": "modern_coffee_table_01",
+      "unreal_name": "CoffeeTable",
+      "name": "Modern Coffee Table 01",
+      "author": {
+        "Amin": "All"
+      },
+      "license": "CC0-1.0",
+      "license_url": "https://polyhaven.com/license",
+      "source_url": "https://polyhaven.com/a/modern_coffee_table_01",
+      "resolution": "2k",
+      "catalog_dimensions_mm": [
+        1201.8300294876099,
+        600.0000834465027,
+        389.99998569488525
+      ],
+      "catalog_polygons": 4504,
+      "files": [
+        {
+          "relative_path": "modern_coffee_table_01_2k.gltf",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/2k/modern_coffee_table_01/modern_coffee_table_01_2k.gltf",
+          "bytes": 2771,
+          "md5": "5e8490b726b706acffbed17d6174471b"
+        },
+        {
+          "relative_path": "modern_coffee_table_01.fbx",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/fbx/2k/modern_coffee_table_01/modern_coffee_table_01_2k.fbx",
+          "bytes": 158780,
+          "md5": "9cf447bae6bee1bc723ca6ce807d3103"
+        },
+        {
+          "relative_path": "textures/modern_coffee_table_01_rough_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/modern_coffee_table_01/modern_coffee_table_01_rough_2k.jpg",
+          "bytes": 1476681,
+          "md5": "48093edf08c1f4ddd85f995bcddc90f7"
+        },
+        {
+          "relative_path": "modern_coffee_table_01.bin",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/modern_coffee_table_01/modern_coffee_table_01.bin",
+          "bytes": 154864,
+          "md5": "6e8f65bff935af308eab9eff062f6daa"
+        },
+        {
+          "relative_path": "textures/modern_coffee_table_01_diff_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/modern_coffee_table_01/modern_coffee_table_01_diff_2k.jpg",
+          "bytes": 1571631,
+          "md5": "0e4e0c7fa75c2ba6e3f244fafd12190c"
+        },
+        {
+          "relative_path": "textures/modern_coffee_table_01_nor_gl_2k.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/modern_coffee_table_01/modern_coffee_table_01_nor_gl_2k.jpg",
+          "bytes": 1495294,
+          "md5": "475d7a37185a8f32318896a08188430e"
+        }
+      ]
+    }
+  ],
+  "status": "imported_pbr_graph_and_bounds_verified",
+  "total_source_bytes": 26953608,
+  "native_import_report": "import-result.json"
+}

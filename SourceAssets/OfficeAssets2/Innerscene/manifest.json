@@ -1,0 +1,48 @@
+{
+  "assets": [
+    {
+      "id": "office-task-chair-with-mesh-back-armless-dba987cc",
+      "unreal_name": "OfficeTaskChair",
+      "source_url": "https://www.innerscene.com/tools/library/3d-parts/office-task-chair-with-mesh-back-armless-dba987cc",
+      "download_url": "https://www.innerscene.com/api/library/office-task-chair-with-mesh-back-armless-dba987cc/download",
+      "license": "CC0-1.0",
+      "license_url": "https://www.innerscene.com/tools/library/terms",
+      "file": "OfficeTaskChair.glb",
+      "bytes": 480976,
+      "sha256": "9f0da7b6f5ab66eb17e13dc01134f7112128deeecf6a7de4733fb49a8a9bc79d",
+      "meshes": 9,
+      "materials": 5,
+      "embedded_images": 5
+    },
+    {
+      "id": "work-tower-desktop-pc-1e7897c7",
+      "unreal_name": "DesktopTower",
+      "source_url": "https://www.innerscene.com/tools/library/3d-parts/work-tower-desktop-pc-1e7897c7",
+      "download_url": "https://www.innerscene.com/api/library/work-tower-desktop-pc-1e7897c7/download",
+      "license": "CC0-1.0",
+      "license_url": "https://www.innerscene.com/tools/library/terms",
+      "file": "DesktopTower.glb",
+      "bytes": 357156,
+      "sha256": "7c1f2b4fa648ee75774640886a31fc37a6a21a18a4529094a9b1c858be65191e",
+      "meshes": 34,
+      "materials": 6,
+      "embedded_images": 7
+    },
+    {
+      "id": "desktop-monitor-24-inch-326dfa17",
+      "unreal_name": "DesktopMonitor",
+      "source_url": "https://www.innerscene.com/tools/library/3d-parts/desktop-monitor-24-inch-326dfa17",
+      "download_url": "https://www.innerscene.com/api/library/desktop-monitor-24-inch-326dfa17/download",
+      "license": "CC0-1.0",
+      "license_url": "https://www.innerscene.com/tools/library/terms",
+      "file": "DesktopMonitor.glb",
+      "bytes": 4951220,
+      "sha256": "332b9242c5fd4024cfcc732dcfba231117e361ce8148f395620eef120fae33c9",
+      "meshes": 6,
+      "materials": 6,
+      "embedded_images": 6
+    }
+  ],
+  "status": "native_imported_requires_runtime_bounds_normalization",
+  "native_report": "native-import-result.json"
+}

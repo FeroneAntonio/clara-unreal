@@ -1,0 +1,10 @@
+{
+  "triangles": 3288,
+  "vertices": 1680,
+  "materials": [
+    "ClearPlastic",
+    "ConsoleBlue",
+    "Gold"
+  ],
+  "ports": 0
+}

@@ -1,0 +1,170 @@
+{
+  "status": "complete",
+  "assets": [
+    {
+      "id": "Cisco2960X",
+      "path": "/Game/NetworkAssets/SM_Cisco2960X.SM_Cisco2960X",
+      "native_size": [
+        4451.7001953125,
+        2836.7503662109375,
+        446.1000061035156
+      ],
+      "native_origin": [
+        0.0,
+        -3.62481689453125,
+        223.0500030517578
+      ],
+      "slots": [
+        {
+          "slot": 0,
+          "source": "CaseGrey",
+          "material": "/Game/NetworkAssets/M_CaseGrey.M_CaseGrey"
+        },
+        {
+          "slot": 1,
+          "source": "Black",
+          "material": "/Game/NetworkAssets/M_Black.M_Black"
+        },
+        {
+          "slot": 2,
+          "source": "SwitchFace",
+          "material": "/Game/NetworkAssets/M_SwitchFace.M_SwitchFace"
+        },
+        {
+          "slot": 3,
+          "source": "Steel",
+          "material": "/Game/NetworkAssets/M_Steel.M_Steel"
+        },
+        {
+          "slot": 4,
+          "source": "Gold",
+          "material": "/Game/NetworkAssets/M_Gold.M_Gold"
+        },
+        {
+          "slot": 5,
+          "source": "LedOff",
+          "material": "/Game/NetworkAssets/M_LedOff.M_LedOff"
+        },
+        {
+          "slot": 6,
+          "source": "DarkInk",
+          "material": "/Game/NetworkAssets/M_DarkInk.M_DarkInk"
+        },
+        {
+          "slot": 7,
+          "source": "ConsoleBlue",
+          "material": "/Game/NetworkAssets/M_ConsoleBlue.M_ConsoleBlue"
+        },
+        {
+          "slot": 8,
+          "source": "White",
+          "material": "/Game/NetworkAssets/M_White.M_White"
+        }
+      ]
+    },
+    {
+      "id": "Cisco1941",
+      "path": "/Game/NetworkAssets/SM_Cisco1941.SM_Cisco1941",
+      "native_size": [
+        3434.000244140625,
+        2994.75,
+        891.599925994873
+      ],
+      "native_origin": [
+        0.0,
+        -3.375244140625,
+        445.2999515533447
+      ],
+      "slots": [
+        {
+          "slot": 0,
+          "source": "RouterBlue",
+          "material": "/Game/NetworkAssets/M_RouterBlue.M_RouterBlue"
+        },
+        {
+          "slot": 1,
+          "source": "CaseGrey",
+          "material": "/Game/NetworkAssets/M_CaseGrey.M_CaseGrey"
+        },
+        {
+          "slot": 2,
+          "source": "Black",
+          "material": "/Game/NetworkAssets/M_Black.M_Black"
+        },
+        {
+          "slot": 3,
+          "source": "White",
+          "material": "/Game/NetworkAssets/M_White.M_White"
+        },
+        {
+          "slot": 4,
+          "source": "LedOff",
+          "material": "/Game/NetworkAssets/M_LedOff.M_LedOff"
+        },
+        {
+          "slot": 5,
+          "source": "SwitchFace",
+          "material": "/Game/NetworkAssets/M_SwitchFace.M_SwitchFace"
+        },
+        {
+          "slot": 6,
+          "source": "Steel",
+          "material": "/Game/NetworkAssets/M_Steel.M_Steel"
+        },
+        {
+          "slot": 7,
+          "source": "DarkInk",
+          "material": "/Game/NetworkAssets/M_DarkInk.M_DarkInk"
+        },
+        {
+          "slot": 8,
+          "source": "Gold",
+          "material": "/Game/NetworkAssets/M_Gold.M_Gold"
+        },
+        {
+          "slot": 9,
+          "source": "ConsoleBlue",
+          "material": "/Game/NetworkAssets/M_ConsoleBlue.M_ConsoleBlue"
+        },
+        {
+          "slot": 10,
+          "source": "Rubber",
+          "material": "/Game/NetworkAssets/M_Rubber.M_Rubber"
+        }
+      ]
+    },
+    {
+      "id": "RJ45Plug",
+      "path": "/Game/NetworkAssets/SM_RJ45Plug.SM_RJ45Plug",
+      "native_size": [
+        325.0,
+        116.00001907348633,
+        107.5
+      ],
+      "native_origin": [
+        22.5,
+        -9.5367431640625e-06,
+        11.25
+      ],
+      "slots": [
+        {
+          "slot": 0,
+          "source": "ClearPlastic",
+          "material": "/Game/NetworkAssets/M_ClearPlastic.M_ClearPlastic"
+        },
+        {
+          "slot": 1,
+          "source": "ConsoleBlue",
+          "material": "/Game/NetworkAssets/M_ConsoleBlue.M_ConsoleBlue"
+        },
+        {
+          "slot": 2,
+          "source": "Gold",
+          "material": "/Game/NetworkAssets/M_Gold.M_Gold"
+        }
+      ]
+    }
+  ],
+  "source": "Original Blender reconstructions, not downloaded Cisco CAD",
+  "visual_validation": "pending"
+}

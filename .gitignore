@@ -1,0 +1,54 @@
+# Unreal: output riproducibili e dati locali
+/Binaries/
+/DerivedDataCache/
+/Intermediate/
+/Saved/
+/Build/
+/Content/Developers/
+/Content/Collections/
+
+# Editor e sistema
+.DS_Store
+*.xcodeproj/
+*.xcworkspace/
+.vs/
+.vscode/
+.idea/
+*.sln
+*.suo
+*.user
+*.VC.db
+*.VC.opendb
+*.log
+*.tmp
+*.bak
+*.blend1
+*.blend2
+
+# Sessioni personali e credenziali: non pubblicare neppure in un repo privato
+.env*
+.claude/
+.codex/
+.agents/
+**/credentials/
+**/secrets/
+**/*credentials*.json
+**/*credentials*.txt
+**/*password*.txt
+*.pem
+*.key
+*.p12
+*.pfx
+*.mobileprovision
+
+# Materiale non usato nella scena attuale; resta sul computer originale
+/SourceAssets/Renderpeople/
+/SourceAssets/Characters/
+/Content/Characters/Prototypes/
+/LEGGIMI-checkpoint-storico.md
+
+# Distribuzione pubblica: risorse Epic da installare localmente, nessuna foto privata
+/Content/Characters/Mannequins/
+/SourceAssets/ChairMaterials/
+/Content/OfficeAssets/ChairMaterials/
+/LEGGIMI.md

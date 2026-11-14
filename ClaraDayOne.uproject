@@ -1,0 +1,26 @@
+{
+  "FileVersion": 3,
+  "EngineAssociation": "5.8",
+  "Category": "Education",
+  "Description": "CLARA: il primo giorno, avventura formativa reti e cyber.",
+  "Modules": [
+    {
+      "Name": "ClaraDayOne",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    }
+  ],
+  "Plugins": [
+    {
+      "Name": "PythonScriptPlugin",
+      "Enabled": true,
+      "TargetAllowList": [
+        "Editor"
+      ]
+    },
+    {
+      "Name": "AndroidFileServer",
+      "Enabled": false
+    }
+  ]
+}

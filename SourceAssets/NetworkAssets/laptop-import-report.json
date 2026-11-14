@@ -1,0 +1,89 @@
+{
+  "status": "complete",
+  "assets": [
+    {
+      "id": "Laptop",
+      "path": "/Game/NetworkAssets/SM_Laptop.SM_Laptop",
+      "native_size": [
+        3327.0003662109375,
+        2400.00048828125,
+        2305.0
+      ],
+      "native_origin": [
+        -3.99993896484375,
+        0.0,
+        1152.5
+      ],
+      "slots": [
+        {
+          "slot": 0,
+          "source": "Steel",
+          "material": "/Game/NetworkAssets/M_Steel.M_Steel"
+        },
+        {
+          "slot": 1,
+          "source": "Black",
+          "material": "/Game/NetworkAssets/M_Black.M_Black"
+        },
+        {
+          "slot": 2,
+          "source": "CaseGrey",
+          "material": "/Game/NetworkAssets/M_CaseGrey.M_CaseGrey"
+        },
+        {
+          "slot": 3,
+          "source": "Gold",
+          "material": "/Game/NetworkAssets/M_Gold.M_Gold"
+        },
+        {
+          "slot": 4,
+          "source": "Rubber",
+          "material": "/Game/NetworkAssets/M_Rubber.M_Rubber"
+        }
+      ]
+    },
+    {
+      "id": "LaptopClosed",
+      "path": "/Game/NetworkAssets/SM_LaptopClosed.SM_LaptopClosed",
+      "native_size": [
+        3327.0003662109375,
+        2400.00048828125,
+        215.00001525878906
+      ],
+      "native_origin": [
+        -3.99993896484375,
+        0.0,
+        107.50000762939453
+      ],
+      "slots": [
+        {
+          "slot": 0,
+          "source": "Steel",
+          "material": "/Game/NetworkAssets/M_Steel.M_Steel"
+        },
+        {
+          "slot": 1,
+          "source": "Black",
+          "material": "/Game/NetworkAssets/M_Black.M_Black"
+        },
+        {
+          "slot": 2,
+          "source": "CaseGrey",
+          "material": "/Game/NetworkAssets/M_CaseGrey.M_CaseGrey"
+        },
+        {
+          "slot": 3,
+          "source": "Gold",
+          "material": "/Game/NetworkAssets/M_Gold.M_Gold"
+        },
+        {
+          "slot": 4,
+          "source": "Rubber",
+          "material": "/Game/NetworkAssets/M_Rubber.M_Rubber"
+        }
+      ]
+    }
+  ],
+  "source": "Original Blender reconstructions, not downloaded Cisco CAD",
+  "visual_validation": "pending"
+}

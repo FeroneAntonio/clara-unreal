@@ -1,0 +1,93 @@
+{
+  "name": "DesktopMonitor",
+  "triangles": 6548,
+  "materials": [
+    "Bezel, matte black plastic",
+    "Rear housing, textured black plastic",
+    "Screen, dark glossy glass",
+    "Stand, dark grey metal",
+    "Status light window",
+    "Openings and ports"
+  ],
+  "components_before_join": [
+    {
+      "name": "Bezel frame",
+      "blender_world_min_cm": [
+        -27.04424262046814,
+        -1.2093734014229085e-06,
+        9.600002318620682
+      ],
+      "blender_world_max_cm": [
+        27.04424262046814,
+        1.3000013306736946,
+        41.637277603149414
+      ]
+    },
+    {
+      "name": "Rear housing",
+      "blender_world_min_cm": [
+        -26.944243907928467,
+        1.2000000104308128,
+        9.700001776218414
+      ],
+      "blender_world_max_cm": [
+        26.944243907928467,
+        4.500000178813934,
+        41.5372759103775
+      ]
+    },
+    {
+      "name": "Screen",
+      "blender_world_min_cm": [
+        -26.384243369102478,
+        0.12000000569969416,
+        11.260001361370087
+      ],
+      "blender_world_max_cm": [
+        26.384243369102478,
+        0.3200000151991844,
+        40.977275371551514
+      ]
+    },
+    {
+      "name": "Stand",
+      "blender_world_min_cm": [
+        -12.000000476837158,
+        -4.200000315904617,
+        0.0
+      ],
+      "blender_world_max_cm": [
+        12.000000476837158,
+        13.80000114440918,
+        28.555655479431152
+      ]
+    },
+    {
+      "name": "Status light",
+      "blender_world_min_cm": [
+        22.894243896007538,
+        -0.10000000474974513,
+        10.285000503063202
+      ],
+      "blender_world_max_cm": [
+        23.194244503974915,
+        0.02000000240514055,
+        10.445000976324081
+      ]
+    },
+    {
+      "name": "Vents and ports",
+      "blender_world_min_cm": [
+        -12.600000202655792,
+        2.7550000697374344,
+        16.58894568681717
+      ],
+      "blender_world_max_cm": [
+        12.600000202655792,
+        4.540000483393669,
+        32.84684121608734
+      ]
+    }
+  ],
+  "coordinate_note": "Bounds here are Blender world axes, meters converted to cm. Native Unreal bounds will be checked after import."
+}
