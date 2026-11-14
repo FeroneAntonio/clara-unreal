@@ -1,3 +1,7 @@
+# Stato aggiornato e passaggio di consegne
+
+Leggere prima `Docs/HANDOFF.md`: contiene lo stato più recente, i bug aperti e la sequenza di ripresa. Il documento non dichiara conclusi i lavori di grafica e collaudo manuale.
+
 # CLARA Unreal — lavoro del team
 
 Leggere README.md, TEAM.md e Docs/CML_GATEWAY.md prima di modificare il progetto.
