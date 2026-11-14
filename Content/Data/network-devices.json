@@ -542,7 +542,7 @@
     },
     "Cisco1941": {
       "displayName": "Cisco 1941 Integrated Services Router",
-      "mesh": "/Game/NetworkAssets/SM_Cisco1941.SM_Cisco1941",
+      "mesh": "/Game/NetworkAssets/SM_Cisco1941_Claude.SM_Cisco1941_Claude",
       "size": [
         34.3,
         29.8,
@@ -554,14 +554,14 @@
           "label": "AC POWER IEC C14",
           "kind": "power",
           "position": [
-            3.1,
-            14.829999999999998,
+            -3.1,
+            14.84,
             6.75
           ],
           "normal": [
-            0,
-            1,
-            0
+            -0.0,
+            1.0,
+            -0.0
           ]
         },
         {
@@ -569,14 +569,14 @@
           "label": "AUX",
           "kind": "aux",
           "position": [
-            -9.9,
-            14.829999999999998,
+            9.9,
+            14.66,
             3.55
           ],
           "normal": [
-            0,
-            1,
-            0
+            -0.0,
+            1.0,
+            -0.0
           ]
         },
         {
@@ -584,14 +584,14 @@
           "label": "CONSOLE RJ-45",
           "kind": "console",
           "position": [
-            -9.9,
-            14.829999999999998,
+            9.9,
+            14.66,
             1.95
           ],
           "normal": [
-            0,
-            1,
-            0
+            -0.0,
+            1.0,
+            -0.0
           ]
         },
         {
@@ -599,14 +599,14 @@
           "label": "USB mini-B console",
           "kind": "usb",
           "position": [
-            -7.8,
-            14.829999999999998,
+            7.8,
+            14.66,
             1.96
           ],
           "normal": [
-            0,
-            1,
-            0
+            -0.0,
+            1.0,
+            -0.0
           ]
         },
         {
@@ -614,14 +614,14 @@
           "label": "GigabitEthernet0/0",
           "kind": "ethernet",
           "position": [
-            -14.9,
-            14.829999999999998,
+            14.9,
+            14.66,
             4.15
           ],
           "normal": [
-            0,
-            1,
-            0
+            -0.0,
+            1.0,
+            -0.0
           ]
         },
         {
@@ -629,14 +629,14 @@
           "label": "GigabitEthernet0/1",
           "kind": "ethernet",
           "position": [
-            -12.0,
-            14.829999999999998,
+            12.0,
+            14.66,
             1.95
           ],
           "normal": [
-            0,
-            1,
-            0
+            -0.0,
+            1.0,
+            -0.0
           ]
         },
         {
@@ -644,14 +644,14 @@
           "label": "USB Type-A 0",
           "kind": "usb",
           "position": [
-            -14.9,
-            14.829999999999998,
+            14.9,
+            14.66,
             1.8
           ],
           "normal": [
-            0,
-            1,
-            0
+            -0.0,
+            1.0,
+            -0.0
           ]
         },
         {
@@ -659,19 +659,19 @@
           "label": "USB Type-A 1",
           "kind": "usb",
           "position": [
-            -14.9,
-            14.829999999999998,
+            14.9,
+            14.66,
             2.55
           ],
           "normal": [
-            0,
-            1,
-            0
+            -0.0,
+            1.0,
+            -0.0
           ]
         }
       ],
-      "origin": "center XY, chassis bottom Z; front -Y",
-      "provenance": "Original reconstruction from official Cisco hardware diagrams; connector placement approximated to match diagram. Not official Cisco CAD."
+      "origin": "center XY, bottom of feet Z; front -Y, rear +Y (Unreal axes after standard FBX import)",
+      "provenance": "Original CLARA reconstruction by Claude, real Cisco1941 layout, procedural PBR textures. Not official Cisco CAD."
     },
     "Laptop": {
       "displayName": "Portatile laboratorio",

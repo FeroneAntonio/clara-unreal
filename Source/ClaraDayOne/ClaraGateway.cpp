@@ -56,7 +56,7 @@ void UClaraGateway::Initialize(bool AllowNetwork)
     BaseURL=Config.IsEmpty()?TEXT("https://api-cml.kappino.me"):Config;
     while(BaseURL.EndsWith(TEXT("/")))BaseURL.LeftChopInline(1);
     const bool Local=FParse::Param(FCommandLine::Get(),TEXT("ClaraLocalLab"));
-    const bool Check=FParse::Param(FCommandLine::Get(),TEXT("ClaraGatewayCheck"));
+    const bool Check=FParse::Param(FCommandLine::Get(),TEXT("ClaraGatewayCheck"))||FParse::Param(FCommandLine::Get(),TEXT("ClaraGatewayPortCheck"));
     bEnabled=AllowNetwork&&!Local&&(!FApp::IsUnattended()||Check)&&ValidateBaseURL(BaseURL);
     LastError=!ValidateBaseURL(BaseURL)?TEXT("Indirizzo gateway HTTPS non valido"):FString();
 }

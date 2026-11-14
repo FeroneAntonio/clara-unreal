@@ -1,0 +1,167 @@
+{
+  "variant": "real",
+  "fbx": "SM_Cisco1941_Claude.fbx",
+  "units": "centimeters (1 Blender unit = 1 cm, scale_length 0.01)",
+  "blender_bounds_min": [
+    -17.15,
+    -14.9,
+    0.0
+  ],
+  "blender_bounds_max": [
+    17.15,
+    14.9,
+    8.9
+  ],
+  "size_cm": [
+    34.3,
+    29.8,
+    8.9
+  ],
+  "triangles": 36310,
+  "vertices": 27087,
+  "materials": [
+    "M_C1941_CoverPowderCoat",
+    "M_C1941_CavityBlack",
+    "M_C1941_BezelGloss",
+    "M_C1941_GrilleBacking",
+    "M_C1941_BezelSatin",
+    "M_C1941_PrintWhite",
+    "M_C1941_LedGreen",
+    "M_C1941_GrilleMetal",
+    "M_C1941_ScrewBlackOxide",
+    "M_C1941_Rubber",
+    "M_C1941_RearPanelZinc",
+    "M_C1941_PrintInk",
+    "M_C1941_JackShieldNickel",
+    "M_C1941_ContactGold",
+    "M_C1941_PlasticBlack",
+    "M_C1941_LabelBlue",
+    "M_C1941_LabelYellow",
+    "M_C1941_LedAmber",
+    "M_C1941_ScrewSteel",
+    "M_C1941_RockerBlack",
+    "M_C1941_LabelBeige"
+  ],
+  "ports_unreal_cm": [
+    {
+      "id": "Power",
+      "label": "AC POWER IEC C14",
+      "kind": "power",
+      "position": [
+        -3.1,
+        14.84,
+        6.75
+      ],
+      "normal": [
+        -0.0,
+        1.0,
+        -0.0
+      ]
+    },
+    {
+      "id": "Aux",
+      "label": "AUX",
+      "kind": "aux",
+      "position": [
+        9.9,
+        14.66,
+        3.55
+      ],
+      "normal": [
+        -0.0,
+        1.0,
+        -0.0
+      ]
+    },
+    {
+      "id": "Console",
+      "label": "CONSOLE RJ-45",
+      "kind": "console",
+      "position": [
+        9.9,
+        14.66,
+        1.95
+      ],
+      "normal": [
+        -0.0,
+        1.0,
+        -0.0
+      ]
+    },
+    {
+      "id": "USBConsole",
+      "label": "USB mini-B console",
+      "kind": "usb",
+      "position": [
+        7.8,
+        14.66,
+        1.96
+      ],
+      "normal": [
+        -0.0,
+        1.0,
+        -0.0
+      ]
+    },
+    {
+      "id": "Gi0/0",
+      "label": "GigabitEthernet0/0",
+      "kind": "ethernet",
+      "position": [
+        14.9,
+        14.66,
+        4.15
+      ],
+      "normal": [
+        -0.0,
+        1.0,
+        -0.0
+      ]
+    },
+    {
+      "id": "Gi0/1",
+      "label": "GigabitEthernet0/1",
+      "kind": "ethernet",
+      "position": [
+        12.0,
+        14.66,
+        1.95
+      ],
+      "normal": [
+        -0.0,
+        1.0,
+        -0.0
+      ]
+    },
+    {
+      "id": "USB0",
+      "label": "USB Type-A 0",
+      "kind": "usb",
+      "position": [
+        14.9,
+        14.66,
+        1.8
+      ],
+      "normal": [
+        -0.0,
+        1.0,
+        -0.0
+      ]
+    },
+    {
+      "id": "USB1",
+      "label": "USB Type-A 1",
+      "kind": "usb",
+      "position": [
+        14.9,
+        14.66,
+        2.55
+      ],
+      "normal": [
+        -0.0,
+        1.0,
+        -0.0
+      ]
+    }
+  ]
+}

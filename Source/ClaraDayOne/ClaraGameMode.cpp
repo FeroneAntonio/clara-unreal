@@ -46,6 +46,7 @@ void AClaraGameMode::BeginPlay()
         Story=GetWorld()->SpawnActor<AClaraStoryDirector>();
         GetWorld()->SpawnActor<AClaraStoryHighlights>();
     }
+    if(FParse::Param(FCommandLine::Get(),TEXT("ClaraGatewayPortCheck"))){RunClaraGatewayPortCheck(GetWorld(),Story);return;}
     if(FParse::Param(FCommandLine::Get(),TEXT("ClaraStoryCheck")))
     {
         FTimerHandle StoryCheck;

@@ -38,12 +38,14 @@ void AClaraStoryDirector::BeginPlay()
     if(GetWorld()->GetGameViewport())
     {HUD=MakeClaraStoryHUD(this);GetWorld()->GetGameViewport()->AddViewportWidgetContent(HUD.ToSharedRef(),12);}
     Owned.Add(TEXT("notebook"));SetPhase(0);
-    if(FParse::Param(FCommandLine::Get(),TEXT("ClaraCableDemo")))
+    if(FParse::Param(FCommandLine::Get(),TEXT("ClaraCableDemo"))||FParse::Param(FCommandLine::Get(),TEXT("ClaraEthernetDemo")))
     {
         Owned.Add(TEXT("badge"));Phase=3;PickupLaptop();ClosePage();
         if(Controller.IsValid()&&Controller->GetPawn())
         {Controller->GetPawn()->SetActorLocation({1120,1185,90});Controller->SetControlRotation({-38,90,0});}
-        Notify(TEXT("Prova aggiornata: punta una bobina e premi E o clicca. T apre il portatile, I la borsa."));
+        if(FParse::Param(FCommandLine::Get(),TEXT("ClaraEthernetDemo")))
+        {for(const FString Kind:{TEXT("ethernet"),TEXT("console"),TEXT("fiber")}){Owned.Add(Kind);Sorted.Add(Kind);}Owned.Add(TEXT("sfp_module"));SetPhase(5);}
+        Notify(TEXT("Prova aggiornata: collega Ethernet fra portatile e switch. La presa del portatile e' gia' inquadrata nel primo piano."));
         return;
     }
     FString Saved;
@@ -645,7 +647,7 @@ bool AClaraStoryDirector::RunSelfTest()
 {
     TGuardValue<bool> TestGuard(SelfTesting,true);
     // Exercise the actual graph and validators; dialogue clicks alone never satisfy a lab gate.
-    FString Error;bool OK=Devices.Contains(TEXT("LAPTOP"))&&Devices.Contains(TEXT("PC2"))&&Devices.Contains(TEXT("SW1"));
+    FString Error;bool OK=RunGatewayPortRepairSelfTest()&&Devices.Contains(TEXT("LAPTOP"))&&Devices.Contains(TEXT("PC2"))&&Devices.Contains(TEXT("SW1"));
     if(!OK)return false;
     auto* SW=Devices[TEXT("SW1")].Get();auto* L=Devices[TEXT("LAPTOP")].Get();auto* PC=Devices[TEXT("PC2")].Get();
     int32 PickableCables=0;
@@ -670,6 +672,13 @@ bool AClaraStoryDirector::RunSelfTest()
         OK=OK&&OpenInHand;CloseLaptopScreen();
         OK=OK&&CarriedLaptop&&L->IsLaptopCarried()&&L->GetAttachParentActor()==Pawn;
         UE_LOG(LogTemp,Display,TEXT("CLARA_LAPTOP_MOBILE_SCREEN_%s: attached and carried state unchanged; camera unchanged."),OpenInHand?TEXT("PASS"):TEXT("FAIL"));
+        Phase=5;Controller->SetCableKind(TEXT("ethernet"));Controller->OpenDevice(SW);
+        Controller->SelectDevicePort(TEXT("Gi1/0/1"));Controller->OpenDevice(L);
+        Controller->SetCableKind(TEXT("ethernet"));Controller->SelectDevicePort(TEXT("Ethernet"));
+        const bool ConnectedInHand=PhysicalLinked(TEXT("LAPTOP"),TEXT("SW1"));PollLab();
+        const bool Advanced=Phase==6;Controller->CloseDevice();
+        UE_LOG(LogTemp,Display,TEXT("CLARA_ETHERNET_INTERACTION_%s: switch to carried laptop through inspector, repeated cable selection preserves first end, mission advances"),(ConnectedInHand&&Advanced)?TEXT("PASS"):TEXT("FAIL"));
+        OK&=ConnectedInHand&&Advanced;FString UnplugError;L->DisconnectPort(TEXT("Ethernet"),UnplugError);
         L->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);L->SetActorTransform(LaptopStart);L->SetLaptopCarried(false);CarriedLaptop=false;
         UE_LOG(LogTemp,Display,TEXT("CLARA_LAPTOP_CARRY_%s: pickup and opening in hand preserve attachment and camera."),(PickedUp&&OpenInHand)?TEXT("PASS"):TEXT("FAIL"));
         Pawn->SetActorTransform(Start);Controller->SetControlRotation(Look);if(Controller->PlayerCameraManager)Controller->PlayerCameraManager->UpdateCamera(.016f);

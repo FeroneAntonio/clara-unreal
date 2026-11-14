@@ -54,7 +54,7 @@ void AClaraRoomController::OpenDevice(AClaraNetworkDevice* Device)
     if(BackMaterial){BackMaterial->SetVectorParameterValue(TEXT("Color"),FLinearColor(.008,.012,.018));PreviewBackdrop->SetMaterial(0,BackMaterial);}
     PreviewBackdrop->SetRelativeScale3D({.02,8,6});PreviewBackdrop->RegisterComponent();
     if(!DeviceCamera)DeviceCamera=GetWorld()->SpawnActor<ACameraActor>();
-    DeviceYaw=Device->GetModelId()==TEXT("Cisco1941")?90.f:-90.f;
+    DeviceYaw=Device->GetModelId()==TEXT("Laptop")?(GetCableKind()==TEXT("console")?0.f:180.f):Device->GetModelId()==TEXT("Cisco1941")?90.f:-90.f;
     DevicePitch=18;DeviceDistance=FMath::Max(75.f,static_cast<float>(Device->GetDeviceSize().GetMax())*2.1f);
     DeviceCamera->GetCameraComponent()->SetFieldOfView(45);
     bDeviceDragging=false;HoveredDevicePort.Empty();ActiveView=-1;
@@ -103,8 +103,11 @@ void AClaraRoomController::ClickDevicePort()
     if(!DevicePreview||!DeviceSource.IsValid())return;
     FHitResult Hit;
     if(!GetHitResultUnderCursor(ECC_Visibility,false,Hit)||Hit.GetActor()!=DevicePreview)return;
-    const FString Id=DevicePreview->PortIdForComponent(Hit.GetComponent());
-    if(Id.IsEmpty())return;
+    SelectDevicePort(DevicePreview->PortIdForComponent(Hit.GetComponent()));
+}
+void AClaraRoomController::SelectDevicePort(const FString& Id)
+{
+    if(!DevicePreview||!DeviceSource.IsValid()||Id.IsEmpty()||DeviceSource->GetEffectivePortKind(Id).IsEmpty())return;
     AClaraNetworkDevice* Source=DeviceSource.Get();FString Error;
     if(GetCableKind()==TEXT("sfp_module"))
     {
@@ -191,6 +194,10 @@ void AClaraRoomController::BuildDevicePanel()
 void AClaraRoomController::SetCableKind(const FString& Kind)
 {
     if(Kind!=TEXT("ethernet")&&Kind!=TEXT("console")&&Kind!=TEXT("fiber")&&Kind!=TEXT("sfp_module"))return;
+    if(DeviceSource.IsValid()&&DeviceSource->GetModelId()==TEXT("Laptop"))
+    {DeviceYaw=Kind==TEXT("console")?0.f:180.f;DevicePitch=12;UpdateDeviceCamera();}
+    if(CableKind==Kind)
+    {DeviceMessage=PendingDevice.IsValid()?TEXT("Primo capo mantenuto. Scegli la presa sul secondo apparato."):TEXT("Cavo pronto. Clicca la prima presa.");return;}
     CableKind=Kind;PendingDevice.Reset();PendingDevicePort.Empty();
     if(DevicePreview)DevicePreview->SetPendingPort(FString(),Kind);
     DeviceMessage=Kind==TEXT("sfp_module")?TEXT("Modulo SFP selezionato: clicca uno slot SFP libero."):TEXT("Cavo selezionato: ")+Kind+TEXT(". Scegli le due estremita'.");

@@ -1,0 +1,204 @@
+{
+  "uvTiling": "UVMap: proiezione box, 1 tile UV = 25 cm",
+  "materials": {
+    "M_C1941_BezelGloss": {
+      "baseColor": [
+        0.01,
+        0.01,
+        0.011
+      ],
+      "metallic": 0.0,
+      "roughness": 0.16
+    },
+    "M_C1941_BezelSatin": {
+      "baseColor": [
+        0.012,
+        0.012,
+        0.013
+      ],
+      "metallic": 0.0,
+      "roughness": 0.38
+    },
+    "M_C1941_CavityBlack": {
+      "baseColor": [
+        0.013,
+        0.013,
+        0.014
+      ],
+      "metallic": 0.0,
+      "roughness": 0.62
+    },
+    "M_C1941_ContactGold": {
+      "baseColor": [
+        1.0,
+        0.76,
+        0.33
+      ],
+      "metallic": 1.0,
+      "roughness": 0.22
+    },
+    "M_C1941_CoverPowderCoat": {
+      "baseColor": [
+        0.02,
+        0.021,
+        0.023
+      ],
+      "metallic": 0.0,
+      "roughness": 0.6,
+      "roughnessTexture": "textures/T_C1941_PowderCoat_R.png",
+      "normalTexture": "textures/T_C1941_PowderCoat_N.png",
+      "normalTextureUnreal": "textures/T_C1941_PowderCoat_N_DirectX.png",
+      "normalStrength": 0.12
+    },
+    "M_C1941_GrilleBacking": {
+      "baseColor": [
+        0.004,
+        0.01,
+        0.012
+      ],
+      "metallic": 0.0,
+      "roughness": 0.8
+    },
+    "M_C1941_GrilleMetal": {
+      "baseColor": [
+        0.03,
+        0.052,
+        0.06
+      ],
+      "metallic": 0.65,
+      "roughness": 0.42
+    },
+    "M_C1941_JackShieldNickel": {
+      "baseColor": [
+        0.66,
+        0.66,
+        0.64
+      ],
+      "metallic": 1.0,
+      "roughness": 0.3
+    },
+    "M_C1941_LabelBeige": {
+      "baseColor": [
+        0.8,
+        0.72,
+        0.52
+      ],
+      "metallic": 0.0,
+      "roughness": 0.55
+    },
+    "M_C1941_LabelBlue": {
+      "baseColor": [
+        0.2,
+        0.47,
+        0.76
+      ],
+      "metallic": 0.0,
+      "roughness": 0.45
+    },
+    "M_C1941_LabelYellow": {
+      "baseColor": [
+        0.86,
+        0.62,
+        0.05
+      ],
+      "metallic": 0.0,
+      "roughness": 0.45
+    },
+    "M_C1941_LedAmber": {
+      "baseColor": [
+        0.22,
+        0.12,
+        0.02
+      ],
+      "metallic": 0.0,
+      "roughness": 0.2,
+      "note": "emissive colour [1.0, 0.55, 0.05] (strength 0 = spento)"
+    },
+    "M_C1941_LedGreen": {
+      "baseColor": [
+        0.05,
+        0.2,
+        0.08
+      ],
+      "metallic": 0.0,
+      "roughness": 0.2,
+      "note": "emissive colour [0.1, 1.0, 0.25] (strength 0 = spento)"
+    },
+    "M_C1941_PlasticBlack": {
+      "baseColor": [
+        0.018,
+        0.018,
+        0.019
+      ],
+      "metallic": 0.0,
+      "roughness": 0.48
+    },
+    "M_C1941_PrintInk": {
+      "baseColor": [
+        0.012,
+        0.013,
+        0.014
+      ],
+      "metallic": 0.0,
+      "roughness": 0.55
+    },
+    "M_C1941_PrintWhite": {
+      "baseColor": [
+        0.8,
+        0.8,
+        0.78
+      ],
+      "metallic": 0.0,
+      "roughness": 0.45
+    },
+    "M_C1941_RearPanelZinc": {
+      "baseColor": [
+        0.6,
+        0.61,
+        0.62
+      ],
+      "metallic": 1.0,
+      "roughness": 0.33,
+      "roughnessTexture": "textures/T_C1941_BrushedZinc_R.png",
+      "normalTexture": "textures/T_C1941_BrushedZinc_N.png",
+      "normalTextureUnreal": "textures/T_C1941_BrushedZinc_N_DirectX.png",
+      "normalStrength": 0.07
+    },
+    "M_C1941_RockerBlack": {
+      "baseColor": [
+        0.014,
+        0.014,
+        0.015
+      ],
+      "metallic": 0.0,
+      "roughness": 0.3
+    },
+    "M_C1941_Rubber": {
+      "baseColor": [
+        0.014,
+        0.014,
+        0.015
+      ],
+      "metallic": 0.0,
+      "roughness": 0.88
+    },
+    "M_C1941_ScrewBlackOxide": {
+      "baseColor": [
+        0.035,
+        0.035,
+        0.037
+      ],
+      "metallic": 0.8,
+      "roughness": 0.42
+    },
+    "M_C1941_ScrewSteel": {
+      "baseColor": [
+        0.62,
+        0.62,
+        0.6
+      ],
+      "metallic": 1.0,
+      "roughness": 0.36
+    }
+  }
+}

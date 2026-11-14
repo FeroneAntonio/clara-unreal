@@ -114,6 +114,10 @@ public:
     void GatewayBlockDomain(const FString& Domain,bool Block);
     void GatewayGenerate(const FString& Prompt,bool DeployToCML);
     void GatewayPatchPort(const FString& PortId,bool Connected);
+    static bool RunGatewayPortRepairSelfTest();
+    bool IsGatewayPortRepairPending() const {return GatewayPortRepairBusy||!GatewayPendingPortRepairs.IsEmpty();}
+    FString GetGatewayPortProofMethod(const FString& PortId) const {return GatewayPortProofMethods.FindRef(PortId);}
+    bool IsGatewayPortConfirmed(const FString& PortId,bool Connected) const {const bool* State=GatewayAcknowledgedPorts.Find(PortId);return State&&*State==Connected;}
     FString RunGatewayCommand(const FString& Command);
 
 private:
@@ -173,6 +177,15 @@ private:
     void RecordGatewayResult(const FString& Action,const FClaraGatewayResponse& Response);
     void PollGatewayPatches();
     TSharedPtr<FJsonObject> GatewayPlayerState() const;
+    TArray<TPair<FString,bool>> GatewayPendingPortRepairs;
+    bool GatewayPortRepairBusy=false,GatewayPortRepairConnected=false,GatewayPortRepairShuttingDown=false,GatewayLegacyPatchBroken=false,GatewayPortRepairReconnectTried=false;
+    FString GatewayPortRepairPort,GatewayPortRepairInterface;
+    uint64 GatewayPortRepairGeneration=0;
+    TArray<TSharedPtr<FJsonObject>> GatewayPortRepairEvidence;
+    TMap<FString,FString> GatewayPortProofMethods;
+    void ProcessGatewayPortRepair();
+    void StepGatewayPortRepair(int32 Step,uint64 Token);
+    void FinishGatewayPortRepair(bool Success,const FString& Reason,const FString& Method=FString());
 
 };
 TSharedRef<SWidget> MakeClaraStoryHUD(AClaraStoryDirector* Director);

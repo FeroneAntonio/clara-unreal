@@ -15,3 +15,13 @@ Il patch endpoint del server risponde ancora con nodo inesistente SW-CORE-01 e l
 L’importazione delle mesh ha completato il salvataggio; l’editor batch ha poi avuto un crash di chiusura in una notifica Slate/ICU. Non si è verificato nel codice di gameplay. Non viene presentato come risolto un problema dell’engine non corretto nel suo sorgente.
 
 Per i dettagli operativi vedere CML_GATEWAY.md. Report grezzi e crash log sono locali e restano esclusi da Git.
+
+## Aggiornamento terminale, Ethernet e router Claude
+
+- Terminale scuro uniforme, input monospazio e comandi compatti; nessun pannello bianco nel terminale locale o CML.
+- Regressione `CLARA_ETHERNET_INTERACTION_PASS`: primo capo sullo switch, secondo sul portatile trasportato, ripetizione di Ethernet e avanzamento della fase5→6.
+- Regressione `CLARA_CARRIED_LAPTOP_PORT_PICKING_PASS`: tracce reali sulle prese Ethernet e USB console dell’anteprima, mantenendo ignorato il modello trasportato nella stanza.
+- Nuovo Cisco1941 di Claude importato con21materiali e coordinate reali delle8porte; predecessore conservato. Percorsi delle texture relativi al progetto. Ingombri UE verificati34,3×29,8×8,9cm.
+- Il modulo compila senza Unity per evitare collisioni tra gli spazi dei nomi dei vecchi sorgenti quando Git li raggruppa in una build pulita.
+
+- Prova HTTP reale del nuovo adattatore: `CLARA_GATEWAY_PORT_LIVE_PASS`, primo tentativo, `IOS_ADMIN` su SW-PIANO1 / Ethernet0/1, con lettura indipendente di conferma.
