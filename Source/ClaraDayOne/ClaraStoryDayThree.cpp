@@ -343,7 +343,7 @@ bool AClaraStoryDirector::IsDayThreeMissionTarget(AActor* Actor)const
     if(const auto* Prop=Cast<AClaraStoryProp>(Actor))
     {
         const FString Id=Prop->GetPropId();
-        return Phase==202&&Id==TEXT("Box_ethernet")||Phase==203&&!Owned.Contains(TEXT("console"))&&Id==TEXT("Box_console");
+        return (Phase==202&&Id==TEXT("Box_ethernet"))||(Phase==203&&!Owned.Contains(TEXT("console"))&&Id==TEXT("Box_console"));
     }
     if(Phase==202)return Actor==Devices.FindRef(TEXT("R1")).Get()||Actor==Devices.FindRef(TEXT("R2")).Get()||Actor==Devices.FindRef(TEXT("SW2")).Get();
     if(Phase>=203&&Phase<=205)return Actor==Devices.FindRef(!CarriedLaptop?TEXT("LAPTOP"):Phase==203?TEXT("R1"):Phase==204?TEXT("R2"):TEXT("SW2")).Get();

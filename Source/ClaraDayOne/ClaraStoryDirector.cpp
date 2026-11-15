@@ -15,6 +15,7 @@
 #include "Engine/World.h"
 #include "Engine/GameViewportClient.h"
 #include "EngineUtils.h"
+#include "Framework/Application/SlateApplication.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
@@ -112,7 +113,7 @@ void AClaraStoryDirector::BeginPlay()
     if(Persist)
     {
         const FString File=FPaths::ProjectSavedDir()/ProgressFile;bool Found=false,Restored=false;
-        for(const FString Suffix:{FString(),FString(TEXT(".bak"))})
+        for(const FString& Suffix:{FString(),FString(TEXT(".bak"))})
         {
             const FString Candidate=File+Suffix;if(!IFileManager::Get().FileExists(*Candidate))continue;Found=true;
             FString Saved;TSharedPtr<FJsonObject> Save;
@@ -185,7 +186,11 @@ void AClaraStoryDirector::ShowPanel(const FString& Name)
     Panel.Reset();Page=Name;
     if(!Name.IsEmpty()&&GetWorld()->GetGameViewport())
     {Panel=MakeClaraStoryPanel(this);GetWorld()->GetGameViewport()->AddViewportWidgetContent(Panel.ToSharedRef(),22);}
-    if(Controller.IsValid()){Controller->bShowMouseCursor=true;FInputModeGameAndUI Mode;Mode.SetHideCursorDuringCapture(false);Controller->SetInputMode(Mode);}
+    if(Controller.IsValid())
+    {
+        Controller->bShowMouseCursor=true;FInputModeGameAndUI Mode;Mode.SetHideCursorDuringCapture(false);Mode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);Controller->SetInputMode(Mode);
+        if(Name.IsEmpty()&&FSlateApplication::IsInitialized())FSlateApplication::Get().SetAllUserFocusToGameViewport();
+    }
 }
 void AClaraStoryDirector::Say(const FString& Who,const TArray<FString>& Lines,int32 Next,const TArray<FString>& Options)
 {
@@ -513,6 +518,8 @@ void AClaraStoryDirector::CloseLaptopScreen()
     if(ScreenOpen&&!SelfTesting)AClaraAudio::Cue(this,TEXT("laptop_close"),.6f);
     ScreenOverlay.Reset();if(Display)Display->DeactivateDisplay();ScreenOpen=false;
     if(CarriedLaptop&&Devices.Contains(TEXT("LAPTOP")))Devices[TEXT("LAPTOP")]->SetLaptopCarried(true);
+    if(Controller.IsValid())Controller->ResumeWalk();
+    if(FSlateApplication::IsInitialized())FSlateApplication::Get().SetAllUserFocusToGameViewport();
 }
 void AClaraStoryDirector::SetScreenPage(const FString& N){if(N==TEXT("subnet")&&Phase==104&&!Completed.Contains(TEXT("day2-host-read"))){ScreenPage=TEXT("terminal");SwitchTerminalSession(TEXT("LAPTOP"));Notify(TEXT("Prima leggi IP, mask e gateway: scrivi ip addr nel terminale."));if(!ScreenOpen)OpenLaptopScreen();return;}ScreenPage=Phase>=200&&(N==TEXT("vision")||N==TEXT("challenge")||N==TEXT("gateway"))?TEXT("routing"):N;if(N==TEXT("notebook")){OpenNotebook();return;}if(N==TEXT("inventory")){OpenInventory();return;}if(!ScreenOpen)OpenLaptopScreen();}
 void AClaraStoryDirector::Tick(float D)
@@ -1001,7 +1008,7 @@ void AClaraStoryDirector::StartDay2()
     ResetDayTransition();ClosePage();CloseLaptopScreen();
     TerminalTranscripts.Empty();TerminalHistories.Empty();Transcript.Empty();TerminalTarget=TEXT("LAPTOP");
     ReturnHeldCable();SortingCable.Empty();TrialCLI.Reset();Day1CLI.Reset();ArpCache.Empty();LearnedMACs.Empty();
-    for(const FString Key:Completed.Array())if(Key.StartsWith(TEXT("day2-"))||Key.StartsWith(TEXT("ssh-verified:"))||Key==TEXT("trial-ping"))Completed.Remove(Key);
+    for(const FString& Key:Completed.Array())if(Key.StartsWith(TEXT("day2-"))||Key.StartsWith(TEXT("ssh-verified:"))||Key==TEXT("trial-ping"))Completed.Remove(Key);
     PendingSSHUser.Empty();PendingSSHAddress.Empty();
     Completed.Remove(TEXT("arp-cleared"));Completed.Remove(TEXT("startup-read"));SubnetStep=0;
     for(const auto& Entry:Devices)if(Entry.Value)for(const auto& Port:Entry.Value->GetPorts()){FString Error;Entry.Value->DisconnectPort(Port.Id,Error);}
@@ -1216,7 +1223,7 @@ void AClaraStoryDirector::RestartStory()
 {
     // Nuova partita esplicita: cancella il salvataggio e ricarica la stanza dal Giorno 1.
     if(Controller.IsValid())if(auto* Camera=Controller->FindComponentByClass<UClaraNarrativeCamera>())Camera->EndConversation(true);
-    CancelAllTerminalCommands();OpenLaptopAfterConversation=false;Persist=false;for(const FString Suffix:{FString(),FString(TEXT(".bak")),FString(TEXT(".tmp"))})IFileManager::Get().Delete(*(FPaths::ProjectSavedDir()/ProgressFile+Suffix));
+    CancelAllTerminalCommands();OpenLaptopAfterConversation=false;Persist=false;for(const FString& Suffix:{FString(),FString(TEXT(".bak")),FString(TEXT(".tmp"))})IFileManager::Get().Delete(*(FPaths::ProjectSavedDir()/ProgressFile+Suffix));
     UGameplayStatics::OpenLevel(this,FName(*UGameplayStatics::GetCurrentLevelName(this,true)));
 }
 void AClaraStoryDirector::SetupChallenge()

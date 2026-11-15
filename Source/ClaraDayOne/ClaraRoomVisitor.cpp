@@ -13,6 +13,7 @@
 #include "Engine/World.h"
 #include "Engine/GameViewportClient.h"
 #include "EngineUtils.h"
+#include "Framework/Application/SlateApplication.h"
 #include "Widgets/SOverlay.h"
 #include "Widgets/SBoxPanel.h"
 #include "Widgets/Input/SButton.h"
@@ -56,12 +57,27 @@ void AClaraRoomVisitor::Right(float V)
 }
 void AClaraRoomVisitor::Turn(float V){auto* PC=Cast<AClaraRoomController>(Controller);if(PC&&PC->IsStoryModal())return;if(PC&&PC->IsDeviceOpen()){PC->OrbitDevice(V,0);return;}if(PC && PC->IsLooking())AddControllerYawInput(V);}
 void AClaraRoomVisitor::Look(float V){auto* PC=Cast<AClaraRoomController>(Controller);if(PC&&PC->IsStoryModal())return;if(PC&&PC->IsDeviceOpen()){PC->OrbitDevice(0,V);return;}if(PC && PC->IsLooking())AddControllerPitchInput(-V);}
-void AClaraRoomVisitor::Tick(float Delta){Super::Tick(Delta);if(GetActorLocation().Z < -300)SetActorLocation({175,85,90});}
+void AClaraRoomVisitor::Tick(float Delta)
+{
+    Super::Tick(Delta);
+    if(GetActorLocation().Z < -300)SetActorLocation({175,85,90});
+    if(auto* PC=Cast<AClaraRoomController>(Controller))
+    {
+        if(!PC->IsStoryModal() && GetPendingMovementInputVector().IsNearlyZero())
+        {
+            const float Fwd=(PC->IsInputKeyDown(EKeys::W)||PC->IsInputKeyDown(EKeys::Up)?1.f:0.f)-(PC->IsInputKeyDown(EKeys::S)||PC->IsInputKeyDown(EKeys::Down)?1.f:0.f);
+            const float Rgt=(PC->IsInputKeyDown(EKeys::D)||PC->IsInputKeyDown(EKeys::Right)?1.f:0.f)-(PC->IsInputKeyDown(EKeys::A)||PC->IsInputKeyDown(EKeys::Left)?1.f:0.f);
+            if(!FMath::IsNearlyZero(Fwd))Forward(Fwd);
+            if(!FMath::IsNearlyZero(Rgt))Right(Rgt);
+        }
+    }
+}
 void AClaraRoomController::Pointer()
 {
     bLook=false; bShowMouseCursor=true;
     FInputModeGameAndUI Mode; Mode.SetHideCursorDuringCapture(false);
     Mode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock); SetInputMode(Mode);
+    if(FSlateApplication::IsInitialized())FSlateApplication::Get().SetAllUserFocusToGameViewport();
 }
 void AClaraRoomController::BeginPlay()
 {
@@ -221,7 +237,9 @@ bool AClaraRoomController::InputKey(const FInputKeyEventArgs& P)
         if(P.Event==IE_Pressed)
         {
             if(GetViewTarget()!=GetPawn())ResumeWalk();
-            bLook=true; bShowMouseCursor=false; SetInputMode(FInputModeGameOnly()); return true;
+            bLook=true; bShowMouseCursor=false; SetInputMode(FInputModeGameOnly());
+            if(FSlateApplication::IsInitialized())FSlateApplication::Get().SetAllUserFocusToGameViewport();
+            return true;
         }
         if(P.Event==IE_Released){Pointer();return true;}
     }

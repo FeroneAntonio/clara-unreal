@@ -32,7 +32,7 @@ bool AClaraStoryDirector::ChooseArrivalInterview(int32 Choice)
     FString TourDirectory;const bool Isolated=FApp::IsUnattended()||FParse::Value(FCommandLine::Get(),TEXT("ClaraFrontEndTour="),TourDirectory);
     // Resume existing Reti progress only after selection. Never overwrite it with interview state.
     bool Found=false,Restored=false,Writable=true;
-    if(!Isolated)for(const FString Suffix:{FString(),FString(TEXT(".bak"))})
+    if(!Isolated)for(const FString& Suffix:{FString(),FString(TEXT(".bak"))})
     {
         const FString File=FPaths::ProjectSavedDir()/TEXT("ClaraStoryProgress.json")+Suffix;
         if(!IFileManager::Get().FileExists(*File))continue;Found=true;FString Data;TSharedPtr<FJsonObject> Save;
