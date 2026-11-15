@@ -4,6 +4,10 @@ Avventura educativa ambientata a Napoli nell’azienda TNES: tre giornate di net
 
 L’app Mac esportata si avvia senza Unreal Editor. Unreal serve agli sviluppatori per compilare il progetto, il cui nome tecnico resta `ClaraDayOne`. Stato della distribuzione e dipendenze locali: [TNES standalone](Docs/TNES-STANDALONE.md). Il repository contiene sorgenti e risorse originali o con licenza documentata in LICENSES.md; i contenuti Epic e le foto personali restano esclusi.
 
+## Consegna CML e Mac
+
+Le configurazioni e gli strumenti CML sono in [Integrations/CML](Integrations/CML/README.md). La build Mac si scarica dalla [release cml-new](https://github.com/FeroneAntonio/clara-unreal/releases/tag/cml-new-mac-2026-11-15); dettagli in [Docs/CML-NEW.md](Docs/CML-NEW.md).
+
 ## Avvio rapido per sviluppatori
 
 1. Installa Unreal Engine **5.8** e gli strumenti C++ richiesti dall’engine per il tuo sistema. La versione verificata sul Mac di sviluppo è **5.8.4**.

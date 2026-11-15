@@ -1,0 +1,185 @@
+[
+  {
+    "file": "network-1-inizio.yaml",
+    "mission": "network_1",
+    "state": "inizio",
+    "title": "TNES N1 - inizio",
+    "nodes": [
+      "SW1",
+      "R1",
+      "PORTATILE",
+      "PC2"
+    ],
+    "links": 0,
+    "result": {
+      "status": 200,
+      "data": {
+        "id": "7b017465-fb03-43c3-ac25-abbc39026a3e",
+        "warnings": []
+      }
+    }
+  },
+  {
+    "file": "network-1-soluzione.yaml",
+    "mission": "network_1",
+    "state": "soluzione",
+    "title": "TNES N1 - soluzione",
+    "nodes": [
+      "SW1",
+      "R1",
+      "PORTATILE",
+      "PC2"
+    ],
+    "links": 3,
+    "result": {
+      "status": 200,
+      "data": {
+        "id": "1fc0e59b-0dfe-4908-8cae-c7bc470a0471",
+        "warnings": []
+      }
+    }
+  },
+  {
+    "file": "network-2-prova-inizio.yaml",
+    "mission": "network_2_prova",
+    "state": "inizio",
+    "title": "TNES N2 prova - inizio",
+    "nodes": [
+      "SW-PROVA",
+      "R1",
+      "PORTATILE"
+    ],
+    "links": 2,
+    "result": {
+      "status": 200,
+      "data": {
+        "id": "7ecfc750-a774-4b9d-857e-f1cbf741c054",
+        "warnings": []
+      }
+    }
+  },
+  {
+    "file": "network-2-prova-soluzione.yaml",
+    "mission": "network_2_prova",
+    "state": "soluzione",
+    "title": "TNES N2 prova - soluzione",
+    "nodes": [
+      "SW-PROVA",
+      "R1",
+      "PORTATILE"
+    ],
+    "links": 2,
+    "result": {
+      "status": 200,
+      "data": {
+        "id": "f4a8390c-95c7-4214-b0ee-725a716837f5",
+        "warnings": []
+      }
+    }
+  },
+  {
+    "file": "network-2-gaia-inizio.yaml",
+    "mission": "network_2_gaia",
+    "state": "inizio",
+    "title": "TNES N2 Gaia - inizio",
+    "nodes": [
+      "R1",
+      "SW-A",
+      "SW-B",
+      "PC2",
+      "PC3"
+    ],
+    "links": 0,
+    "result": {
+      "status": 200,
+      "data": {
+        "id": "3d32fffb-9a47-4c75-9255-9ccb57a3b388",
+        "warnings": []
+      }
+    }
+  },
+  {
+    "file": "network-2-gaia-soluzione.yaml",
+    "mission": "network_2_gaia",
+    "state": "soluzione",
+    "title": "TNES N2 Gaia - soluzione",
+    "nodes": [
+      "R1",
+      "SW-A",
+      "SW-B",
+      "PC2",
+      "PC3"
+    ],
+    "links": 4,
+    "result": {
+      "status": 200,
+      "data": {
+        "id": "3d815e84-bd14-453d-bf95-f7191e10f27f",
+        "warnings": []
+      }
+    }
+  },
+  {
+    "file": "network-3-inizio.yaml",
+    "mission": "network_3",
+    "state": "inizio",
+    "title": "TNES N3 - inizio",
+    "nodes": [
+      "R1",
+      "SW1",
+      "R2",
+      "SW2",
+      "PC2"
+    ],
+    "links": 2,
+    "result": {
+      "status": 200,
+      "data": {
+        "id": "3d5198d2-2c02-4380-9110-26dd8323a2ad",
+        "warnings": []
+      }
+    }
+  },
+  {
+    "file": "network-3-soluzione.yaml",
+    "mission": "network_3",
+    "state": "soluzione",
+    "title": "TNES N3 - soluzione",
+    "nodes": [
+      "R1",
+      "SW1",
+      "R2",
+      "SW2",
+      "PC2"
+    ],
+    "links": 4,
+    "result": {
+      "status": 200,
+      "data": {
+        "id": "faaffab5-d858-48f8-892c-a1e0273b83c7",
+        "warnings": []
+      }
+    }
+  },
+  {
+    "file": "network-3-guasti.yaml",
+    "mission": "network_3",
+    "state": "guasti",
+    "title": "TNES N3 - guasti",
+    "nodes": [
+      "R1",
+      "SW1",
+      "R2",
+      "SW2",
+      "PC2"
+    ],
+    "links": 4,
+    "result": {
+      "status": 200,
+      "data": {
+        "id": "88e84725-d354-4b5f-8891-f0ee680d0f80",
+        "warnings": []
+      }
+    }
+  }
+]

@@ -1,0 +1,9 @@
+{
+  "lab_id": "1fc0e59b-0dfe-4908-8cae-c7bc470a0471",
+  "node": "SW1",
+  "command": "show ip interface brief",
+  "websocket_upgrade": 101,
+  "ready_state": 1,
+  "received_text": "",
+  "ios_verified": false
+}

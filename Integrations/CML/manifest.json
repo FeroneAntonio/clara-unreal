@@ -1,0 +1,122 @@
+[
+  {
+    "file": "network-1-inizio.yaml",
+    "mission": "network_1",
+    "state": "inizio",
+    "title": "TNES N1 - inizio",
+    "nodes": [
+      "SW1",
+      "R1",
+      "PORTATILE",
+      "PC2"
+    ],
+    "links": 0
+  },
+  {
+    "file": "network-1-soluzione.yaml",
+    "mission": "network_1",
+    "state": "soluzione",
+    "title": "TNES N1 - soluzione",
+    "nodes": [
+      "SW1",
+      "R1",
+      "PORTATILE",
+      "PC2"
+    ],
+    "links": 3
+  },
+  {
+    "file": "network-2-prova-inizio.yaml",
+    "mission": "network_2_prova",
+    "state": "inizio",
+    "title": "TNES N2 prova - inizio",
+    "nodes": [
+      "SW-PROVA",
+      "R1",
+      "PORTATILE"
+    ],
+    "links": 2
+  },
+  {
+    "file": "network-2-prova-soluzione.yaml",
+    "mission": "network_2_prova",
+    "state": "soluzione",
+    "title": "TNES N2 prova - soluzione",
+    "nodes": [
+      "SW-PROVA",
+      "R1",
+      "PORTATILE"
+    ],
+    "links": 2
+  },
+  {
+    "file": "network-2-gaia-inizio.yaml",
+    "mission": "network_2_gaia",
+    "state": "inizio",
+    "title": "TNES N2 Gaia - inizio",
+    "nodes": [
+      "R1",
+      "SW-A",
+      "SW-B",
+      "PC2",
+      "PC3"
+    ],
+    "links": 0
+  },
+  {
+    "file": "network-2-gaia-soluzione.yaml",
+    "mission": "network_2_gaia",
+    "state": "soluzione",
+    "title": "TNES N2 Gaia - soluzione",
+    "nodes": [
+      "R1",
+      "SW-A",
+      "SW-B",
+      "PC2",
+      "PC3"
+    ],
+    "links": 4
+  },
+  {
+    "file": "network-3-inizio.yaml",
+    "mission": "network_3",
+    "state": "inizio",
+    "title": "TNES N3 - inizio",
+    "nodes": [
+      "R1",
+      "SW1",
+      "R2",
+      "SW2",
+      "PC2"
+    ],
+    "links": 2
+  },
+  {
+    "file": "network-3-soluzione.yaml",
+    "mission": "network_3",
+    "state": "soluzione",
+    "title": "TNES N3 - soluzione",
+    "nodes": [
+      "R1",
+      "SW1",
+      "R2",
+      "SW2",
+      "PC2"
+    ],
+    "links": 4
+  },
+  {
+    "file": "network-3-guasti.yaml",
+    "mission": "network_3",
+    "state": "guasti",
+    "title": "TNES N3 - guasti",
+    "nodes": [
+      "R1",
+      "SW1",
+      "R2",
+      "SW2",
+      "PC2"
+    ],
+    "links": 4
+  }
+]

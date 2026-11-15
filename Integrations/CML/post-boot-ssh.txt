@@ -1,0 +1,12 @@
+Su SW-PROVA, SW-A e SW-B nella soluzione, una volta dopo il primo avvio:
+enable
+Privato1
+configure terminal
+crypto key generate rsa general-keys modulus 2048
+end
+write memory
+
+Da PORTATILE (prova) o PC2 (Gaia):
+ssh -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa admin@192.168.1.2
+# Password didattica: Personale1
+# Gaia: ripetere per 192.168.1.3.

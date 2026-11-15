@@ -36,6 +36,11 @@
 #include "Misc/Parse.h"
 #include "Misc/Paths.h"
 #include "UnrealClient.h"
+#if !UE_BUILD_SHIPPING
+#include "GroomComponent.h"
+#include "UObject/UnrealType.h"
+#include "HAL/IConsoleManager.h"
+#endif
 #if WITH_DEV_AUTOMATION_TESTS
 #include "Misc/AutomationTest.h"
 #endif
@@ -335,6 +340,55 @@ void RunStep(FTour& Tour,const FTourStep& Step)
         }
         UE_LOG(LogTemp,Display,TEXT("CLARA_TOUR_ASSERT_PASS: %s"),*Step.Rest);
     }
+#if !UE_BUILD_SHIPPING
+    else if(V==TEXT("castprobe"))
+    {
+        const int32 Head=FCString::Atoi(*Arg(0)),Skin=FCString::Atoi(*Arg(1));
+        AActor* Native=nullptr;
+        if(Step.Args.Num()==2&&Head>=0&&Head<=5&&Skin>=0&&Skin<=5&&Arg(0)==FString::FromInt(Head)&&Arg(1)==FString::FromInt(Skin))
+            for(TActorIterator<AClaraStoryNPC> It(World);It;++It)if(It->GetCharacterId()==TEXT("Luca"))
+            {
+                TArray<AActor*> Attached;It->GetAttachedActors(Attached,true,true);
+                for(AActor* Child:Attached)if(Child->GetClass()->GetName()==TEXT("BP_TNES_LucaOffice_C"))Native=Child;
+            }
+        auto* HeadProperty=Native?FindFProperty<FIntProperty>(Native->GetClass(),TEXT("HeadIndex")):nullptr;
+        auto* SkinProperty=Native?FindFProperty<FIntProperty>(Native->GetClass(),TEXT("SkinTextureIndex")):nullptr;
+        UFunction* Construction=Native?Native->FindFunction(TEXT("UserConstructionScript")):nullptr;
+        if(!HeadProperty||!SkinProperty||!Construction)
+        {Tour.Failed=true;RestoreTourSettings(Tour);UE_LOG(LogTemp,Error,TEXT("CLARA_TOUR_FAIL: castprobe requires Luca and head/skin indices 0..5"));FPlatformMisc::RequestExitWithStatus(false,1);return;}
+        HeadProperty->SetPropertyValue_InContainer(Native,Head);SkinProperty->SetPropertyValue_InContainer(Native,Skin);
+        Native->ProcessEvent(Construction,nullptr);++Tour.Checks;
+    }
+    else if(V==TEXT("hairprobe"))
+    {
+        const FString Mode=Arg(0);const bool Restore=Mode==TEXT("restore");
+        if(Step.Args.Num()!=1||(Mode!=TEXT("shadows-off")&&Mode!=TEXT("ao-off")&&Mode!=TEXT("cards-off")&&Mode!=TEXT("lod0")&&!Restore))
+        {Tour.Failed=true;RestoreTourSettings(Tour);UE_LOG(LogTemp,Error,TEXT("CLARA_TOUR_FAIL: unsupported hairprobe mode"));FPlatformMisc::RequestExitWithStatus(false,1);return;}
+        if(Mode==TEXT("shadows-off")||Mode==TEXT("lod0")||Restore)
+            for(TActorIterator<AClaraStoryNPC> It(World);It;++It)
+            {
+                TArray<AActor*> Attached;It->GetAttachedActors(Attached,true,true);
+                for(AActor* Child:Attached)
+                {
+                    TInlineComponentArray<UGroomComponent*> Grooms(Child);
+                    for(UGroomComponent* Groom:Grooms)
+                    {
+                        if(Mode==TEXT("shadows-off")||Restore)Groom->SetCastShadow(Restore);
+                        if(Mode==TEXT("lod0")||Restore)Groom->SetForcedLOD(Restore?-1:0);
+                    }
+                }
+            }
+        if(Mode==TEXT("ao-off")||Restore)
+        {
+            const TCHAR* Names[]={TEXT("r.Lumen.ScreenProbeGather.ShortRangeAO"),TEXT("r.Lumen.ScreenProbeGather.ScreenTraces"),TEXT("r.AmbientOcclusionLevels")};
+            const int32 Defaults[]={1,1,-1};
+            for(int32 I=0;I<3;++I)if(auto* Variable=IConsoleManager::Get().FindConsoleVariable(Names[I]))Variable->Set(Restore?Defaults[I]:0,ECVF_SetByCode);
+        }
+        if(Mode==TEXT("cards-off")||Restore)
+            if(auto* Variable=IConsoleManager::Get().FindConsoleVariable(TEXT("r.HairStrands.Cards")))Variable->Set(Restore?1:0,ECVF_SetByCode);
+        ++Tour.Checks;
+    }
+#endif
     else if(V==TEXT("gait"))
     {
         auto& Probe=Tour.Gait;

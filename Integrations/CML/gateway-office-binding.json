@@ -1,0 +1,13 @@
+{
+  "lab_id": "1fc0e59b-0dfe-4908-8cae-c7bc470a0471",
+  "node_id": "4dd95325-a4f7-4b59-bbbb-896aad60051b",
+  "before": {
+    "title": "TNES N1 - soluzione",
+    "label": "SW1"
+  },
+  "after": {
+    "title": "FuoriRete_Room_Office",
+    "label": "SW-PIANO1"
+  },
+  "active_nodes": 4
+}

@@ -1,0 +1,14 @@
+{
+  "api_service": "running",
+  "authentication": "existing Chrome session; no token persisted",
+  "lab_count": 9,
+  "active_node_count": 4,
+  "limit": 5,
+  "autonomous_launcher_verified": true,
+  "node_limit_live_check_passed": true,
+  "duplicate_import_live_check_passed": true,
+  "yaml_imports_without_warnings": 9,
+  "ios_command": "show ip interface brief",
+  "ios_verified": false,
+  "console_result": "connected, no output received"
+}

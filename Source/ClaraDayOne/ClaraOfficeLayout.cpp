@@ -147,7 +147,11 @@ void AClaraOfficeLayout::Portal(float X,float Y,const FString& Name)
     auto* Pane=Shape(TEXT("SlidingDoorGlass"),P,{102,.8,226},GlassTint,false);
     if(Glass)Pane->SetMaterial(0,Glass);
     Shape(TEXT("SlidingDoorHandle"),P+FVector(-Slide*43,-Face*4,-13),{2,3,28},Metal,false);
-    Text(Name,{X,Y-9,270},8);
+    // Both faces stay readable when approaching from the corridor or leaving the room.
+    Shape(TEXT("RoomNameplate"),{X,Y,276},{116,15,26},Teal,false);
+    const FColor Lettering(240,244,239);
+    Text(Name,{X,Y-7.7f,276},11,FRotator(0,-90,0),Lettering);
+    Text(Name,{X,Y+7.7f,276},11,FRotator(0,90,0),Lettering);
 }
 bool AClaraOfficeLayout::Asset(const TCHAR* Id,FVector P,FVector TargetSize,float Yaw)
 {

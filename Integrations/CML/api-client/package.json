@@ -1,0 +1,17 @@
+{
+  "name": "tnes-cml-client",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "puppeteer-core": "^25.16.0",
+    "yaml": "^2.8.1"
+  },
+  "scripts": {
+    "test": "node test.mjs",
+    "start": "node serve.mjs"
+  }
+}

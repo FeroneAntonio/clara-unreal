@@ -1,0 +1,1 @@
+{"source":"fallback_sim","node":"SW-PIANO1","command":"show ip interface brief","output":"[SIM] SW-PIANO1# show ip interface brief","detail":"Handshake console IOS oltre il tempo massimo: ","latency_ms":10650.5}

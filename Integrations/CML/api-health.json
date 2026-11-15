@@ -1,0 +1,78 @@
+{
+  "connected": true,
+  "origin": "https://cml.kappino.me",
+  "labs": [
+    {
+      "id": "7b017465-fb03-43c3-ac25-abbc39026a3e",
+      "title": "TNES N1 - inizio",
+      "state": "DEFINED_ON_CORE"
+    },
+    {
+      "id": "1fc0e59b-0dfe-4908-8cae-c7bc470a0471",
+      "title": "TNES N1 - soluzione",
+      "state": "STARTED"
+    },
+    {
+      "id": "7ecfc750-a774-4b9d-857e-f1cbf741c054",
+      "title": "TNES N2 prova - inizio",
+      "state": "DEFINED_ON_CORE"
+    },
+    {
+      "id": "f4a8390c-95c7-4214-b0ee-725a716837f5",
+      "title": "TNES N2 prova - soluzione",
+      "state": "DEFINED_ON_CORE"
+    },
+    {
+      "id": "3d32fffb-9a47-4c75-9255-9ccb57a3b388",
+      "title": "TNES N2 Gaia - inizio",
+      "state": "DEFINED_ON_CORE"
+    },
+    {
+      "id": "3d815e84-bd14-453d-bf95-f7191e10f27f",
+      "title": "TNES N2 Gaia - soluzione",
+      "state": "DEFINED_ON_CORE"
+    },
+    {
+      "id": "3d5198d2-2c02-4380-9110-26dd8323a2ad",
+      "title": "TNES N3 - inizio",
+      "state": "DEFINED_ON_CORE"
+    },
+    {
+      "id": "faaffab5-d858-48f8-892c-a1e0273b83c7",
+      "title": "TNES N3 - soluzione",
+      "state": "DEFINED_ON_CORE"
+    },
+    {
+      "id": "88e84725-d354-4b5f-8891-f0ee680d0f80",
+      "title": "TNES N3 - guasti",
+      "state": "DEFINED_ON_CORE"
+    }
+  ],
+  "limit": 5,
+  "active_nodes": [
+    {
+      "id": "4dd95325-a4f7-4b59-bbbb-896aad60051b",
+      "label": "SW1",
+      "lab_id": "1fc0e59b-0dfe-4908-8cae-c7bc470a0471",
+      "state": "BOOTED"
+    },
+    {
+      "id": "882d12b0-6004-4f24-b1a1-5848dfd21c58",
+      "label": "R1",
+      "lab_id": "1fc0e59b-0dfe-4908-8cae-c7bc470a0471",
+      "state": "BOOTED"
+    },
+    {
+      "id": "7bb856d8-1e5d-41fe-9395-62db634f5b5d",
+      "label": "PORTATILE",
+      "lab_id": "1fc0e59b-0dfe-4908-8cae-c7bc470a0471",
+      "state": "BOOTED"
+    },
+    {
+      "id": "39033198-6907-4433-bba7-b6459c0c3bc9",
+      "label": "PC2",
+      "lab_id": "1fc0e59b-0dfe-4908-8cae-c7bc470a0471",
+      "state": "BOOTED"
+    }
+  ]
+}

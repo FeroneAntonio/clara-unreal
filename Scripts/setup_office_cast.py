@@ -44,7 +44,10 @@ def inspect_actor(cls, values=None):
         for part in actor.get_components_by_class(unreal.SkeletalMeshComponent):
             mesh = part.get_skeletal_mesh_asset()
             components[part.get_name()] = mesh.get_path_name() if mesh else None
-        for required in ("Body", "Top", "Bottom", "Shoes", "Face"):
+        for part in actor.get_components_by_class(unreal.GroomComponent):
+            groom = part.get_editor_property("groom_asset")
+            components[part.get_name()] = groom.get_path_name() if groom else None
+        for required in ("Body", "Top", "Bottom", "Shoes", "Face", "Hair", "Beard", "Mustache"):
             assert components.get(required), f"Missing original Epic part: {required}"
         assert components["Shoes"].endswith("m_tal_nrw_oxfords.m_tal_nrw_oxfords")
         assert components["Bottom"].endswith("m_tal_nrw_slacks.m_tal_nrw_slacks")
@@ -53,13 +56,29 @@ def inspect_actor(cls, values=None):
         subsystem.destroy_actor(actor)
 
 
-presets = [("Luca", {"RandomOptions": False, "HeadIndex": 0, "OutfitIndex": 0, "OutfitMaterialIndex": 0}),
-           ("Jonathan", {"RandomOptions": False, "HeadIndex": 3, "OutfitIndex": 0, "OutfitMaterialIndex": 1})]
+# The pack chooses face shape, skin texture and hair independently.
+# Luca: dark curls and short stubble. Jonathan: side-swept dark hair and a full short beard.
+presets = [
+    ("Luca", {"RandomOptions": False, "HeadIndex": 1, "SkinTextureIndex": 1,
+              "SkinTextureModifierIndex": 0, "HairIndex": 2, "HairColorIndex": 0,
+              "BeardIndex": 0, "MustacheIndex": 0, "EyebrowsIndex": 0,
+              "OutfitIndex": 0, "OutfitMaterialIndex": 0}),
+    ("Jonathan", {"RandomOptions": False, "HeadIndex": 2, "SkinTextureIndex": 2,
+                  "SkinTextureModifierIndex": 0, "HairIndex": 1, "HairColorIndex": 0,
+                  "BeardIndex": 1, "MustacheIndex": 0, "EyebrowsIndex": 0,
+                  "OutfitIndex": 0, "OutfitMaterialIndex": 1}),
+]
 validated = []
 for name, values in presets:
     # Validate the original Blueprint's parameter interface before creating assets.
     validated.append(inspect_actor(parent, values))
 assert validated[0]["Face"] != validated[1]["Face"], "Presets must have distinct original heads"
+for parts, head, hair, beard in zip(validated, ("m_002", "m_003"),
+                                   ("Hair_S_CurlyFade", "Hair_M_SideSweptFringe"),
+                                   ("Beard_S_Stubble", "Beard_S_Full")):
+    assert f"/{head}/Face/" in parts["Face"], parts["Face"]
+    assert parts["Hair"].endswith(f".{hair}"), parts["Hair"]
+    assert parts["Beard"].endswith(f".{beard}"), parts["Beard"]
 for (name, values), expected in zip(presets, validated):
     asset_name = f"BP_TNES_{name}Office"
     path = DESTINATION + "/" + asset_name

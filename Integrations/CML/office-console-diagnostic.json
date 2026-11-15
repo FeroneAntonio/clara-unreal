@@ -1,0 +1,38 @@
+[
+  {
+    "node": "SW-PIANO1",
+    "state": "BOOTED",
+    "boot_progress": "Booted",
+    "log": {
+      "status": 200,
+      "data": ""
+    }
+  },
+  {
+    "node": "R1",
+    "state": "BOOTED",
+    "boot_progress": "Booted",
+    "log": {
+      "status": 200,
+      "data": ""
+    }
+  },
+  {
+    "node": "PORTATILE",
+    "state": "BOOTED",
+    "boot_progress": "Booted",
+    "log": {
+      "status": 200,
+      "data": "|0000000000|\n\n|0000020893|Welcome to Alpine Linux 3.23\n|0000020893|\nKernel 6.18.7-0-virt on x86_64 (/dev/ttyS0)\n|0000020893|\n\n|0000020893|\nPORTATILE login: "
+    }
+  },
+  {
+    "node": "PC2",
+    "state": "BOOTED",
+    "boot_progress": "Booted",
+    "log": {
+      "status": 200,
+      "data": "|0000000000|\n\n|0000020798|Welcome to Alpine Linux 3.23\n|0000020798|\nKernel 6.18.7-0-virt on x86_64 (/dev/ttyS0)\n|0000020798|\n\n|0000020798|\nPC2 login: "
+    }
+  }
+]
