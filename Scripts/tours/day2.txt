@@ -1,0 +1,274 @@
+# Giro completo del Giorno 2 attraverso tutte le fasi 100-110.
+# Ogni riga: attesa in secondi, azione, argomenti. Nessuna fase viene impostata dal tour.
+# Avvio: UnrealEditor ClaraDayOne.uproject -game -windowed -ResX=1280 -ResY=800
+#   -ClaraLocalLab -ClaraStoryDay2 -ClaraTour=<questo file> -ClaraShotDir=<cartella>
+# Le password qui sotto sono esclusivamente esempi del laboratorio locale.
+0 pos 680 900 90 -4 90
+16 expect phase 100
+0 expect clock 09:00
+0 shot 00-giorno2-luca
+0.3 talk Luca
+0.2 expect page dialogue
+0.4 skip
+1.0 expect phase 101
+0 expect screen open
+0 shot 01-arp-sequenza
+0.3 solve
+0.2 expect phase 102
+0 expect terminal LAPTOP
+0.3 skip
+0.2 cmd ip neigh
+0.1 expect phase 102
+0.2 cmd sudo ip neigh flush all
+0.1 expect phase 102
+0.2 cmd ip neigh
+0.1 expect phase 103
+0 expect transcript Nessuna voce ARP trovata.
+0 shot 02-cache-arp-vuota
+0.3 cmd ping 192.168.1.11
+17.0 expect transcript Reply from 192.168.1.11
+0.2 cmd ip neigh
+0.1 expect phase 103
+0 expect page dialogue
+0 shot 03-cache-arp-dopo-ping
+0.4 skip
+0.2 expect phase 104
+0.3 skip
+0.2 cmd ip addr
+0.3 skip
+0 shot 04-subnet-foglio
+0.2 answer 01000110
+0.2 answer 11000000
+0.2 answer 192.168.1.64
+0.2 answer 192.168.1.127
+0.2 answer 62
+0.2 answer no
+0.2 expect phase 105
+0 expect page dialogue
+0.4 skip
+1.0 pos 1135 1010 90 -28 90
+0.3 pickup
+# Prendere il portatile stacca i cavi: ripristino Ethernet prima della console.
+0.3 use ethernet
+0.3 device LAPTOP
+0.3 port Ethernet
+0.3 device SW1
+0.3 port Gi1/0/3
+0.3 closedevice
+0.3 use console
+0.3 device LAPTOP
+0.3 port ConsoleUSB
+0.3 device SW1
+0.3 port Console
+0.3 closedevice
+1.0 expect phase 106
+0 expect page dialogue
+0.4 skip
+0.2 expect screen open
+0 expect terminal SW-PROVA
+0 shot 05-switch-prova
+0.15 cmd enable
+0.15 cmd configure terminal
+0.15 cmd hostname SW-PROVA
+0.15 cmd enable secret Cisco123
+0.15 cmd line console 0
+0.15 cmd password Console123
+0.15 cmd login
+0.15 cmd exit
+0.15 cmd service password-encryption
+0.15 cmd banner motd #Accesso riservato al laboratorio CLARA#
+0.15 cmd interface vlan 1
+0.15 cmd ip address 192.168.1.2 255.255.255.0
+0.15 cmd no shutdown
+0.15 cmd exit
+0.15 cmd ip default-gateway 192.168.1.1
+0.15 cmd ip domain-name hacktheroute.local
+0.15 cmd crypto key generate rsa
+0.15 cmd 2048
+0.15 cmd username admin secret Admin123
+0.15 cmd ip ssh version 2
+0.15 cmd line vty 0 15
+0.15 cmd transport input ssh
+0.15 cmd login local
+0.15 cmd exit
+0.15 cmd end
+0.2 expect phase 106
+0.2 cmd show running-config
+0.2 expect transcript hostname SW-PROVA
+0 shot 06-configurazione-non-ancora-salvata
+0.2 cmd copy running-config startup-config
+0.1 expect phase 106
+0.2 cmd
+0.2 expect phase 107
+0.2 cmd show startup-config
+0.1 expect transcript Startup configuration (copia locale salvata):
+0 shot 07-startup-switch-prova
+0.2 cmd ping 192.168.1.10
+17.0 expect phase 107
+0.2 target LAPTOP
+0.2 cmd ssh admin@192.168.1.2
+0.2 cmd Admin123
+0.2 expect phase 108
+0 expect page dialogue
+0.4 skip
+0.3 closelaptop
+0.3 pos 110 1040 90 -6 65
+1.0 talk Gaia
+0.2 expect page dialogue
+5.0 shot 08-missione-gaia
+0.4 skip
+6.0 expect phase 109
+0 expect screen open
+0 shot 09-rete-da-ripristinare
+# Il TEST iniziale fallisce; il riavvio resta bloccato.
+0.2 sim test
+0.1 expect ready no
+0 expect simmessage Manca il collegamento
+0.2 sim reboot
+0.1 expect phase 109
+0 expect simmessage Prima completa il TEST operativo.
+# Cablaggio richiesto dalla scheda di Gaia.
+0.2 sim cable ethernet
+0.2 sim select R1
+0.2 sim select SW-A
+0.2 sim select SW-A
+0.2 sim select SW-B
+0.2 sim select LAPTOP
+0.2 sim select SW-A
+0.2 sim select PC2
+0.2 sim select SW-A
+0.2 sim select PC3
+0.2 sim select SW-B
+0.2 sim cable console
+0.2 sim select LAPTOP
+0.2 sim select SW-A
+0.2 sim cable none
+0.2 target SW-A
+0.1 expect terminal SW-A
+0.2 screen terminal
+0.15 cmd enable
+0.15 cmd configure terminal
+0.15 cmd hostname SW-A
+0.15 cmd enable secret Cisco123
+0.15 cmd line console 0
+0.15 cmd password Console123
+0.15 cmd login
+0.15 cmd exit
+0.15 cmd service password-encryption
+0.15 cmd banner motd #Accesso riservato al laboratorio CLARA#
+0.15 cmd interface vlan 1
+0.15 cmd ip address 192.168.1.2 255.255.255.0
+0.15 cmd no shutdown
+0.15 cmd exit
+0.15 cmd ip default-gateway 192.168.1.1
+0.15 cmd ip domain-name hacktheroute.local
+0.15 cmd crypto key generate rsa
+0.15 cmd 2048
+0.15 cmd username admin secret Admin123
+0.15 cmd ip ssh version 2
+0.15 cmd line vty 0 15
+0.15 cmd transport input ssh
+0.15 cmd login local
+0.15 cmd exit
+0.15 cmd end
+0.2 cmd show running-config
+0.1 expect transcript hostname SW-A
+0 shot 10-sw-a-configurato
+0.2 screen challenge
+0.2 sim cable console
+0.2 sim select LAPTOP
+0.2 sim select SW-B
+0.2 sim cable none
+0.2 target SW-B
+0.1 expect terminal SW-B
+0.2 screen terminal
+0.15 cmd enable
+0.15 cmd configure terminal
+0.15 cmd hostname SW-B
+0.15 cmd enable secret Cisco123
+0.15 cmd line console 0
+0.15 cmd password Console123
+0.15 cmd login
+0.15 cmd exit
+0.15 cmd service password-encryption
+0.15 cmd banner motd #Accesso riservato al laboratorio CLARA#
+0.15 cmd interface vlan 1
+0.15 cmd ip address 192.168.1.3 255.255.255.0
+0.15 cmd no shutdown
+0.15 cmd exit
+0.15 cmd ip default-gateway 192.168.1.1
+0.15 cmd ip domain-name hacktheroute.local
+0.15 cmd crypto key generate rsa
+0.15 cmd 2048
+0.15 cmd username admin secret Admin123
+0.15 cmd ip ssh version 2
+0.15 cmd line vty 0 15
+0.15 cmd transport input ssh
+0.15 cmd login local
+0.15 cmd exit
+0.15 cmd end
+0.2 cmd show running-config
+0.1 expect transcript hostname SW-B
+0 shot 11-sw-b-configurato
+# I due switch sono configurati, ma il TEST deve trovare l'IP errato di PC3.
+0.2 screen challenge
+0.2 sim test
+0.1 expect ready no
+0 expect simmessage PC3: l'IP non corrisponde alla scheda.
+0 shot 12-guasto-pc3
+0.2 sim cable none
+0.2 sim select PC3
+0.2 sim ip PC3 192.168.1.12
+0.2 target LAPTOP
+0.2 screen terminal
+0.2 cmd ssh admin@192.168.1.2
+0.2 cmd Admin123
+0.2 cmd ssh admin@192.168.1.3
+0.2 cmd Admin123
+0.2 screen challenge
+0.2 sim test
+0.1 expect ready yes
+0 expect phase 109
+0 expect simmessage Verifiche operative superate.
+0 shot 13-test-operativo-prima-del-salvataggio
+# Le configurazioni non sono ancora persistenti: salvataggio di entrambi gli switch.
+0.2 target SW-B
+0.2 screen terminal
+0.2 cmd copy running-config startup-config
+0.2 cmd
+0.2 cmd show startup-config
+0.1 expect transcript Startup configuration (copia locale salvata):
+0.2 screen challenge
+0.2 sim cable console
+0.2 sim select LAPTOP
+0.2 sim select SW-A
+0.2 sim cable none
+0.2 target SW-A
+0.2 screen terminal
+0.2 cmd copy running-config startup-config
+0.2 cmd
+0.2 cmd show startup-config
+0.1 expect transcript Startup configuration (copia locale salvata):
+0.2 target LAPTOP
+0.2 cmd ping 192.168.1.12
+17.0 expect transcript Reply from 192.168.1.12
+0.2 cmd ssh admin@192.168.1.2
+0.2 cmd Admin123
+0.1 expect transcript Autenticazione SSH del laboratorio riuscita
+0 shot 14-verifiche-locali
+0.2 screen challenge
+0.2 sim test
+0.1 expect ready yes
+0 expect phase 109
+0 shot 15-pronto-al-riavvio
+0.3 sim reboot
+0.2 expect phase 110
+0 expect page report
+0 expect screen closed
+0 expect simmessage TEST superato anche dopo il riavvio.
+0 shot 16-giorno2-completato
+# Il riepilogo finale deve poter essere riaperto; il tour termina prima del Giorno 3.
+0.3 close
+0.2 notebook
+0.1 expect page report
+1.0 quit

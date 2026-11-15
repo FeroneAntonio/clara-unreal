@@ -269,7 +269,7 @@ void AClaraOffice::Room()
     Label(TEXT("ALESSIA | ACCOGLIENZA"), FVector(-432, 220, 115), 5, FColor(220, 232, 226));
     Box(TEXT("Badge primo giorno"), FVector(-432, 105, 106), FVector(9, 6, .4), Paper,
         AlessiaMesh ? NAME_None : FName(TEXT("Clara.Reception")));
-    Label(TEXT("CLARA"), FVector(-828, 160, 237), 34, FColor(36, 104, 105), FRotator(0, 0, 0));
+    Label(TEXT("TNES"), FVector(-828, 160, 237), 34, FColor(36, 104, 105), FRotator(0, 0, 0));
     Label(TEXT("LABORATORI  /  NAPOLI"), FVector(-828, 160, 198), 11, FColor(52, 67, 67), FRotator(0, 0, 0));
     Label(TEXT("RETI  +  SICUREZZA"), FVector(-131, 380, 158), 13, FColor(47, 86, 86));
     Label(TEXT("LABORATORIO 01   >"), FVector(-100, -607, 208), 15, FColor(35, 80, 79), FRotator(0, 90, 0));
@@ -441,7 +441,7 @@ void AClaraOffice::Rack()
     Box(TEXT("Ripiano switch"), P + FVector(0, -4, 120), FVector(57, 64, 2), Ink);
     Box(TEXT("Chassis switch 24 porte"), P + FVector(0, -16.5, 124), FVector(44.5, 32.9, 4.4), Aluminium, TEXT("Clara.Switch"));
     Box(TEXT("Frontale switch"), P + FVector(0, -33.1, 124), FVector(44.5, .5, 4.4), FLinearColor(.11, .18, .22), TEXT("Clara.Switch"));
-    Label(TEXT("CLARA LAB  |  24 x 1G + 4 SFP"), P + FVector(0, -33.5, 128.8), 1.35, FColor(188, 205, 209), FRotator(0, -90, 0));
+    Label(TEXT("TNES LAB  |  24 x 1G + 4 SFP"), P + FVector(0, -33.5, 128.8), 1.35, FColor(188, 205, 209), FRotator(0, -90, 0));
     for (int32 I = 0; I < 24; ++I)
     {
         const float X = -17.3 + (I / 2) * 2.45;

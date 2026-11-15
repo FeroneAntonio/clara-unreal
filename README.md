@@ -1,8 +1,10 @@
-# CLARA — il primo giorno
+# TNES — demo di reti e sicurezza
 
-Prototipo di un’avventura educativa in un ufficio informatico di Napoli, sviluppato in **Unreal Engine 5.8.4**. Si impara lavorando con un tutor: prendere cavi e portatile, collegare apparati, diagnosticare la rete e configurare uno switch. Il repository pubblico contiene sorgenti, mappa e asset originali o CC0. I manichini Epic si installano dalla propria copia di Unreal; ritratti personali e tessuti Seaprop non vengono pubblicati.
+Avventura educativa ambientata a Napoli nell’azienda TNES: tre giornate di networking e tre giornate Cyber, con prospettive Red e Blue, dialoghi guidati, taccuino e checkpoint. Il laboratorio locale è distinto dal gateway CML reale.
 
-## Avvio rapido
+L’app Mac esportata si avvia senza Unreal Editor. Unreal serve agli sviluppatori per compilare il progetto, il cui nome tecnico resta `ClaraDayOne`. Stato della distribuzione e dipendenze locali: [TNES standalone](Docs/TNES-STANDALONE.md). Il repository contiene sorgenti e risorse originali o con licenza documentata in LICENSES.md; i contenuti Epic e le foto personali restano esclusi.
+
+## Avvio rapido per sviluppatori
 
 1. Installa Unreal Engine **5.8** e gli strumenti C++ richiesti dall’engine per il tuo sistema. La versione verificata sul Mac di sviluppo è **5.8.4**.
 2. Clona il repository: `git clone https://github.com/FeroneAntonio/clara-unreal.git`.

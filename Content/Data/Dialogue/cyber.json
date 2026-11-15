@@ -1,0 +1,242 @@
+[
+  {
+    "speaker": "Jonny",
+    "text": "Benvenuto. Oggi non devi riparare niente. Un collega ci ha chiesto di controllare il server dei servizi didattici.",
+    "key": "2f6df3ed3e3df66d",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Il server dei servizi didattici consente di consultare i materiali del corso. Quali servizi pensi che debba avere attivi per farlo?",
+    "key": "d34ba6ce144363fe",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Non c'è una risposta giusta, per ora. Il computer è lì: avvicinati e guardiamo cosa c'è davvero.",
+    "key": "f1ec3713b9785378",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Un server può offrire più servizi insieme. Ognuno \"ascolta\" su una porta numerata. Immagina un palazzo con tante porte: ogni porta serve un ufficio diverso.",
+    "key": "e378a8908cab5e96",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Ogni porta aperta è un punto da cui qualcuno può provare a entrare. Se un servizio serve, va tenuto e protetto. Se non serve a nessuno, è una porta aperta senza motivo. Questa si chiama superficie esposta.",
+    "key": "1b1d6e5dd8eb0855",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Ora hai un'idea di cosa c'è. Da dove vuoi guardare?",
+    "key": "677dde768d21df59",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Non c'è una scelta migliore. Sono due modi di guardare lo stesso server.",
+    "key": "ef01d930f22baaea",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Fingi di non sapere niente di questo server, a parte l'indirizzo. È un test autorizzato, solo nel nostro laboratorio. Come scopri cosa è aperto?",
+    "key": "0e42a9d5b4ac4289",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Hai fatto quello che farebbe chi ci osserva da fuori: ti sei fatto una mappa. Da qui comincia anche qualsiasi attacco.",
+    "key": "5dc0660f7f68b02d",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Prima di toccare qualsiasi cosa, guardiamo se qualcuno è già passato di qui.",
+    "key": "4b977cc19ca188b9",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Che cosa ti sembra questa sequenza?",
+    "key": "45aaa9f8aec98f7f",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Hai ridotto cosa è aperto. E come lo verifichiamo?",
+    "key": "0b5199600a7b8af0",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Hai guardato lo stesso server da una parte sola. Chi attacca fa una mappa per capire dove provare. Chi difende riduce la mappa, per dare meno punti di ingresso.",
+    "key": "357784f1ec31afec",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Gaia",
+    "text": "Il server Prenotazioni contiene i dati dei clienti. La reception deve continuare a raggiungerlo.",
+    "key": "467943172e7b60a6",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Oggi guardiamo chi può entrare. Questo server contiene i dati dei clienti, quindi per regola deve parlare solo con il PC della reception. Controlliamo se è davvero così.",
+    "key": "3be5f2501bc7c50c",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Secondo te, quali postazioni dovrebbero poter arrivare a un server con i dati dei clienti?",
+    "key": "c3cfe6552da56985",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Non c'è una risposta giusta, per ora. Guarda cosa dice il firewall e confrontiamo.",
+    "key": "e10a80473b9f80a8",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Il firewall decide cosa lasciar passare con una lista di regole, la ACL. Le legge dall'alto verso il basso e si ferma alla prima che corrisponde al traffico. L'ordine conta.",
+    "key": "93418b70f3e358a0",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Se un PC dell'aula prova a raggiungere le prenotazioni, quale riga lo ferma?",
+    "key": "998fda51499ee673",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Ora sai come si legge la lista. Da dove vuoi guardare?",
+    "key": "c5c2c0d05af0680b",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Non c'è una scelta migliore. Sono due modi di guardare lo stesso firewall.",
+    "key": "6020558787078039",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Il firewall dichiara una cosa, la rete ne fa un'altra. Testiamo da tre postazioni e confrontiamo.",
+    "key": "452bdbb639082d48",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Due postazioni che non dovrebbero vedere il server ci arrivano. Cosa hanno in comune?",
+    "key": "292b7ea3f5463d20",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "L'aula non dovrebbe arrivarci. Le regole sono scritte, quindi qualcosa non torna.",
+    "key": "1b9b0de193f58914",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Che regola ha fatto passare l'aula? Leggi l'ultima colonna.",
+    "key": "27b01013bb746a62",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Due controlli.",
+    "key": "c04248372e3455b2",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Il firewall non era rotto. Aveva una regola scritta per comodità e mai tolta.",
+    "key": "235c7a0aa058e5e4",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Il server Prenotazioni ha un pannello di gestione. Lo usa il team tecnico. Vediamo quanto è protetto.",
+    "key": "d39b705f56d46366",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Secondo te, cosa serve per proteggere un accesso come questo?",
+    "key": "1006493e8e4d3dfe",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Non c'è una risposta giusta, per ora. Il pannello è lì: avvicinati e guardiamo.",
+    "key": "29e44c96267dd422",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Un accesso si difende in due modi. Primo: chi sei, cioè le credenziali. Secondo: chi può leggere quello che mandi, cioè la cifratura.",
+    "key": "f8a1920421a4e0d9",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Nota la scritta sulla barra dell'indirizzo: la connessione non è protetta. Che cosa significa, secondo te?",
+    "key": "7113ba11cc38f127",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Ora hai due idee in testa: chi sei e cosa leggono gli altri. Da dove vuoi guardare?",
+    "key": "e7e2d6ee68516e2c",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Non c'è una scelta migliore. Sono due modi di guardare lo stesso accesso.",
+    "key": "e6bb7e7c580d2455",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Test autorizzato, in laboratorio. Parti dalle prove che farebbe chiunque: le credenziali che nessuno ha cambiato.",
+    "key": "92f17c34df87a187",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Non hai forzato niente. Hai provato quello che nessuno aveva cambiato.",
+    "key": "c16701816cd4a2ed",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Ora guarda cosa passa nella rete mentre un amministratore fa lo stesso accesso.",
+    "key": "38e9459ed835a59c",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Quell'indirizzo lo conosciamo: è quello che ha provato le porte nel primo giorno. Cosa vedi nel registro?",
+    "key": "2a90ebe55eac63fb",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Tre controlli.",
+    "key": "fddd4a8df5fa4870",
+    "kind": "cyber"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Un servizio può sembrare chiuso bene e avere una chiave sotto lo zerbino. E anche una chiave buona, se la fai passare in chiaro, la può leggere chiunque.",
+    "key": "4a06a35a964756e2",
+    "kind": "cyber"
+  }
+]

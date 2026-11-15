@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+class FJsonObject;
 
 /** Stateful, deliberately limited IOS-style lesson model. It does not execute Cisco IOS. */
 class CLARADAYONE_API FClaraSwitchCLI
@@ -21,11 +22,16 @@ public:
     bool IsSVIUp() const;
     bool IsStartupSaved() const;
     bool IsSSHConfigured() const;
+    bool AuthenticateLocalSSH(const FString& User, const FString& Password) const;
+    FString GetRunningConfigurationFingerprint() const;
     bool IsAwaitingInput() const { return bAwaitingSaveConfirmation || bAwaitingRSA || bAwaitingBanner || bAwaitingReload; }
+    bool IsReadingBanner() const { return bAwaitingBanner; }
     FString ValidateDay2(const FString& ExpectedName, const FString& ExpectedIP, bool IncludeSaved=true) const;
     void ReloadFromStartup();
     void SetLearnedMacTable(const TMap<FString,FString>& Table) { LearnedMacTable=Table; }
     void SetReachableTargets(const TSet<FString>& Targets) { ReachableTargets=Targets; }
+    TSharedRef<FJsonObject> ExportState() const;
+    bool ImportState(const TSharedPtr<FJsonObject>& State);
 
 private:
     enum class EMode : uint8 { UserExec, PrivilegedExec, GlobalConfig, VlanConfig, InterfaceConfig, LineConsole, LineVTY };

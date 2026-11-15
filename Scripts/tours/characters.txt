@@ -1,0 +1,37 @@
+# Verify the three assembled colleagues in the real game. No save writes.
+12 expect cast 4
+0 expect customLuca 0
+0 shot 00-cast-ready
+0.3 pos 235 330 90 -10 65
+2 shot 01-alessia-seated
+0.3 talk Alessia
+2 shot 02-alessia-dialogue
+0.5 skip
+0.2 prop Badge
+0.2 skip
+0.5 pos 665 965 90 -2 90
+2 shot 03-luca
+0.3 talk Luca
+2 shot 04-luca-dialogue
+0.5 skip
+0.5 pos 1195 300 90 -2 85
+2 shot 05-jonny
+0.3 talk Jonny
+2 shot 06-jonny-dialogue
+0.5 skip
+0.3 pickup
+0.3 skip
+0.3 laptop
+0.5 screen terminal
+1.5 shot 07-terminale
+0.3 closelaptop
+0.3 inventory
+1 shot 08-borsa
+0.3 close
+0.3 notebook
+1 shot 09-taccuino
+0.3 close
+0.3 device SW1
+1.5 shot 10-apparato
+0.3 closedevice
+0.5 quit

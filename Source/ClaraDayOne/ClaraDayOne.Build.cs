@@ -6,6 +6,6 @@ public class ClaraDayOne : ModuleRules
     {
         bUseUnity = false;
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-        PublicDependencyModuleNames.AddRange(new[] {"Core", "CoreUObject", "Engine", "InputCore", "Slate", "SlateCore", "UMG", "HTTP", "Json"});
+        PublicDependencyModuleNames.AddRange(new[] {"Core", "CoreUObject", "Engine", "InputCore", "Slate", "SlateCore", "UMG", "HTTP", "Json", "HairStrandsCore"});
     }
 }

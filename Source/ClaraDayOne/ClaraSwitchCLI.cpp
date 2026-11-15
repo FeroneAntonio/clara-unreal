@@ -1,4 +1,6 @@
 #include "ClaraSwitchCLI.h"
+#include "Misc/SecureHash.h"
+#include "Dom/JsonObject.h"
 
 namespace
 {
@@ -87,7 +89,7 @@ FString Description(const FString& Word)
     if (Word == TEXT("write")) return TEXT("Salva la configurazione in uso");
     if (Word == TEXT("memory")) return TEXT("Scrive la copia startup del modello locale");
     if (Word == TEXT("shutdown")) return TEXT("Disabilita amministrativamente l'interfaccia");
-    if (Word == TEXT("no")) return TEXT("Rimuove l'impostazione shutdown supportata");
+    if (Word == TEXT("no")) return TEXT("Rimuove un'impostazione supportata nel contesto corrente");
     if (Word == TEXT("exit")) return TEXT("Torna al livello di configurazione precedente");
     if (Word == TEXT("end")) return TEXT("Torna direttamente a EXEC privilegiato");
     if (Word == TEXT("brief")) return TEXT("Mostra un riepilogo");
@@ -115,6 +117,93 @@ FString DisplayWord(const FString& Word)
 }
 
 FClaraSwitchCLI::FClaraSwitchCLI() { Reset(); }
+
+TSharedRef<FJsonObject> FClaraSwitchCLI::ExportState() const
+{
+    auto WriteConfig=[](const FConfiguration& C)
+    {
+        auto O=MakeShared<FJsonObject>();
+        for(const auto& Field:TArray<TPair<FString,FString>>{
+            {TEXT("hostname"),C.Hostname},{TEXT("enableSecret"),C.EnableSecret},{TEXT("consolePassword"),C.ConsolePassword},
+            {TEXT("vtyPassword"),C.VTYPassword},{TEXT("domain"),C.DomainName},{TEXT("gateway"),C.Gateway},
+            {TEXT("banner"),C.Banner},{TEXT("transport"),C.Transport}})
+            O->SetStringField(Field.Key,Field.Value);
+        for(const auto& Field:TArray<TPair<FString,bool>>{
+            {TEXT("consoleLogin"),C.bConsoleLogin},{TEXT("consoleLocal"),C.bConsoleLoginLocal},{TEXT("vtyLogin"),C.bVTYLogin},
+            {TEXT("vtyLocal"),C.bVTYLoginLocal},{TEXT("passwordEncryption"),C.bPasswordEncryption}})
+            O->SetBoolField(Field.Key,Field.Value);
+        O->SetNumberField(TEXT("rsaBits"),C.RSAKeyBits);O->SetNumberField(TEXT("sshVersion"),C.SSHVersion);
+        TArray<TSharedPtr<FJsonValue>> Vlans,Interfaces;
+        for(int32 V:C.Vlans)Vlans.Add(MakeShared<FJsonValueNumber>(V));
+        for(const auto& Entry:C.Interfaces)
+        {
+            auto I=MakeShared<FJsonObject>();I->SetNumberField(TEXT("vlan"),Entry.Key);
+            I->SetStringField(TEXT("address"),Entry.Value.Address);I->SetStringField(TEXT("mask"),Entry.Value.Mask);
+            I->SetBoolField(TEXT("shutdown"),Entry.Value.bShutdown);Interfaces.Add(MakeShared<FJsonValueObject>(I));
+        }
+        auto Users=MakeShared<FJsonObject>();for(const auto& User:C.Users)Users->SetStringField(User.Key,User.Value);
+        O->SetArrayField(TEXT("vlans"),Vlans);O->SetArrayField(TEXT("interfaces"),Interfaces);O->SetObjectField(TEXT("users"),Users);
+        return O;
+    };
+    auto State=MakeShared<FJsonObject>();State->SetObjectField(TEXT("running"),WriteConfig(Running));State->SetObjectField(TEXT("startup"),WriteConfig(Startup));
+    State->SetNumberField(TEXT("mode"),static_cast<int32>(Mode));State->SetNumberField(TEXT("interface"),CurrentInterface);
+    State->SetBoolField(TEXT("awaitingSave"),bAwaitingSaveConfirmation);State->SetBoolField(TEXT("awaitingRSA"),bAwaitingRSA);
+    State->SetBoolField(TEXT("awaitingBanner"),bAwaitingBanner);State->SetBoolField(TEXT("awaitingReload"),bAwaitingReload);
+    State->SetStringField(TEXT("pendingBanner"),PendingBanner);State->SetNumberField(TEXT("bannerDelimiter"),static_cast<uint32>(BannerDelimiter));
+    return State;
+}
+
+bool FClaraSwitchCLI::ImportState(const TSharedPtr<FJsonObject>& State)
+{
+    if(!State.IsValid())return false;
+    auto ReadConfig=[](const TSharedPtr<FJsonObject>& O,FConfiguration& C)
+    {
+        if(!O.IsValid())return false;
+        for(const auto& Field:TArray<TPair<FString,FString*>>{
+            {TEXT("hostname"),&C.Hostname},{TEXT("enableSecret"),&C.EnableSecret},{TEXT("consolePassword"),&C.ConsolePassword},
+            {TEXT("vtyPassword"),&C.VTYPassword},{TEXT("domain"),&C.DomainName},{TEXT("gateway"),&C.Gateway},
+            {TEXT("banner"),&C.Banner},{TEXT("transport"),&C.Transport}})
+            if(!O->TryGetStringField(Field.Key,*Field.Value)||Field.Value->Len()>8192)return false;
+        for(const auto& Field:TArray<TPair<FString,bool*>>{
+            {TEXT("consoleLogin"),&C.bConsoleLogin},{TEXT("consoleLocal"),&C.bConsoleLoginLocal},{TEXT("vtyLogin"),&C.bVTYLogin},
+            {TEXT("vtyLocal"),&C.bVTYLoginLocal},{TEXT("passwordEncryption"),&C.bPasswordEncryption}})
+            if(!O->TryGetBoolField(Field.Key,*Field.Value))return false;
+        if(!O->TryGetNumberField(TEXT("rsaBits"),C.RSAKeyBits)||!O->TryGetNumberField(TEXT("sshVersion"),C.SSHVersion))return false;
+        const TArray<TSharedPtr<FJsonValue>>* Values=nullptr;
+        if(!O->TryGetArrayField(TEXT("vlans"),Values)||Values->Num()>4094)return false;
+        for(const auto& Value:*Values){int32 V=0;if(!Value->TryGetNumber(V)||V<1||V>4094)return false;C.Vlans.Add(V);}
+        if(!O->TryGetArrayField(TEXT("interfaces"),Values)||Values->Num()>4094)return false;
+        for(const auto& Value:*Values)
+        {
+            const TSharedPtr<FJsonObject>* I=nullptr;int32 V=0;FInterface Interface;
+            if(!Value->TryGetObject(I)||!I->IsValid()||!(*I)->TryGetNumberField(TEXT("vlan"),V)||V<1||V>4094||
+               !(*I)->TryGetStringField(TEXT("address"),Interface.Address)||!(*I)->TryGetStringField(TEXT("mask"),Interface.Mask)||
+               !(*I)->TryGetBoolField(TEXT("shutdown"),Interface.bShutdown))return false;
+            uint32 Parsed=0;
+            if((!Interface.Address.IsEmpty()&&!ParseIPv4(Interface.Address,Parsed))||(!Interface.Mask.IsEmpty()&&!ParseIPv4(Interface.Mask,Parsed)))return false;
+            C.Interfaces.Add(V,Interface);
+        }
+        const TSharedPtr<FJsonObject>* Users=nullptr;
+        if(!O->TryGetObjectField(TEXT("users"),Users)||!Users->IsValid()||(*Users)->Values.Num()>4096)return false;
+        for(const auto& User:(*Users)->Values){FString Secret;if(!User.Value->TryGetString(Secret)||Secret.Len()>8192)return false;C.Users.Add(FString(*User.Key),Secret);}
+        return C.RSAKeyBits>=0&&C.RSAKeyBits<=4096&&C.SSHVersion>=0&&C.SSHVersion<=2;
+    };
+    const TSharedPtr<FJsonObject>* RunningState=nullptr;const TSharedPtr<FJsonObject>* StartupState=nullptr;
+    FClaraSwitchCLI Restored;FConfiguration R,S;int32 SavedMode=0,Delimiter=0;
+    if(!State->TryGetObjectField(TEXT("running"),RunningState)||!State->TryGetObjectField(TEXT("startup"),StartupState)||
+       !ReadConfig(*RunningState,R)||!ReadConfig(*StartupState,S)||
+       !State->TryGetNumberField(TEXT("mode"),SavedMode)||SavedMode<0||SavedMode>static_cast<int32>(EMode::LineVTY)||
+       !State->TryGetNumberField(TEXT("interface"),Restored.CurrentInterface)||Restored.CurrentInterface<1||Restored.CurrentInterface>4094||
+       !State->TryGetBoolField(TEXT("awaitingSave"),Restored.bAwaitingSaveConfirmation)||
+       !State->TryGetBoolField(TEXT("awaitingRSA"),Restored.bAwaitingRSA)||
+       !State->TryGetBoolField(TEXT("awaitingBanner"),Restored.bAwaitingBanner)||
+       !State->TryGetBoolField(TEXT("awaitingReload"),Restored.bAwaitingReload)||
+       !State->TryGetStringField(TEXT("pendingBanner"),Restored.PendingBanner)||Restored.PendingBanner.Len()>8192||
+       !State->TryGetNumberField(TEXT("bannerDelimiter"),Delimiter)||Delimiter<0||Delimiter>65535)return false;
+    Restored.Running=MoveTemp(R);Restored.Startup=MoveTemp(S);Restored.Mode=static_cast<EMode>(SavedMode);
+    Restored.BannerDelimiter=static_cast<TCHAR>(Delimiter);*this=MoveTemp(Restored);
+    return true;
+}
 
 void FClaraSwitchCLI::Reset()
 {
@@ -195,6 +284,7 @@ TArray<FClaraSwitchCLI::FRule> FClaraSwitchCLI::GetRules() const
     if (Mode == EMode::InterfaceConfig)
     {
         Add(TEXT("ip address $ip $mask"), TEXT("address"));
+        Add(TEXT("no ip address"), TEXT("no_address"));
         Add(TEXT("shutdown"), TEXT("shutdown"));
         Add(TEXT("no shutdown"), TEXT("no_shutdown"));
     }
@@ -218,6 +308,7 @@ TArray<FClaraSwitchCLI::FRule> FClaraSwitchCLI::GetRules() const
         Add(TEXT("do show ip interface brief"),TEXT("show_interfaces"));
         Add(TEXT("do show vlan brief"),TEXT("show_vlans"));
         Add(TEXT("do show mac address-table"),TEXT("show_mac"));
+        Add(TEXT("do show mac-address-table"),TEXT("show_mac"));
         Add(TEXT("do ping $ip"),TEXT("ping"));
         Add(TEXT("exit"), TEXT("exit"));
         Add(TEXT("end"), TEXT("end"));
@@ -315,7 +406,7 @@ FString FClaraSwitchCLI::Help(const FString& Prefix) const
 
 FString FClaraSwitchCLI::Complete(const FString& Prefix) const
 {
-    if (bAwaitingSaveConfirmation) return Prefix;
+    if (IsAwaitingInput()) return Prefix;
     TArray<FString> Canonical;
     bool bTrailing = false;
     FString Partial;
@@ -366,6 +457,7 @@ FString FClaraSwitchCLI::Execute(const FString& Input)
     }
     if(bAwaitingReload)
     {
+        if(Clean==TEXT("?"))return Help(Clean);
         if(Clean.Equals(TEXT("no"),ESearchCase::IgnoreCase)||Clean.Equals(TEXT("cancel"),ESearchCase::IgnoreCase))
         {bAwaitingReload=false;return TEXT("Reload annullato.");}
         if(!Clean.IsEmpty()&&!Clean.Equals(TEXT("yes"),ESearchCase::IgnoreCase))return TEXT("Premi Invio per confermare, oppure scrivi no per annullare.");
@@ -454,6 +546,13 @@ FString FClaraSwitchCLI::ApplyRule(const FRule& Rule, const TArray<FString>& Wor
         Interface.Mask = Words[3];
         return FString();
     }
+    if (Action == TEXT("no_address"))
+    {
+        FInterface& Interface = Running.Interfaces.FindChecked(CurrentInterface);
+        Interface.Address.Empty();
+        Interface.Mask.Empty();
+        return FString();
+    }
     if (Action == TEXT("shutdown") || Action == TEXT("no_shutdown"))
     {
         Running.Interfaces.FindChecked(CurrentInterface).bShutdown = Action == TEXT("shutdown");
@@ -512,8 +611,14 @@ FString FClaraSwitchCLI::ApplyRule(const FRule& Rule, const TArray<FString>& Wor
     {
         FString Out=TEXT("          Mac Address Table\nVlan    Mac Address       Type        Ports\n----    -----------       --------    -----\n");
         TArray<FString> Keys;LearnedMacTable.GetKeys(Keys);Keys.Sort();
-        for(const FString& MAC:Keys)Out+=TEXT("--      ")+MAC+TEXT("    DYNAMIC     ")+LearnedMacTable.FindChecked(MAC)+TEXT("\n");
-        return Out+TEXT("\nTabella appresa dal modello di rete locale; VLAN non specificata dalla sorgente.");
+        for(const FString& MAC:Keys)
+        {
+            // IOS scrive il MAC a gruppi di quattro cifre: stesse 12 cifre del PC, separatori diversi.
+            FString Hex=MAC.ToLower();Hex.ReplaceInline(TEXT("-"),TEXT(""));Hex.ReplaceInline(TEXT(":"),TEXT(""));Hex.ReplaceInline(TEXT("."),TEXT(""));
+            const FString Shown=Hex.Len()==12?Hex.Mid(0,4)+TEXT(".")+Hex.Mid(4,4)+TEXT(".")+Hex.Mid(8,4):MAC;
+            Out+=TEXT("   1    ")+Shown+TEXT("    DYNAMIC     ")+LearnedMacTable.FindChecked(MAC)+TEXT("\n");
+        }
+        return Out+FString::Printf(TEXT("Total Mac Addresses for this criterion: %d"),Keys.Num());
     }
     if(Action==TEXT("ping"))
     {
@@ -585,12 +690,25 @@ FString FClaraSwitchCLI::ShowInterfaces() const
     for (int32 Id : Ids)
     {
         const FInterface& Interface = Running.Interfaces.FindChecked(Id);
-        Result += FString::Printf(TEXT("%-22s %-15s YES manual %-21s down\n"),
+        const bool Enabled = !Interface.bShutdown && Running.Vlans.Contains(Id);
+        uint32 Address = 0, Mask = 0;
+        bool ReachablePeer = false;
+        if (Enabled && ParseIPv4(Interface.Address, Address) && ParseIPv4(Interface.Mask, Mask))
+            for (const FString& Target : ReachableTargets)
+            {
+                uint32 Peer = 0;
+                if (ParseIPv4(Target, Peer) && Peer != Address && (Peer & Mask) == (Address & Mask))
+                { ReachablePeer = true; break; }
+            }
+        // shortcut: peer reachability is the lab's link evidence; use per-VLAN port state when modeled.
+        Result += FString::Printf(TEXT("%-22s %-15s YES %-6s %-21s %s\n"),
             *FString::Printf(TEXT("Vlan%d"), Id),
             Interface.Address.IsEmpty() ? TEXT("unassigned") : *Interface.Address,
-            Interface.bShutdown ? TEXT("administratively down") : TEXT("up"));
+            Interface.Address.IsEmpty() ? TEXT("unset") : TEXT("manual"),
+            Interface.bShutdown ? TEXT("administratively down") : Enabled ? TEXT("up") : TEXT("down"),
+            ReachablePeer ? TEXT("up") : TEXT("down"));
     }
-    return Result + TEXT("\nModello locale: Protocol non sale senza porte attive nella VLAN. Lo stato operativo e il traffico non sono modellati da questa CLI.");
+    return Result + TEXT("\nModello locale: Protocol up indica un peer raggiungibile nella subnet della SVI. Porte VLAN e spanning tree non sono simulati.");
 }
 
 FString FClaraSwitchCLI::ShowVlans() const
@@ -648,12 +766,30 @@ bool FClaraSwitchCLI::IsSVIUp() const
 bool FClaraSwitchCLI::IsStartupSaved() const{return ConfigurationIdentity(Running)==ConfigurationIdentity(Startup)&&!bAwaitingSaveConfirmation;}
 bool FClaraSwitchCLI::IsSSHConfigured() const
 {return !Running.DomainName.IsEmpty()&&Running.RSAKeyBits>=2048&&Running.SSHVersion==2&&!Running.Users.IsEmpty()&&Running.bVTYLoginLocal&&Running.Transport==TEXT("ssh");}
+bool FClaraSwitchCLI::AuthenticateLocalSSH(const FString& User,const FString& Password) const
+{
+    const FString* Secret=nullptr;
+    for(const auto& Entry:Running.Users)
+        if(Entry.Key.Equals(User,ESearchCase::CaseSensitive)){Secret=&Entry.Value;break;}
+    return IsSSHConfigured()&&Secret&&!Secret->IsEmpty()&&Secret->Equals(Password,ESearchCase::CaseSensitive);
+}
+FString FClaraSwitchCLI::GetRunningConfigurationFingerprint() const
+{
+    // Evidence must expire when the configuration changes, including redacted credentials.
+    const FString Identity=ConfigurationIdentity(Running);const FTCHARToUTF8 Bytes(*Identity);
+    return FMD5::HashBytes(reinterpret_cast<const uint8*>(Bytes.Get()),Bytes.Length());
+}
 FString FClaraSwitchCLI::ValidateDay2(const FString& ExpectedName,const FString& ExpectedIP,bool IncludeSaved) const
 {
     if(!Running.Hostname.Equals(ExpectedName,ESearchCase::IgnoreCase))return TEXT("Il nome dello switch non corrisponde al ticket.");
     if(GetManagementAddress()!=ExpectedIP)return TEXT("L'indirizzo di gestione non corrisponde al ticket.");
+    for(const auto& Entry:Running.Interfaces)if(Entry.Value.Address==ExpectedIP&&Entry.Value.Mask!=TEXT("255.255.255.0"))
+        return TEXT("La mask di gestione richiesta è 255.255.255.0 (/24).");
     if(!IsSVIUp())return TEXT("La SVI deve appartenere a una VLAN esistente ed essere abilitata amministrativamente.");
     if(Running.Gateway.IsEmpty())return TEXT("Manca il gateway predefinito di gestione.");
+    int32 LastDot=INDEX_NONE;
+    if(ExpectedIP.FindLastChar(TEXT('.'),LastDot)&&Running.Gateway!=ExpectedIP.Left(LastDot+1)+TEXT("1"))
+        return TEXT("Il gateway richiesto è l'indirizzo .1 della rete di gestione.");
     if(Running.EnableSecret.IsEmpty())return TEXT("Manca enable secret per proteggere l'accesso privilegiato.");
     if(Running.ConsolePassword.IsEmpty()||!Running.bConsoleLogin||Running.bConsoleLoginLocal)return TEXT("La console richiede password e login per questo incarico.");
     if(!IsSSHConfigured())return TEXT("Verifica dominio, RSA almeno 2048 bit, SSH v2, utente locale e VTY con login local e solo SSH.");
@@ -749,6 +885,73 @@ bool FClaraSwitchHelpTest::RunTest(const FString& Parameters)
     return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FClaraSwitchInteractiveEditingTest, "Clara.SwitchCLI.InteractivePromptEditing", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FClaraSwitchInteractiveEditingTest::RunTest(const FString& Parameters)
+{
+    FClaraSwitchCLI CLI;
+    for (const TCHAR* Command : {TEXT("enable"), TEXT("conf t"), TEXT("hostname LAB"), TEXT("ip domain-name clara.local"), TEXT("crypto key generate rsa")}) CLI.Execute(Command);
+    TestTrue(TEXT("RSA prompt is waiting"), CLI.IsAwaitingInput());
+    TestEqual(TEXT("Tab cannot insert a config command into RSA answer"), CLI.Complete(TEXT("en")), FString(TEXT("en")));
+    CLI.Execute(TEXT("1536"));
+    TestTrue(TEXT("Unsupported RSA size keeps prompt active"), CLI.IsAwaitingInput());
+    CLI.Execute(TEXT("2048"));
+    TestFalse(TEXT("Accepted RSA size closes prompt"), CLI.IsAwaitingInput());
+    CLI.Execute(TEXT("banner motd #"));
+    TestTrue(TEXT("Banner explicitly exposes literal input context"), CLI.IsReadingBanner());
+    TestEqual(TEXT("Tab leaves banner text untouched"), CLI.Complete(TEXT("en")), FString(TEXT("en")));
+    CLI.Execute(TEXT("Accesso autorizzato? #"));
+    TestFalse(TEXT("Closing delimiter restores command context"), CLI.IsReadingBanner());
+    TestTrue(TEXT("Question mark inside banner is retained"), CLI.Execute(TEXT("do show run")).Contains(TEXT("Accesso autorizzato?")));
+    CLI.Execute(TEXT("end"));CLI.Execute(TEXT("copy run start"));
+    TestEqual(TEXT("Tab leaves copy destination untouched"), CLI.Complete(TEXT("sta")), FString(TEXT("sta")));
+    CLI.Execute(TEXT(""));CLI.Execute(TEXT("reload"));
+    TestEqual(TEXT("Tab cannot turn reload answer into a command"), CLI.Complete(TEXT("sh")), FString(TEXT("sh")));
+    TestTrue(TEXT("Reload question mark explains confirmation"), CLI.Execute(TEXT("?")).Contains(TEXT("<cr>")));
+    TestTrue(TEXT("Help leaves reload pending"), CLI.IsAwaitingInput());
+    CLI.Execute(TEXT("no"));
+    TestFalse(TEXT("Reload can still be cancelled after help"), CLI.IsAwaitingInput());
+    TestEqual(TEXT("Command completion resumes after prompt"), CLI.Complete(TEXT("conf t")), FString(TEXT("configure terminal ")));
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FClaraSwitchInterfaceEvidenceTest, "Clara.SwitchCLI.InterfaceEvidenceAndAddressRemoval", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FClaraSwitchInterfaceEvidenceTest::RunTest(const FString& Parameters)
+{
+    FClaraSwitchCLI CLI;ConfigureClaraSwitch(CLI);
+    auto Protocol = [&CLI](const FString& Name)
+    {
+        TArray<FString> Rows;CLI.Execute(TEXT("show ip interface brief")).ParseIntoArrayLines(Rows);
+        for (const FString& Row : Rows)
+            if (Row.StartsWith(Name + TEXT(" ")))
+            {TArray<FString> Words;Row.ParseIntoArrayWS(Words);return Words.Last();}
+        return FString(TEXT("missing"));
+    };
+    TestEqual(TEXT("No link evidence never reports protocol up"), Protocol(TEXT("Vlan10")), FString(TEXT("down")));
+    TSet<FString> Peers;Peers.Add(TEXT("192.168.10.20"));CLI.SetReachableTargets(Peers);
+    TestTrue(TEXT("Injected reachable peer supports IOS ping"), CLI.Execute(TEXT("ping 192.168.10.20")).Contains(TEXT("100 percent")));
+    TestEqual(TEXT("Same local evidence is visible in interface protocol"), Protocol(TEXT("Vlan10")), FString(TEXT("up")));
+    Peers.Empty();Peers.Add(TEXT("192.168.20.20"));CLI.SetReachableTargets(Peers);
+    TestEqual(TEXT("Evidence from another subnet does not activate this SVI"), Protocol(TEXT("Vlan10")), FString(TEXT("down")));
+    Peers.Empty();Peers.Add(TEXT("192.168.10.20"));CLI.SetReachableTargets(Peers);
+    CLI.Execute(TEXT("conf t"));CLI.Execute(TEXT("int vlan10"));CLI.Execute(TEXT("shutdown"));CLI.Execute(TEXT("end"));
+    TestEqual(TEXT("Administrative shutdown overrides reachable targets"), Protocol(TEXT("Vlan10")), FString(TEXT("down")));
+    CLI.Execute(TEXT("conf t"));CLI.Execute(TEXT("int vlan10"));CLI.Execute(TEXT("no shut"));
+    TestTrue(TEXT("Address removal is discoverable by contextual help"), CLI.Help(TEXT("no ip ")).Contains(TEXT("address")));
+    TestTrue(TEXT("Unexpected argument does not remove address"), CLI.Execute(TEXT("no ip address extra")).Contains(TEXT("Invalid input")));
+    TestEqual(TEXT("Invalid removal keeps original address"), CLI.GetManagementAddress(), FString(TEXT("192.168.10.2")));
+    TestTrue(TEXT("Abbreviated removal succeeds"), CLI.Execute(TEXT("no ip add")).IsEmpty());
+    TestTrue(TEXT("Management address is removed"), CLI.GetManagementAddress().IsEmpty());
+    TestFalse(TEXT("Unaddressed SVI cannot satisfy the local network gate"), CLI.IsSVIUp());
+    CLI.Execute(TEXT("end"));
+    TestEqual(TEXT("Unaddressed SVI has no IP reachability evidence"), Protocol(TEXT("Vlan10")), FString(TEXT("down")));
+    TestTrue(TEXT("Running configuration exposes the removed address"), CLI.Execute(TEXT("show run")).Contains(TEXT("interface Vlan10\n no ip address")));
+    TMap<FString,FString> MAC;MAC.Add(TEXT("02aa.0000.0010"),TEXT("Gi1/0/3"));CLI.SetLearnedMacTable(MAC);
+    CLI.Execute(TEXT("conf t"));
+    TestEqual(TEXT("Hyphenated MAC alias works under do too"), CLI.Execute(TEXT("do show mac-address-table")), CLI.Execute(TEXT("do show mac address-table")));
+    TestEqual(TEXT("Do verification preserves global config mode"), CLI.GetPrompt(), FString(TEXT("AULA-01(config)#")));
+    return true;
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FClaraSwitchValidationTest, "Clara.SwitchCLI.InvalidValuesNeverMutate", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
 bool FClaraSwitchValidationTest::RunTest(const FString& Parameters)
 {
@@ -804,6 +1007,22 @@ bool FClaraSwitchSnapshotTest::RunTest(const FString& Parameters)
     TestFalse(TEXT("Reset removes learned VLAN config"), Startup.Contains(TEXT("vlan 10")));
     return true;
 }
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FClaraSwitchPersistenceTest, "Clara.SwitchCLI.CheckpointPreservesUnsavedWork", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FClaraSwitchPersistenceTest::RunTest(const FString& Parameters)
+{
+    FClaraSwitchCLI Original,Restored;ConfigureClaraSwitch(Original);Original.Execute(TEXT("write memory"));
+    Original.Execute(TEXT("conf t"));Original.Execute(TEXT("hostname IN-CORSO"));Original.Execute(TEXT("end"));Original.Execute(TEXT("copy run start"));
+    TestTrue(TEXT("Checkpoint restores"),Restored.ImportState(Original.ExportState()));
+    TestEqual(TEXT("Pending confirmation remains pending"),Restored.GetPrompt(),Original.GetPrompt());
+    TestFalse(TEXT("App checkpoint does not perform IOS write memory"),Restored.IsStartupSaved());
+    Restored.Execute(TEXT(""));TestTrue(TEXT("Confirmation after restore saves"),Restored.IsStartupSaved());
+    Restored.ImportState(Original.ExportState());Restored.ReloadFromStartup();
+    TestEqual(TEXT("Reboot restores original startup"),Restored.GetHostname(),FString(TEXT("AULA-01")));
+    auto Broken=Original.ExportState();Broken->SetNumberField(TEXT("mode"),99);
+    TestFalse(TEXT("Invalid checkpoint rejected"),Restored.ImportState(Broken));
+    TestEqual(TEXT("Rejected checkpoint cannot alter running state"),Restored.GetHostname(),FString(TEXT("AULA-01")));
+    return true;
+}
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FClaraSwitchDay2Test, "Clara.SwitchCLI.DayTwoSecurityAndReload", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
 bool FClaraSwitchDay2Test::RunTest(const FString& Parameters)
 {
@@ -814,10 +1033,29 @@ bool FClaraSwitchDay2Test::RunTest(const FString& Parameters)
     for(const TCHAR* C:{TEXT("username tecnico secret Personale1"),TEXT("ip ssh version 2"),TEXT("line vty 0 15"),TEXT("login local"),TEXT("transport input ssh"),TEXT("exit"),TEXT("banner motd #Accesso autorizzato#"),TEXT("service password-encryption"),TEXT("ip default-gateway 192.168.10.1")})CLI.Execute(C);
     TestTrue(TEXT("do show works without leaving global configuration"),CLI.Execute(TEXT("do sh run")).Contains(TEXT("hostname AULA-02")));
     TestTrue(TEXT("SSH requires actual modeled prerequisites"),CLI.IsSSHConfigured());
+    TestTrue(TEXT("Configured local user authenticates with exact password"),CLI.AuthenticateLocalSSH(TEXT("tecnico"),TEXT("Personale1")));
+    TestFalse(TEXT("Wrong local user is rejected"),CLI.AuthenticateLocalSSH(TEXT("admin"),TEXT("Personale1")));
+    TestFalse(TEXT("Local username is case sensitive"),CLI.AuthenticateLocalSSH(TEXT("Tecnico"),TEXT("Personale1")));
+    TestFalse(TEXT("Wrong password is rejected"),CLI.AuthenticateLocalSSH(TEXT("tecnico"),TEXT("personale1")));
+    const FString SSHFingerprint=CLI.GetRunningConfigurationFingerprint();
+    CLI.Execute(TEXT("do show running-config"));
+    TestEqual(TEXT("Read-only inspection preserves SSH evidence fingerprint"),CLI.GetRunningConfigurationFingerprint(),SSHFingerprint);
+    CLI.Execute(TEXT("username tecnico secret Diversa2"));
+    TestNotEqual(TEXT("Secret changes invalidate prior authentication evidence"),CLI.GetRunningConfigurationFingerprint(),SSHFingerprint);
+    TestFalse(TEXT("Old password stops working immediately"),CLI.AuthenticateLocalSSH(TEXT("tecnico"),TEXT("Personale1")));
+    CLI.Execute(TEXT("username tecnico secret Personale1"));
+    CLI.Execute(TEXT("line vty 0 15"));CLI.Execute(TEXT("transport input telnet"));
+    TestFalse(TEXT("A valid password cannot bypass SSH-disabled VTY"),CLI.AuthenticateLocalSSH(TEXT("tecnico"),TEXT("Personale1")));
+    CLI.Execute(TEXT("transport input ssh"));CLI.Execute(TEXT("exit"));
     TestFalse(TEXT("Day 2 cannot complete before save"),CLI.ValidateDay2(TEXT("AULA-02"),TEXT("192.168.10.3")).IsEmpty());
     TestTrue(TEXT("Pre-reboot challenge can inspect correct unsaved running state"),CLI.ValidateDay2(TEXT("AULA-02"),TEXT("192.168.10.3"),false).IsEmpty());
     CLI.Execute(TEXT("end"));CLI.Execute(TEXT("write memory"));
     TestTrue(TEXT("Complete security state validates"),CLI.ValidateDay2(TEXT("AULA-02"),TEXT("192.168.10.3")).IsEmpty());
+    CLI.Execute(TEXT("conf t"));CLI.Execute(TEXT("int vlan10"));CLI.Execute(TEXT("ip address 192.168.10.3 255.255.0.0"));
+    TestFalse(TEXT("A different valid mask does not satisfy the /24 ticket"),CLI.ValidateDay2(TEXT("AULA-02"),TEXT("192.168.10.3"),false).IsEmpty());
+    CLI.Execute(TEXT("ip address 192.168.10.3 255.255.255.0"));CLI.Execute(TEXT("exit"));CLI.Execute(TEXT("ip default-gateway 192.168.20.1"));
+    TestFalse(TEXT("An unrelated gateway does not satisfy the ticket"),CLI.ValidateDay2(TEXT("AULA-02"),TEXT("192.168.10.3"),false).IsEmpty());
+    CLI.Execute(TEXT("ip default-gateway 192.168.10.1"));CLI.Execute(TEXT("end"));
     CLI.Execute(TEXT("conf t"));CLI.Execute(TEXT("enable secret Changed1"));
     TestFalse(TEXT("Redacted secrets still affect startup snapshot equality"),CLI.IsStartupSaved());
     CLI.Execute(TEXT("end"));CLI.Execute(TEXT("reload"));TestTrue(TEXT("Reload requires confirmation"),CLI.IsAwaitingInput());CLI.Execute(TEXT(""));

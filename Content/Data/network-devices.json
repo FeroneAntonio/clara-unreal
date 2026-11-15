@@ -728,9 +728,9 @@
           "label": "Ethernet PC2",
           "kind": "ethernet",
           "position": [
-            0,
-            -21,
-            24
+            5,
+            -21.1,
+            39
           ],
           "normal": [
             0,
@@ -741,7 +741,7 @@
       ]
     },
     "FiberUplink": {
-      "displayName": "Distribuzione ottica laboratorio",
+      "displayName": "Rack della fibra",
       "mesh": "/Game/NetworkAssets/SM_Cisco2960X.SM_Cisco2960X",
       "size": [
         44.5,

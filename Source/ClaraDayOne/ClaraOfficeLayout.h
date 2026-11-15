@@ -14,8 +14,12 @@ public:
     AClaraOfficeLayout();
     virtual void BeginPlay() override;
     void ShowPlan(bool bPlan);
+    bool IsBuildReady() const {return bBuildReady;}
     int32 GetZoneCount() const { return 5; }
 private:
+    int32 BuildStage=0;
+    bool bBuildReady=false;
+    void BuildNextStage();
     UStaticMeshComponent* Shape(const TCHAR* Name, FVector P, FVector Size, FLinearColor C, bool bSolid = true, FRotator R = FRotator::ZeroRotator, UStaticMesh* Mesh = nullptr);
     void Text(const FString& Value, FVector P, float Size = 6, FRotator R = FRotator(0,-90,0), FColor C = FColor(35,65,65));
     UMaterialInstanceDynamic* Mat(FLinearColor C);

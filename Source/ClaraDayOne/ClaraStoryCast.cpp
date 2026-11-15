@@ -1,9 +1,13 @@
 #include "ClaraStoryCast.h"
+#include "ClaraFrontEnd.h"
+#include "TimerManager.h"
 #include "ClaraStoryDirector.h"
 #include "Components/PoseableMeshComponent.h"
 #include "EngineUtils.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/Pawn.h"
+#include "GroomAsset.h"
+#include "GroomComponent.h"
 
 #include "Animation/AnimSequence.h"
 #include "Components/BoxComponent.h"
@@ -17,6 +21,8 @@
 #include "Engine/World.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Materials/MaterialInterface.h"
+#include "Misc/CommandLine.h"
+#include "Misc/Parse.h"
 
 namespace
 {
@@ -65,7 +71,7 @@ void AClaraStoryNPC::Initialize(const FString& Id, const FString& Name, const FS
     RoleDescription = RoleName;
     Tags.AddUnique(FName(*(TEXT("NPC_") + Id)));
     Interaction->ComponentTags.AddUnique(FName(*(TEXT("StoryTarget=") + Id)));
-    Nameplate->SetText(FText::FromString(Name + TEXT("\n") + RoleName + TEXT("\nPROVVISORIO")));
+    Nameplate->SetText(FText::FromString(Name + TEXT("\n") + RoleName));
     auto* Mesh = LoadObject<USkeletalMesh>(nullptr, bUseQuinn
         ? TEXT("/Game/Characters/Mannequins/Meshes/SKM_Quinn_Simple.SKM_Quinn_Simple")
         : TEXT("/Game/Characters/Mannequins/Meshes/SKM_Manny_Simple.SKM_Manny_Simple"));
@@ -80,7 +86,7 @@ void AClaraStoryNPC::Initialize(const FString& Id, const FString& Name, const FS
     IdleAnimation = LoadObject<UAnimSequence>(nullptr, TEXT("/Game/Characters/Mannequins/Anims/Unarmed/MM_Idle.MM_Idle"));
     if (IdleAnimation) Mannequin->PlayAnimation(IdleAnimation, true);
     if (Id==TEXT("Luca")) WalkAnimation=LoadObject<UAnimSequence>(nullptr,TEXT("/Game/Characters/Mannequins/Anims/Unarmed/Walk/MF_Unarmed_Walk_Fwd.MF_Unarmed_Walk_Fwd"));
-    SetActorTickEnabled(Id==TEXT("Luca"));
+    SetActorTickEnabled(true);
     for (int32 Index = 0; Index < Mannequin->GetNumMaterials(); ++Index)
     {
         auto* Parent = Mannequin->GetMaterial(Index);
@@ -99,9 +105,223 @@ void AClaraStoryNPC::Initialize(const FString& Id, const FString& Name, const FS
         }
     }
     if(Id==TEXT("Alessia")) ConfigureSeatedPose(Mesh,Scale);
+    AttachMetaHuman(Id==TEXT("Jonny") ? TEXT("Jonathan") : Id==TEXT("Gaia") ? TEXT("Alessia") : Id, SeatedPose ? static_cast<USkinnedMeshComponent*>(SeatedPose.Get()) : Mannequin.Get());
 #if WITH_EDITOR
-    SetActorLabel(Name + TEXT(" - manichino storia provvisorio"));
+    SetActorLabel(Name + (MetaHuman ? TEXT(" - MetaHuman") : TEXT(" - manichino storia provvisorio")));
 #endif
+    if (Id == TEXT("Gaia")) SetStoryVisible(false);
+}
+
+bool AClaraStoryNPC::AttachOfficeCharacter(const FString& AssetName)
+{
+    const FString Path = FString::Printf(TEXT("/Game/Characters/OfficeCast/BP_TNES_%sOffice.BP_TNES_%sOffice_C"), *AssetName, *AssetName);
+    UClass* Class = StaticLoadClass(AActor::StaticClass(), nullptr, *Path, nullptr, LOAD_NoWarn | LOAD_Quiet);
+    if (!Class) return false;
+    auto* Idle = LoadObject<UAnimSequence>(nullptr, TEXT("/Game/Characters/OfficeCast/Animations/MTN_N_Idle.MTN_N_Idle"));
+    auto* Walk = LoadObject<UAnimSequence>(nullptr, TEXT("/Game/Characters/OfficeCast/Animations/MTN_N_Walk_InPlace.MTN_N_Walk_InPlace"));
+    if (!Idle || !Walk)
+    {
+        UE_LOG(LogTemp, Error, TEXT("TNES_OFFICE_CAST: missing native crowd animations for %s"), *AssetName);
+        return false;
+    }
+    FActorSpawnParameters Parameters;
+    Parameters.Owner = this;
+    Parameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    MetaHuman = GetWorld()->SpawnActor<AActor>(Class, GetActorTransform(), Parameters);
+    if (!MetaHuman) return false;
+    TInlineComponentArray<USkeletalMeshComponent*> Meshes(MetaHuman.Get());
+    for (USkeletalMeshComponent* Part : Meshes)
+        if (const USkeletalMesh* Mesh = Part->GetSkeletalMeshAsset(); Mesh && Mesh->GetName() == TEXT("m_tal_nrw_base"))
+            OfficeAnimationRoot = Part;
+    if (!OfficeAnimationRoot)
+    {
+        UE_LOG(LogTemp, Error, TEXT("TNES_OFFICE_CAST: %s has no native animation root"), *AssetName);
+        MetaHuman->Destroy();
+        MetaHuman = nullptr;
+        return false;
+    }
+    // Preserve Epic's native body/clothes/face bindings and corrective pose graph.
+    MetaHuman->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+    MetaHuman->SetActorRelativeScale3D(FVector::OneVector);
+    TInlineComponentArray<UPrimitiveComponent*> Primitives(MetaHuman.Get());
+    for (UPrimitiveComponent* Part : Primitives) Part->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    IdleAnimation = Idle;
+    WalkAnimation = Walk;
+    OfficeAnimationRoot->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
+    OfficeAnimationRoot->bEnableUpdateRateOptimizations = false;
+    OfficeAnimationRoot->SetComponentTickEnabled(true);
+    OfficeAnimationRoot->PlayAnimation(IdleAnimation, true);
+    Mannequin->SetVisibility(false);
+    Mannequin->SetComponentTickEnabled(false);
+    Tags.Remove(TEXT("StoryPlaceholder"));
+    UE_LOG(LogTemp, Display, TEXT("TNES_OFFICE_CAST: %s -> %s; native assembly, clothes, shoes and animations"), *AssetName, *Path);
+    return true;
+}
+
+void AClaraStoryNPC::AttachMetaHuman(const FString& AssetName, USkinnedMeshComponent* Leader)
+{
+    if (FParse::Param(FCommandLine::Get(), TEXT("ClaraMannequins"))) return;
+    if ((AssetName == TEXT("Luca") || AssetName == TEXT("Jonathan")) && AttachOfficeCharacter(AssetName)) return;
+    const FString ClassPath = FString::Printf(TEXT("/Game/MetaHumans/%s/BP_%s.BP_%s_C"), *AssetName, *AssetName, *AssetName);
+    UClass* Class = StaticLoadClass(AActor::StaticClass(), nullptr, *ClassPath, nullptr, LOAD_NoWarn | LOAD_Quiet);
+    if (!Class || !Leader)
+    {
+        if (CharacterId != TEXT("Gaia"))
+            UE_LOG(LogTemp, Error, TEXT("CLARA_METAHUMAN: required character %s could not load %s"), *CharacterId, *ClassPath);
+        return;
+    }
+    FActorSpawnParameters Parameters;
+    Parameters.Owner = this;
+    Parameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    MetaHuman = GetWorld()->SpawnActor<AActor>(Class, Leader->GetComponentTransform(), Parameters);
+    if (!MetaHuman) return;
+    MetaHuman->AttachToComponent(Leader, FAttachmentTransformRules::SnapToTargetIncludingScale);
+    TInlineComponentArray<UPrimitiveComponent*> Primitives(MetaHuman.Get());
+    for (UPrimitiveComponent* Primitive : Primitives) Primitive->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    TInlineComponentArray<USkeletalMeshComponent*> Meshes(MetaHuman.Get());
+    USkeletalMeshComponent* Body = nullptr;
+    USkeletalMeshComponent* Face = nullptr;
+    for (USkeletalMeshComponent* Part : Meshes)
+    {
+        const USkeletalMesh* Mesh = Part->GetSkeletalMeshAsset();
+        if (!Mesh) continue;
+        if (Part->GetFName() == TEXT("Body") || Mesh->GetName().EndsWith(TEXT("_BodyMesh"))) Body = Part;
+        if (Part->GetFName() == TEXT("Face") || Mesh->GetName().EndsWith(TEXT("_FaceMesh"))) Face = Part;
+    }
+    if (!Body || !Face)
+    {
+        UE_LOG(LogTemp, Error, TEXT("CLARA_METAHUMAN: %s has no valid Body/Face mesh"), *AssetName);
+        MetaHuman->Destroy();
+        MetaHuman = nullptr;
+        return;
+    }
+    Body->SetLeaderPoseComponent(Leader, true);
+    // CopyPoseFromMesh only follows skeletal leaders, not the seated poseable mesh.
+    // A direct face leader keeps Alessia's neutral face aligned with her seated head.
+    if (SeatedPose) Face->SetLeaderPoseComponent(Leader, true);
+    const FLinearColor Shirt = CharacterId == TEXT("Alessia") ? FLinearColor(.80f,.78f,.74f)
+        : CharacterId == TEXT("Luca") ? FLinearColor(.30f,.45f,.62f) : FLinearColor(.035f,.035f,.04f);
+    const FLinearColor Trousers = CharacterId == TEXT("Alessia") ? FLinearColor(.02f,.025f,.04f)
+        : CharacterId == TEXT("Luca") ? FLinearColor(.05f,.05f,.055f) : FLinearColor(.05f,.08f,.15f);
+    int32 TintedMaterials = 0;
+    for (USkeletalMeshComponent* Part : Meshes)
+    {
+        for (int32 Slot = 0; Slot < Part->GetNumMaterials(); ++Slot)
+        {
+            UMaterialInterface* Material = Part->GetMaterial(Slot);
+            if (!Material || !Material->GetName().Contains(TEXT("DefaultGarment"))) continue;
+            TArray<FMaterialParameterInfo> ParametersInfo;
+            TArray<FGuid> ParameterIds;
+            Material->GetAllVectorParameterInfo(ParametersInfo, ParameterIds);
+            UMaterialInstanceDynamic* Instance = nullptr;
+            for (const FMaterialParameterInfo& Info : ParametersInfo)
+            {
+                if (!Info.Name.ToString().StartsWith(TEXT("diffuse_color"))) continue;
+                if (!Instance) Instance = Part->CreateDynamicMaterialInstance(Slot);
+                if (Instance) Instance->SetVectorParameterValueByInfo(Info,
+                    Material->GetName().Contains(TEXT("Shirt")) ? Shirt : Trousers);
+            }
+            if (Instance) ++TintedMaterials;
+        }
+    }
+    // The hidden driver still updates every frame for the visible body and face.
+    Mannequin->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
+    Mannequin->bEnableUpdateRateOptimizations = false;
+    Leader->SetVisibility(false);
+    Mannequin->SetVisibility(false);
+    Tags.Remove(TEXT("StoryPlaceholder"));
+    Nameplate->SetText(FText::FromString(DisplayName + TEXT("\n") + RoleDescription));
+    // Personal likeness is still being fitted; the assembled preset is the playable default.
+    if (CharacterId == TEXT("Luca") && FParse::Param(FCommandLine::Get(), TEXT("ClaraPersonalLuca")))
+        AttachCustomLucaHead(Leader, Face);
+    UE_LOG(LogTemp, Display, TEXT("CLARA_METAHUMAN: %s -> %s; body=%s face=%s leader=%s; tinted materials=%d"),
+        *CharacterId, *ClassPath, *Body->GetName(), *Face->GetName(), *Leader->GetName(), TintedMaterials);
+}
+
+void AClaraStoryNPC::AttachCustomLucaHead(USkinnedMeshComponent* Leader, USkeletalMeshComponent* Face)
+{
+    auto* HeadMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Game/Luca/SM_Luca_Testa.SM_Luca_Testa"), nullptr, LOAD_NoWarn | LOAD_Quiet);
+    auto* HairAsset = LoadObject<UGroomAsset>(nullptr, TEXT("/Game/Luca/GR_Luca_Capelli.GR_Luca_Capelli"), nullptr, LOAD_NoWarn | LOAD_Quiet);
+    const FName NoseBone(TEXT("FACIAL_C_NoseTip"));
+    if (!HeadMesh || !HairAsset || !Face || Face->GetBoneIndex(NoseBone) == INDEX_NONE || Face->GetBoneIndex(TEXT("head")) == INDEX_NONE)
+    {
+        UE_LOG(LogTemp, Error, TEXT("CLARA_CUSTOM_LUCA: personal head, groom or facial anchor missing"));
+        return;
+    }
+    Mannequin->TickAnimation(0.f, false);
+    Mannequin->RefreshBoneTransforms();
+    Face->TickAnimation(0.f, false);
+    Face->RefreshBoneTransforms();
+    // Head and groom share the imported frame: centimetres, forward +Y, measured nose tip.
+    const FVector SourceNose(-.1f, 12.9f, .3f);
+    const FVector Scale = Leader->GetComponentScale();
+    const FQuat Rotation = Leader->GetComponentQuat();
+    const FVector Nose = Face->GetBoneLocation(NoseBone);
+    FTransform Placement(Rotation, Nose - Rotation.RotateVector(SourceNose * Scale), Scale);
+    // Centre the measured open neck ring on the body's neck, preserving the vertical overlap.
+    const FVector SourceNeck(-.094f, -2.525f, -14.947f);
+    const FVector Neck = Leader->GetBoneLocation(TEXT("neck_01"));
+    const FVector Ring = Placement.TransformPosition(SourceNeck);
+    Placement.AddToTranslation(FVector(Neck.X - Ring.X, Neck.Y - Ring.Y, 0));
+    auto* Head = NewObject<UStaticMeshComponent>(this, TEXT("LucaPersonalHead"));
+    AddInstanceComponent(Head);
+    Head->SetStaticMesh(HeadMesh);
+    if (auto* Skin = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Luca/M_Luca_Pelle.M_Luca_Pelle"))) Head->SetMaterial(0, Skin);
+    Head->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    Head->SetupAttachment(Leader, TEXT("head"));
+    Head->RegisterComponent();
+    Head->SetWorldTransform(Placement);
+    auto* Hair = NewObject<UGroomComponent>(this, TEXT("LucaPersonalHair"));
+    AddInstanceComponent(Hair);
+    Hair->SetupAttachment(Head);
+    Hair->SetGroomAsset(HairAsset);
+    if (auto* HairMaterial = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Luca/M_Luca_Capelli.M_Luca_Capelli"))) Hair->SetMaterial(0, HairMaterial);
+    Hair->SimulationSettings.bOverrideSettings = true;
+    Hair->SimulationSettings.SolverSettings.bEnableSimulation = false;
+    Hair->SetEnableSimulation(false);
+    Hair->SetForcedLOD(0);
+    Hair->SetHairWidth(.03f);
+    Hair->SetHairRootScale(1.15f);
+    Hair->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    Hair->RegisterComponent();
+    // The Face asset also owns the neck and upper chest; retain those below the personal head.
+    Face->SetVisibility(true);
+    Face->SetHiddenInGame(false);
+    Face->HideBoneByName(TEXT("head"), PBO_None);
+    TInlineComponentArray<UGroomComponent*> PresetGrooms(MetaHuman.Get());
+    for (UGroomComponent* PresetGroom : PresetGrooms)
+    {
+        PresetGroom->SetVisibility(false, true);
+        PresetGroom->SetHiddenInGame(true, true);
+        PresetGroom->SetComponentTickEnabled(false);
+        PresetGroom->SetCastShadow(false);
+    }
+    Head->SetVisibility(true, true);
+    Head->SetHiddenInGame(false, true);
+    Head->PrestreamTextures(30.f, true);
+    bCustomLucaHead = true;
+    TInlineComponentArray<USkeletalMeshComponent*> VisualParts(MetaHuman.Get());
+    for (USkeletalMeshComponent* Part : VisualParts)
+    {
+        const USkeletalMesh* Mesh = Part->GetSkeletalMeshAsset();
+        const FBoxSphereBounds Bounds = Mesh ? Mesh->GetImportedBounds() : FBoxSphereBounds(EForceInit::ForceInit);
+        UE_LOG(LogTemp, Display, TEXT("CLARA_CUSTOM_LUCA_PART: component=%s mesh=%s visible=%d hidden=%d ref center=%s extent=%s"),
+            *Part->GetName(), *GetNameSafe(Mesh), Part->IsVisible(), Part->bHiddenInGame,
+            *Bounds.Origin.ToCompactString(), *Bounds.BoxExtent.ToCompactString());
+        if (Part->GetFName() == TEXT("Body"))
+            UE_LOG(LogTemp, Display, TEXT("CLARA_CUSTOM_LUCA_NECK: body neck01=%s head open-ring=%s"),
+                *Part->GetBoneLocation(TEXT("neck_01")).ToCompactString(),
+                *Placement.TransformPosition(SourceNeck).ToCompactString());
+    }
+    UE_LOG(LogTemp, Display, TEXT("CLARA_CUSTOM_LUCA: personal head + original groom attached; nose=%s; head center=%s extent=%s scale=%s; neck visible=%d preset head hidden=%d; rigid neutral face"),
+        *Nose.ToCompactString(), *Head->Bounds.Origin.ToCompactString(), *Head->Bounds.BoxExtent.ToCompactString(),
+        *Head->GetComponentScale().ToCompactString(), Face->IsVisible(), Face->IsBoneHiddenByName(TEXT("head")));
+}
+
+void AClaraStoryNPC::EndPlay(const EEndPlayReason::Type Reason)
+{
+    if (MetaHuman) MetaHuman->Destroy();
+    Super::EndPlay(Reason);
 }
 
 
@@ -156,15 +376,33 @@ void AClaraStoryNPC::ConfigureSeatedPose(USkeletalMesh* Mesh,float Scale)
 void AClaraStoryNPC::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
-    if(CharacterId!=TEXT("Luca"))return;
     if(!Director.IsValid()){TActorIterator<AClaraStoryDirector> It(GetWorld());if(It)Director=*It;}
+    if (CharacterId == TEXT("Gaia") && Director.IsValid())
+    {
+        const bool bVisible = Director->GetDay() >= 2;
+        if (IsHidden() == bVisible) SetStoryVisible(bVisible);
+        if (!bVisible) return;
+    }
     auto* PC=GetWorld()->GetFirstPlayerController();
     APawn* Player=PC?PC->GetPawn():nullptr;
     if(!Player||!Director.IsValid())return;
-    const int32 Phase=Director->GetPhase();
-    const bool Active=(Phase>=3&&Phase<16)||(Phase>=100&&Phase<108);
+    FVector Eye; FRotator View;
+    PC->GetPlayerViewPoint(Eye, View);
+    Nameplate->SetWorldRotation((Eye-Nameplate->GetComponentLocation()).Rotation());
+    Nameplate->SetVisibility(FVector::DistSquared(Eye, GetActorLocation()) < FMath::Square(420.f)
+        && Director->GetPage().IsEmpty() && !Director->IsScreenOpen());
     const FVector Here=GetActorLocation(),There=FVector(Player->GetActorLocation().X,Player->GetActorLocation().Y,Here.Z);
     const float Distance=FVector::Dist2D(Here,There);
+    const bool bFacePlayer = !SeatedPose && Distance < 300 && !Director->IsScreenOpen()
+        && (Director->GetPage().IsEmpty() || Director->GetSpeaker() == DisplayName);
+    const FRotator PlayerFacing(0, (There-Here).Rotation().Yaw-90, 0);
+    if(CharacterId!=TEXT("Luca"))
+    {
+        if (bFacePlayer) SetActorRotation(FMath::RInterpTo(GetActorRotation(),PlayerFacing,DeltaSeconds,3));
+        return;
+    }
+    const int32 Phase=Director->GetPhase();
+    const bool Active=(Phase>=3&&Phase<16)||(Phase>=100&&Phase<108)||(Phase>=202&&Phase<=211);
     bool Moving=false;
     if(Active && Director->GetPage().IsEmpty() && !Director->IsScreenOpen() && Distance>185)
     {
@@ -206,12 +444,13 @@ void AClaraStoryNPC::Tick(float DeltaSeconds)
             Moving=true;
         }
     }
-    else if(Active && Distance<360)
-        SetActorRotation(FMath::RInterpTo(GetActorRotation(),FRotator(0,(There-Here).Rotation().Yaw-90,0),DeltaSeconds,3));
+    else if(bFacePlayer)
+        SetActorRotation(FMath::RInterpTo(GetActorRotation(),PlayerFacing,DeltaSeconds,3));
     if(Moving!=bWalking)
     {
         bWalking=Moving;
-        if(auto* Animation=Moving?WalkAnimation.Get():IdleAnimation.Get())Mannequin->PlayAnimation(Animation,true);
+        if (auto* Animation = Moving ? WalkAnimation.Get() : IdleAnimation.Get())
+            (OfficeAnimationRoot ? OfficeAnimationRoot.Get() : Mannequin.Get())->PlayAnimation(Animation, true);
     }
 }
 
@@ -224,6 +463,7 @@ void AClaraStoryNPC::SetStoryVisible(bool bVisible)
 {
     SetActorHiddenInGame(!bVisible);
     SetActorEnableCollision(bVisible);
+    if (MetaHuman) MetaHuman->SetActorHiddenInGame(!bVisible);
 }
 
 AClaraStoryProp::AClaraStoryProp()
@@ -251,7 +491,7 @@ AClaraStoryProp::AClaraStoryProp()
     Lettering = CreateDefaultSubobject<UTextRenderComponent>(TEXT("BadgePrint"));
     Lettering->SetupAttachment(RootComponent);
     Lettering->SetRelativeLocation(FVector(0, -.8, .09));
-    Lettering->SetRelativeRotation(FRotator(90, 0, 0));
+    Lettering->SetRelativeRotation(FRotator(90, -90, 0));
     Lettering->SetHorizontalAlignment(EHTA_Center);
     Lettering->SetVerticalAlignment(EVRTA_TextCenter);
     Lettering->SetWorldSize(.9);
@@ -282,7 +522,7 @@ void AClaraStoryProp::Initialize(const FString& Id, const FString& Label)
             Parts[Index]->SetMaterial(0, Material);
         }
     }
-    Lettering->SetText(FText::FromString(TEXT("CLARA\nSTAFF")));
+    Lettering->SetText(FText::FromString(TEXT("TNES\nSTAFF")));
 
     if (Id == TEXT("Badge")) return;
 
@@ -375,7 +615,10 @@ void AClaraStoryProp::Initialize(const FString& Id, const FString& Label)
         Part(Cube,FVector(0,0,-.1f),FVector(44,26,.8f),Material(FLinearColor(.18,.21,.21)));
         Interaction->SetBoxExtent(FVector(22,13,5));
         Interaction->SetRelativeLocation(FVector(0,0,3));
-        Lettering->SetRelativeLocation(FVector(0,-9,1));
+        // A label on the front lip stays readable while standing at the cable table.
+        Part(Cube,FVector(0,-13.3f,2.6f),FVector(31,.5f,5),Dark);
+        Lettering->SetRelativeLocation(FVector(0,-13.6f,2.6f));
+        Lettering->SetRelativeRotation(FRotator(0,-90,0));
         Lettering->SetWorldSize(2.1);
         Lettering->SetTextRenderColor(FColor(220,230,225));
     }
@@ -423,7 +666,10 @@ AClaraStoryCast::AClaraStoryCast()
 
 void AClaraStoryCast::BeginPlay()
 {
-    Super::BeginPlay();
+    Super::BeginPlay();BuildNextColleague();
+}
+void AClaraStoryCast::BuildNextColleague()
+{
     struct FColleague
     {
         const TCHAR* Id;
@@ -437,20 +683,32 @@ void AClaraStoryCast::BeginPlay()
         {TEXT("Alessia"), TEXT("Accoglienza"), FVector(305, 450, 0), 180, true, FLinearColor(.55, .50, .40)},
         {TEXT("Luca"), TEXT("Tutor reti"), FVector(675, 1100, 0), -90, false, FLinearColor(.08, .24, .38)},
         {TEXT("Jonny"), TEXT("Tutor cyber"), FVector(1220, 450, 0), -90, false, FLinearColor(.10, .13, .15)},
-        {TEXT("Gaia"), TEXT("Briefing"), FVector(250, 880, 0), -90, true, FLinearColor(.08, .30, .28)}
+        {TEXT("Gaia"), TEXT("Briefing"), FVector(265, 1335, 0), -90, true, FLinearColor(.08, .30, .28)}
     };
     FActorSpawnParameters Parameters;
     Parameters.Owner = this;
     Parameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    for (const FColleague& Person : People)
+    const bool Staged=AClaraFrontEnd::IsPreparingOffice(GetWorld());
+    const int32 End=Staged?FMath::Min(NextColleague+1,4):4;
+    for (int32 Index=NextColleague;Index<End;++Index)
     {
+        const FColleague& Person=People[Index];
         auto* NPC = GetWorld()->SpawnActor<AClaraStoryNPC>(Person.Position, FRotator(0, Person.Yaw, 0), Parameters);
         if (!NPC) continue;
         NPC->Initialize(Person.Id, Person.Id, Person.Role, Person.bQuinn, Person.Accent);
         Colleagues.Add(NPC);
     }
+    NextColleague=End;
+    if(NextColleague<4)
+    {
+        TWeakObjectPtr<AClaraStoryCast> Weak(this);
+        GetWorldTimerManager().SetTimerForNextTick([Weak](){if(Weak.IsValid())Weak->BuildNextColleague();});return;
+    }
+    bBuildReady=true;
     Badge = GetWorld()->SpawnActor<AClaraStoryProp>(FVector(245, 330, 82), FRotator::ZeroRotator, Parameters);
     if (Badge) Badge->Initialize(TEXT("Badge"), TEXT("Badge del nuovo collega"));
-    UE_LOG(LogTemp, Display, TEXT("CLARA_STORY_CAST_READY: %d Epic mannequins; badge=%s; floor plan unchanged."),
-        Colleagues.Num(), Badge ? TEXT("yes") : TEXT("no"));
+    int32 MetaHumans = 0;
+    for (const auto& NPC : Colleagues) MetaHumans += NPC->HasMetaHuman() ? 1 : 0;
+    UE_LOG(LogTemp, Display, TEXT("CLARA_STORY_CAST_READY: %d colleagues, %d MetaHuman; badge=%s; floor plan unchanged."),
+        Colleagues.Num(), MetaHumans, Badge ? TEXT("yes") : TEXT("no"));
 }

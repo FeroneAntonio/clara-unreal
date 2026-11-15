@@ -47,6 +47,9 @@ public:
     bool IsDeviceOpen() const { return DevicePreview != nullptr; }
     void OrbitDevice(float X, float Y);
     void ZoomDevice(float Amount);
+    void SetDeviceView(float Yaw, float Pitch, float Distance);
+    bool DevProbeDevicePort(const FString& Id,bool bSelect);
+    bool DevCheckDeviceDrag();
 private:
     void Pointer();
     bool bLook = false;
@@ -64,7 +67,11 @@ private:
     TSharedPtr<class SWidget> DevicePanel;
     float DeviceYaw=-90, DevicePitch=18, DeviceDistance=90;
     bool bDeviceDragging=false, bDeviceLeftDrag=false, bDeviceMoved=false;
+    float DeviceDragTravel=0;
     void UpdateDeviceCamera();
     void ClickDevicePort();
+    bool SelectDevicePortAt(const FVector2D& Position);
     void BuildDevicePanel();
+    void ChooseCable(const FString& Kind);
+    bool StoryGuardsWiring() const;
 };

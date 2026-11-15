@@ -1,0 +1,27 @@
+{
+  "descrizione": "Voce femminile italiana di circa trent'anni, responsabile dell'accoglienza in un'azienda informatica. Tono cordiale, luminoso e professionale, accogliente senza essere sdolcinata, ritmo tranquillo e sicuro. Dizione pulita, italiano standard senza accento regionale marcato. Registrazione ravvicinata e asciutta, senza riverbero, senza musica.",
+  "testo": "Eccoti qui. Puntualissimo! Benvenuto in CLARA: reti costruite e protette, questo facciamo. Oggi ti mettiamo subito al lavoro con la squadra.",
+  "scelto": "candidato-2.wav",
+  "candidati": [
+    {
+      "file": "candidato-1.wav",
+      "testo_sentito": "Eccoci qui. Punto alissimo.  Benvenuto in Clara.  Reti costruite e protette.  Questo facciamo.  Oggi ti mettiamo subito al lavoro con la squadra.",
+      "corrispondenza": 0.884,
+      "altezza_hz": 261.7,
+      "secondi": 11.6,
+      "caratteri_al_secondo": 12.1,
+      "punteggio": 0.901,
+      "secondi_di_calcolo": 88.3
+    },
+    {
+      "file": "candidato-2.wav",
+      "testo_sentito": "Ecco di qui, puntualissimo!  Benvenuto in Clara!  Reti costruite e protette questo facciamo!  Oggi ti mettiamo subito al lavoro con la squadra!",
+      "corrispondenza": 0.93,
+      "altezza_hz": 297.2,
+      "secondi": 10.32,
+      "caratteri_al_secondo": 13.6,
+      "punteggio": 0.944,
+      "secondi_di_calcolo": 82.7
+    }
+  ]
+}

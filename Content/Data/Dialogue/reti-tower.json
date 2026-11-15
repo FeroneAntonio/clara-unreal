@@ -1,0 +1,86 @@
+[
+  {
+    "speaker": "Luca",
+    "text": "Riguarda l’ordine per cinque secondi. La base va in fondo, il servizio in cima.",
+    "key": "f3ec6ebe94cbf346",
+    "kind": "day1-tower"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Dall’alto: Anna Porta Sempre Torte Nella Dispensa Piccola. Application, Presentation, Session, Transport, Network, Data Link, Physical. Physical è il pavimento della torre.",
+    "key": "dd0d52a1a95bbd48",
+    "kind": "day1-tower"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Dall’alto: Alessia Trasporta Informazioni Nuove. Application, Transport, Internet, Network Access. Network Access è la base.",
+    "key": "2d25033971935ec5",
+    "kind": "day1-tower"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Torre ricostruita. Application è il servizio che usi, come il web o la posta.",
+    "key": "4d55e5054fc9e291",
+    "kind": "day1-tower"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Presentation riguarda formato dei dati, compressione e cifratura.",
+    "key": "8e33365fa2d6a456",
+    "kind": "day1-tower"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Session apre, gestisce e chiude il dialogo tra due host.",
+    "key": "2e0058b209654e06",
+    "kind": "day1-tower"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Transport divide i dati in segmenti e gestisce la comunicazione tra le applicazioni; le garanzie dipendono dal protocollo.",
+    "key": "fec4771241aaa5da",
+    "kind": "day1-tower"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Network si occupa degli indirizzi IP e del percorso tra reti.",
+    "key": "4f0b502e97eb8345",
+    "kind": "day1-tower"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Data Link gestisce indirizzi MAC e frame nella rete locale.",
+    "key": "03a85a3746c6578a",
+    "kind": "day1-tower"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Physical sono i segnali sul mezzo di trasmissione: rame, fibra o radio.",
+    "key": "a053ecfec5d6eb56",
+    "kind": "day1-tower"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Torre TCP/IP ricostruita. Application riunisce Application, Presentation e Session di OSI.",
+    "key": "b52e2025d0f5826a",
+    "kind": "day1-tower"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Transport corrisponde al livello 4; Internet al Network di OSI.",
+    "key": "d3d235ea958a384f",
+    "kind": "day1-tower"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Network Access comprende Data Link e Physical. I colori ti aiutano a ritrovare la corrispondenza.",
+    "key": "73a5f9dce4515473",
+    "kind": "day1-tower"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Dopo questa battuta avrai dieci secondi per osservare la torre. Poi ricostruiscila sul piolo destro: Physical in fondo, Application in cima. Si sposta soltanto il blocco superiore, senza limiti di dimensione.",
+    "key": "0d2dea7213f2b8da",
+    "kind": "day1-tower"
+  }
+]

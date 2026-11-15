@@ -25,7 +25,7 @@ FVector ReadVector(const TSharedPtr<FJsonObject>& Object,const TCHAR* Key,FVecto
 }
 FLinearColor CableColor(const FString& Kind)
 {
-    if(Kind==TEXT("console"))return FLinearColor(.12,.48,.82);
+    if(Kind==TEXT("console"))return FLinearColor(.30,.66,.92);
     if(Kind==TEXT("fiber"))return FLinearColor(.95,.70,.03);
     return FLinearColor(.88,.88,.82);
 }
@@ -33,7 +33,7 @@ UMaterialInstanceDynamic* WireMaterial(UObject* Outer,const FString& Kind=TEXT("
 {
     auto* Base=LoadObject<UMaterialInterface>(nullptr,TEXT("/Game/Materials/M_Office.M_Office"));
     auto* Material=UMaterialInstanceDynamic::Create(Base,Outer);
-    if(Material)Material->SetVectorParameterValue(TEXT("Color"),CableColor(Kind));
+    if(Material){Material->SetVectorParameterValue(TEXT("Color"),CableColor(Kind));Material->SetVectorParameterValue(TEXT("BaseColor"),CableColor(Kind));}
     return Material;
 }
 }
@@ -92,6 +92,44 @@ void AClaraNetworkDevice::Initialize(const FString& Id,bool bPreview)
     }
     if(ModelId==TEXT("Laptop"))LaptopOpenSize=DeviceSize;
     auto* Cube=LoadObject<UStaticMesh>(nullptr,TEXT("/Engine/BasicShapes/Cube.Cube"));
+    if(ModelId==TEXT("PC2"))
+    {
+        // This source mesh is meter-sized: its imported convex collision scales ~100x with the render mesh.
+        // Keep a solid chassis in actor centimetres, independent of the imported collision's cooking margin.
+        Body->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        auto* Chassis=NewObject<UBoxComponent>(this,TEXT("PC2ChassisCollision"));
+        AddInstanceComponent(Chassis);Chassis->SetupAttachment(RootComponent);
+        Chassis->SetRelativeLocation(FVector(0,0,DeviceSize.Z*.5f));Chassis->SetBoxExtent(DeviceSize*.5f);
+        Chassis->SetCollisionProfileName(TEXT("BlockAll"));Chassis->ComponentTags.Add(TEXT("Inspectable"));Chassis->RegisterComponent();
+        if(const auto* Ethernet=FindPort(TEXT("Ethernet"));Ethernet&&Cube)
+        {
+            // The acquired tower has USB openings and fans but no RJ45: fit a visible socket above the rear fans.
+            auto* Base=LoadObject<UMaterialInterface>(nullptr,TEXT("/Game/Materials/M_Office.M_Office"));
+            auto Material=[&](FLinearColor Color)
+            {
+                auto* M=UMaterialInstanceDynamic::Create(Base,this);
+                if(M){M->SetVectorParameterValue(TEXT("Color"),Color);M->SetVectorParameterValue(TEXT("BaseColor"),Color);}
+                return M;
+            };
+            auto* Metal=Material(FLinearColor(.36,.40,.42));auto* Dark=Material(FLinearColor(.006,.008,.01));
+            auto* Gold=Material(FLinearColor(.65,.47,.12));
+            auto Part=[&](FVector Offset,FVector Size,UMaterialInterface* M)
+            {
+                auto* Piece=NewObject<UStaticMeshComponent>(this);AddInstanceComponent(Piece);
+                Piece->SetMobility(EComponentMobility::Movable);Piece->SetupAttachment(RootComponent);Piece->SetStaticMesh(Cube);
+                Piece->SetRelativeLocation(Ethernet->Position+Offset);Piece->SetRelativeScale3D(Size/100.f);
+                Piece->SetMaterial(0,M);Piece->SetCollisionEnabled(ECollisionEnabled::NoCollision);Piece->RegisterComponent();
+            };
+            Part({0,.95,0},{2.5,.25,2.2},Metal);
+            Part({0,.24,0},{1.8,.15,1.5},Dark);
+            for(float Side:{-1.f,1.f})
+            {
+                Part({Side*.94,.20,0},{.16,.65,1.7},Metal);
+                Part({0,.20,Side*.78},{1.88,.65,.14},Metal);
+            }
+            for(int32 Contact=0;Contact<8;++Contact)Part({-.56f+Contact*.16f,.11,.43},{.055,.16,.25},Gold);
+        }
+    }
     for(const auto& P:Ports)
     {
         float Neighbor=4.f;
@@ -109,7 +147,14 @@ void AClaraNetworkDevice::Initialize(const FString& Id,bool bPreview)
         auto* Plug=NewObject<UStaticMeshComponent>(this);
         AddInstanceComponent(Plug);Plug->SetMobility(EComponentMobility::Movable);Plug->SetupAttachment(RootComponent);Plug->SetStaticMesh(Cube);
         auto* Connector=(P.Kind==TEXT("ethernet")||P.Kind==TEXT("console"))?LoadObject<UStaticMesh>(nullptr,TEXT("/Game/NetworkAssets/SM_RJ45Plug.SM_RJ45Plug")):nullptr;
-        if(Connector)Plug->SetStaticMesh(Connector);else Plug->SetMaterial(0,WireMaterial(this));
+        if(Connector)
+        {
+            // Il cappuccio della spina prende il colore del cavo (bianco Cat 6, azzurro console): trasparenza e contatti restano quelli del modello.
+            Plug->SetStaticMesh(Connector);
+            const auto& Slots=Connector->GetStaticMaterials();
+            for(int32 Slot=0;Slot<Slots.Num();++Slot)if(Slots[Slot].MaterialInterface&&Slots[Slot].MaterialInterface->GetName().Contains(TEXT("ConsoleBlue")))Plug->SetMaterial(Slot,WireMaterial(this));
+        }
+        else Plug->SetMaterial(0,WireMaterial(this));
         Plug->SetCollisionEnabled(ECollisionEnabled::NoCollision);
         Plug->SetRelativeLocation(P.Position+P.Normal*.9f);Plug->SetRelativeRotation(FRotationMatrix::MakeFromX(P.Normal).Rotator());
         if(Connector)
@@ -119,6 +164,20 @@ void AClaraNetworkDevice::Initialize(const FString& Id,bool bPreview)
             Plug->SetRelativeLocation(P.Position+P.Normal*.9f-Plug->GetRelativeRotation().RotateVector(Bounds.GetCenter()*Scale));
         }
         else Plug->SetRelativeScale3D(FVector(.028,.011,.0085));Plug->SetVisibility(false);Plug->RegisterComponent();Plugs.Add(Plug);
+        // LED di collegamento sopra la presa: spento finche' non c'e' un cavo, poi ambra e verde.
+        UStaticMeshComponent* Led=nullptr;UPointLightComponent* Glow=nullptr;
+        if(ModelId!=TEXT("Laptop")&&(P.Kind==TEXT("ethernet")||P.Kind==TEXT("sfp")||P.Kind==TEXT("fiber")))
+        {
+            const FVector Up=FMath::Abs(P.Normal.Z)>.9f?FVector(1,0,0):FVector(0,0,1);
+            const FVector At=P.Position+P.Normal*.16f+Up*(Half+.16f);
+            Led=NewObject<UStaticMeshComponent>(this);AddInstanceComponent(Led);Led->SetMobility(EComponentMobility::Movable);Led->SetupAttachment(RootComponent);
+            Led->SetStaticMesh(Cube);Led->SetMaterial(0,WireMaterial(this));Led->SetCollisionEnabled(ECollisionEnabled::NoCollision);Led->SetCastShadow(false);
+            Led->SetRelativeLocation(At);Led->SetRelativeRotation(FRotationMatrix::MakeFromX(P.Normal).Rotator());Led->SetRelativeScale3D(FVector(.0012f,.0036f,.0014f));
+            Led->SetVisibility(false);Led->RegisterComponent();
+            Glow=NewObject<UPointLightComponent>(this);AddInstanceComponent(Glow);Glow->SetupAttachment(RootComponent);Glow->SetRelativeLocation(At+P.Normal*.55f);
+            Glow->SetIntensity(.9f);Glow->SetAttenuationRadius(6.f);Glow->SetCastShadows(false);Glow->SetVisibility(false);Glow->RegisterComponent();
+        }
+        Leds.Add(Led);LedLights.Add(Glow);
     }
     if(bPreview)
     {
@@ -143,8 +202,22 @@ FString AClaraNetworkDevice::GetPortStatus(const FString& Id)const
 {
     const auto* P=FindPort(Id);if(!P)return TEXT("Seleziona una porta");
     const auto* Link=GetOriginalDevice()->Connections.Find(Id);
-    return P->Label+TEXT(" · ")+GetEffectivePortKind(Id)+(HasOpticalModule(Id)?TEXT(" (SFP inserito)"):TEXT(""))+(Link&&Link->Peer.IsValid()?TEXT(" · collegata a ")+Link->Peer->GetDisplayName()+TEXT(" / ")+Link->PeerPort:TEXT(" · libera"));
+    const int32 Led=GetLedState(Id);
+    return P->Label+TEXT(" · ")+GetEffectivePortKind(Id)+(HasOpticalModule(Id)?TEXT(" (SFP inserito)"):TEXT(""))+(Link&&Link->Peer.IsValid()?TEXT(" · collegata a ")+Link->Peer->GetDisplayName()+TEXT(" / ")+Link->PeerPort:TEXT(" · libera"))
+        +(Led==1?TEXT(" · LED ambra: la porta sta aspettando"):Led>=2?TEXT(" · LED verde"):TEXT(""));
 }
+int32 AClaraNetworkDevice::GetLedState(const FString& Id)const
+{
+    const auto* Source=GetOriginalDevice();const auto* Link=Source->Connections.Find(Id);
+    if(!Link||!Link->Peer.IsValid()||Link->CableKind==TEXT("console")||!GetWorld())return 0;
+    const double Now=GetWorld()->GetTimeSeconds();
+    // Solo lo switch resta in ambra mentre controlla che non ci siano anelli; qui dura pochi secondi invece dei trenta reali.
+    if(Source->ModelId==TEXT("Cisco2960X")&&Now-Link->Since<3.5)return 1;
+    const double* Until=Source->TrafficUntil.Find(Id);
+    return Until&&Now<*Until?3:2;
+}
+void AClaraNetworkDevice::MarkTraffic(const FString& Id,float Seconds)
+{if(GetWorld())GetOriginalDevice()->TrafficUntil.Add(Id,GetWorld()->GetTimeSeconds()+Seconds);}
 AClaraNetworkDevice* AClaraNetworkDevice::GetPeerForPort(const FString& Id,FString& PeerPort)const
 {
     PeerPort.Empty();const auto* Link=GetOriginalDevice()->Connections.Find(Id);
@@ -203,7 +276,8 @@ bool AClaraNetworkDevice::ConnectPorts(AClaraNetworkDevice* A,const FString& Por
         return false;
     }
     if(A->IsPortOccupied(PortA)||B->IsPortOccupied(PortB)){Error=TEXT("Una porta e' gia' occupata: prima scollega il connettore esistente.");return false;}
-    A->Connections.Add(PortA,{B,PortB,CableKind});B->Connections.Add(PortB,{A,PortA,CableKind});A->AddCable(PortA,B,PortB,CableKind);return true;
+    const double Now=A->GetWorld()?A->GetWorld()->GetTimeSeconds():0.;
+    A->Connections.Add(PortA,{B,PortB,CableKind,Now});B->Connections.Add(PortB,{A,PortA,CableKind,Now});A->AddCable(PortA,B,PortB,CableKind);return true;
 }
 bool AClaraNetworkDevice::DisconnectPort(const FString& Id,FString& Error)
 {
@@ -235,6 +309,20 @@ void AClaraNetworkDevice::RefreshCables()
         {for(USplineMeshComponent* Part:Cable.Segments)if(Part)Part->DestroyComponent();if(Cable.Spline)Cable.Spline->DestroyComponent();Cables.RemoveAt(I);continue;}
         const FVector A=GetPortWorldLocation(Cable.Port)+GetPortWorldNormal(Cable.Port)*2;
         const FVector B=Cable.Peer->GetPortWorldLocation(Cable.OtherPort)+Cable.Peer->GetPortWorldNormal(Cable.OtherPort)*2;
+        if(FVector::Distance(A,B)>220.)
+        {
+            // Tratta lunga: il cavo scende a terra, corre sul pavimento e risale. Nessun filo teso a mezz'aria tra banchi e stanze.
+            const FVector NA=GetPortWorldNormal(Cable.Port),NB=Cable.Peer->GetPortWorldNormal(Cable.OtherPort);
+            const FVector Path[]={A,A+NA*9,FVector(A.X+NA.X*42,A.Y+NA.Y*42,1.2),FVector(B.X+NB.X*42,B.Y+NB.Y*42,1.2),B+NB*9,B};
+            for(int32 J=0;J<Cable.Segments.Num();++J)
+            {
+                const bool Used=J<5;Cable.Segments[J]->SetVisibility(Used);if(!Used)continue;
+                const FVector Start=GetActorTransform().InverseTransformPosition(Path[J]),End=GetActorTransform().InverseTransformPosition(Path[J+1]);
+                Cable.Segments[J]->SetStartAndEnd(Start,End-Start,End,End-Start);
+            }
+            continue;
+        }
+        for(USplineMeshComponent* Part:Cable.Segments)if(Part)Part->SetVisibility(true);
         FVector Middle=(A+B)*.5;
         Middle.Z=ActorHasTag(TEXT("BenchDevice"))&&Cable.Peer->ActorHasTag(TEXT("BenchDevice"))
             ? FMath::Max(77.8,FMath::Min(A.Z,B.Z)+.8)
@@ -257,8 +345,19 @@ void AClaraNetworkDevice::Tick(float Delta)
     {
         const FString& Id=Ports[I].Id;Plugs[I]->SetVisibility(IsPortOccupied(Id)||PendingPort==Id||HasOpticalModule(Id));
         const auto* Link=GetOriginalDevice()->Connections.Find(Id);
-        if(auto* Material=Cast<UMaterialInstanceDynamic>(Plugs[I]->GetMaterial(0)))
-            Material->SetVectorParameterValue(TEXT("Color"),Link?CableColor(Link->CableKind):(HasOpticalModule(Id)?FLinearColor(.45,.46,.47):CableColor(PendingPort==Id?PendingKind:TEXT("ethernet"))));
+        const FLinearColor Tint=Link?CableColor(Link->CableKind):(HasOpticalModule(Id)?FLinearColor(.45,.46,.47):CableColor(PendingPort==Id?PendingKind:TEXT("ethernet")));
+        for(int32 Slot=0;Slot<Plugs[I]->GetNumMaterials();++Slot)if(auto* Material=Cast<UMaterialInstanceDynamic>(Plugs[I]->GetMaterial(Slot)))
+        {Material->SetVectorParameterValue(TEXT("Color"),Tint);Material->SetVectorParameterValue(TEXT("BaseColor"),Tint);}
+    }
+    const bool Blink=GetWorld()&&FMath::Fmod(GetWorld()->GetTimeSeconds(),.18)<.09;
+    for(int32 I=0;I<Leds.Num();++I)if(Leds[I]&&Ports.IsValidIndex(I))
+    {
+        const int32 State=GetLedState(Ports[I].Id);const bool Lit=State==1||State==2||(State==3&&Blink);
+        Leds[I]->SetVisibility(Lit);if(LedLights[I])LedLights[I]->SetVisibility(Lit);
+        if(!Lit)continue;
+        const FLinearColor Color=State==1?FLinearColor(1.f,.42f,.02f):FLinearColor(.08f,1.f,.22f);
+        if(auto* Material=Cast<UMaterialInstanceDynamic>(Leds[I]->GetMaterial(0))){Material->SetVectorParameterValue(TEXT("Color"),Color);Material->SetVectorParameterValue(TEXT("BaseColor"),Color);}
+        if(LedLights[I])LedLights[I]->SetLightColor(Color);
     }
 }
 void AClaraNetworkDevice::EndPlay(const EEndPlayReason::Type Reason)

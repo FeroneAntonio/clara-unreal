@@ -1,0 +1,23 @@
+{
+  "sequence": "TNES airplane arrival",
+  "duration_seconds": 27,
+  "captions": [
+    {
+      "start": 1,
+      "end": 9,
+      "text": "Stai andando a Napoli per un colloquio in TNES, un’azienda che costruisce e protegge reti."
+    },
+    {
+      "start": 9.5,
+      "end": 17,
+      "text": "Non serve sapere già tutto. Cerchi un’occasione per imparare, partendo da zero."
+    },
+    {
+      "start": 17.5,
+      "end": 27,
+      "text": "Al colloquio parlerai dei tuoi interessi. Da lì comincerà il tuo percorso tra reti e sicurezza informatica."
+    }
+  ],
+  "camera": "Seated airplane passenger: CV, slow right turn, aerial Naples and real Vesuvius only through oval cabin window.",
+  "transition": "Fade to office only when ready; interview in office."
+}

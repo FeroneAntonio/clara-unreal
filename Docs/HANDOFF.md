@@ -1,3 +1,5 @@
+> **Correzione vincolante di Antonio, 15 novembre 2026:** il gioco e l’azienda si chiamano **TNES**, non CLARA. I nomi tecnici storici `Clara*` restano interni. L’intro richiesta è in prima persona, seduti in **aereo**: CV leggibile, sguardo a destra, vero Vesuvio visibile soltanto dal finestrino. Testi introduttivi spiegano il viaggio verso il colloquio in TNES; il percorso si decide al colloquio in ufficio. La versione treno e i precedenti filmati geometrici sono superati. Importazione e resa in Unreal vanno ancora verificate; non dichiararle concluse sulla base di anteprime Blender.
+
 # CLARA — passaggio di consegne completo alla nuova chat
 
 Aggiornato il **14 novembre 2026**, fuso Europe/Rome. Documento operativo: leggere prima di proporre modifiche o ricreare componenti già presenti.

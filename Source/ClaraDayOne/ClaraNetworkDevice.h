@@ -6,6 +6,7 @@ class UStaticMeshComponent;
 class UPrimitiveComponent;
 class UBoxComponent;
 class USplineComponent;
+class UPointLightComponent;
 
 struct FClaraDevicePort
 {
@@ -39,6 +40,9 @@ public:
     FString GetEffectivePortKind(const FString& PortId) const;
     bool InstallOpticalModule(const FString& PortId);
     bool HasOpticalModule(const FString& PortId) const;
+    // LED della porta: 0 spento, 1 ambra (lo switch sta aspettando), 2 verde, 3 verde con traffico.
+    int32 GetLedState(const FString& PortId) const;
+    void MarkTraffic(const FString& PortId, float Seconds=2.5f);
     void SetLaptopCarried(bool bCarried);
     bool IsLaptopCarried() const { return GetOriginalDevice()->bLaptopCarried; }
     bool DisconnectPort(const FString& PortId, FString& Error);
@@ -49,11 +53,14 @@ private:
     UPROPERTY() TObjectPtr<UStaticMeshComponent> Body;
     UPROPERTY() TArray<TObjectPtr<UBoxComponent>> PortHits;
     UPROPERTY() TArray<TObjectPtr<UStaticMeshComponent>> Plugs;
+    UPROPERTY() TArray<TObjectPtr<UStaticMeshComponent>> Leds;
+    UPROPERTY() TArray<TObjectPtr<UPointLightComponent>> LedLights;
+    TMap<FString,double> TrafficUntil;
     TWeakObjectPtr<AClaraNetworkDevice> PreviewSource;
     FString ModelId, DisplayName, PendingPort, PendingKind=TEXT("ethernet");
     FVector DeviceSize = FVector(44.5,27.94,4.45);
     TArray<FClaraDevicePort> Ports;
-    struct FConnection { TWeakObjectPtr<AClaraNetworkDevice> Peer; FString PeerPort; FString CableKind; };
+    struct FConnection { TWeakObjectPtr<AClaraNetworkDevice> Peer; FString PeerPort; FString CableKind; double Since=0; };
     TMap<FString,FConnection> Connections;
     struct FCable { FString Port, OtherPort, Kind; TWeakObjectPtr<AClaraNetworkDevice> Peer; TObjectPtr<USplineComponent> Spline; TArray<TObjectPtr<class USplineMeshComponent>> Segments; };
     TArray<FCable> Cables;

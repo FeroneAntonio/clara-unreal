@@ -1,4 +1,5 @@
 #include "ClaraStoryHighlights.h"
+#include "ClaraFrontEnd.h"
 #include "ClaraStoryDirector.h"
 #include "ClaraRoomVisitor.h"
 #include "ClaraStoryCast.h"
@@ -14,6 +15,9 @@
 #include "Widgets/SCompoundWidget.h"
 #include "Rendering/DrawElements.h"
 #include "Styling/CoreStyle.h"
+#include "Framework/Application/SlateApplication.h"
+#include "Rendering/SlateRenderer.h"
+#include "Fonts/FontMeasure.h"
 
 namespace
 {
@@ -33,14 +37,21 @@ public:
         const FVector2D Size=Geometry.GetLocalSize();
         int32 Width=0,Height=0;PC->GetViewportSize(Width,Height);
         if(Width<1||Height<1)return Layer;
+        TArray<FSlateRect> Labels;
         for(auto* Target:Owner->GetTargets())
         {
             const FVector Position=Owner->GetMarkerLocation(Target);
+            const float Meters=FVector::Distance(Camera,Target->GetActorLocation())/100.f;
+            // La distanza serve per orientarsi da lontano; a portata di mano basta il nome.
+            const FString Label=Meters>=3.f?FString::Printf(TEXT("%s  ·  %.0f m"),*Owner->GetTargetName(Target),Meters):Owner->GetTargetName(Target);
+            const FLinearColor Accent(.68f,.83f,.72f,.9f);
+            const FSlateFontInfo Font=FCoreStyle::GetDefaultFontStyle(TEXT("Regular"),15);
+            const float LabelWidth=FSlateApplication::Get().GetRenderer()->GetFontMeasureService()->Measure(Label,Font).X+24.f;
             FVector2D Screen;
             const bool Projected=PC->ProjectWorldLocationToScreen(Position,Screen);
             const FVector Local=View.UnrotateVector(Position-Camera);
             bool Edge=!Projected||Local.X<=0;
-            if(!Edge){Screen.X*=Size.X/Width;Screen.Y*=Size.Y/Height;Edge=Screen.X<100||Screen.X>Size.X-210||Screen.Y<95||Screen.Y>Size.Y-115;}
+            if(!Edge){Screen.X*=Size.X/Width;Screen.Y*=Size.Y/Height;Edge=Screen.X<100||Screen.X>Size.X-LabelWidth-20||Screen.Y<95||Screen.Y>Size.Y-115;}
             if(Edge)
             {
                 FVector2D Direction(Local.Y,-Local.Z);
@@ -50,16 +61,42 @@ public:
                 const double Radius=FMath::Min((Size.X*.5-125)/FMath::Max(.001,FMath::Abs(Direction.X)),(Size.Y*.5-110)/FMath::Max(.001,FMath::Abs(Direction.Y)));
                 Screen=Size*.5+Direction*Radius;
             }
-            Screen.X=FMath::Clamp(Screen.X,80.,FMath::Max(81.,Size.X-210));
+            Screen.X=FMath::Clamp(Screen.X,80.,FMath::Max(81.,Size.X-LabelWidth-20));
             Screen.Y=FMath::Clamp(Screen.Y,80.,FMath::Max(81.,Size.Y-100));
-            const float Meters=FVector::Distance(Camera,Target->GetActorLocation())/100.f;
-            const FString Label=FString::Printf(TEXT("%s  ·  %.1f m"),*Owner->GetTargetName(Target),Meters);
-            const FLinearColor Accent(.68f,.83f,.72f,.9f);
-            const FSlateFontInfo Font=FCoreStyle::GetDefaultFontStyle(TEXT("Regular"),13);
-            FSlateDrawElement::MakeText(Draw,Layer+1,Geometry.ToPaintGeometry(FVector2D(220,24),FSlateLayoutTransform(Screen+FVector2D(15,1))),FText::FromString(Label),Font,ESlateDrawEffect::None,FLinearColor(0,0,0,.75));
-            FSlateDrawElement::MakeText(Draw,Layer+2,Geometry.ToPaintGeometry(FVector2D(220,24),FSlateLayoutTransform(Screen+FVector2D(14,0))),FText::FromString(Label),Font,ESlateDrawEffect::None,Accent);
-            TArray<FVector2D> Diamond={Screen+FVector2D(0,-4),Screen+FVector2D(5,1),Screen+FVector2D(0,6),Screen+FVector2D(-5,1),Screen+FVector2D(0,-4)};
-            FSlateDrawElement::MakeLines(Draw,Layer+2,Geometry.ToPaintGeometry(),Diamond,ESlateDrawEffect::None,Accent,true,1.2f);
+            // Nearby objectives win; move crowded labels instead of drawing over one another.
+            const FVector2D Anchor=Screen;
+            bool Fits=false;
+            for(int32 Attempt=0;Attempt<15&&!Fits;++Attempt)
+            {
+                const float Offset=Attempt==0?0.f:((Attempt+1)/2)*34.f*(Attempt%2?1.f:-1.f);
+                Screen.Y=FMath::Clamp(Anchor.Y+Offset,95.,FMath::Max(96.,Size.Y-115));
+                const FSlateRect Rect(Screen.X-9,Screen.Y-7,Screen.X+LabelWidth+18,Screen.Y+25);
+                Fits=!Labels.ContainsByPredicate([&](const FSlateRect& Other)
+                {return Rect.Left<Other.Right&&Rect.Right>Other.Left&&Rect.Top<Other.Bottom&&Rect.Bottom>Other.Top;});
+                if(Fits)Labels.Add(Rect);
+            }
+            if(!Fits)continue;
+            FSlateDrawElement::MakeBox(Draw,Layer,Geometry.ToPaintGeometry(
+                FVector2D(LabelWidth+27,32),FSlateLayoutTransform(Screen+FVector2D(-9,-7))),
+                FCoreStyle::Get().GetBrush("WhiteBrush"),ESlateDrawEffect::None,FLinearColor(.018f,.035f,.037f,.88f));
+            FSlateDrawElement::MakeText(Draw,Layer+2,Geometry.ToPaintGeometry(
+                FVector2D(LabelWidth,24),FSlateLayoutTransform(Screen+FVector2D(14,0))),
+                FText::FromString(Label),Font,ESlateDrawEffect::None,FLinearColor(.88f,.95f,.89f,1));
+            TArray<FVector2D> Symbol;
+            if(Edge)
+            {
+                FVector2D Direction=Anchor-Size*.5;Direction.Normalize();
+                const FVector2D Side(-Direction.Y,Direction.X),Center=Screen+FVector2D(0,7);
+                Symbol={Center-Direction*3+Side*5,Center+Direction*5,Center-Direction*3-Side*5};
+            }
+            else
+            {
+                if(!Screen.Equals(Anchor,1.f))
+                    FSlateDrawElement::MakeLines(Draw,Layer,Geometry.ToPaintGeometry(),
+                        TArray<FVector2D>{Anchor,Screen+FVector2D(0,7)},ESlateDrawEffect::None,FLinearColor(.68f,.83f,.72f,.55f),true,1.f);
+                Symbol={Screen+FVector2D(0,2),Screen+FVector2D(5,7),Screen+FVector2D(0,12),Screen+FVector2D(-5,7),Screen+FVector2D(0,2)};
+            }
+            FSlateDrawElement::MakeLines(Draw,Layer+2,Geometry.ToPaintGeometry(),Symbol,ESlateDrawEffect::None,Accent,true,1.5f);
         }
         return Layer+2;
     }
@@ -76,7 +113,8 @@ AClaraStoryHighlights::AClaraStoryHighlights()
 void AClaraStoryHighlights::BeginPlay()
 {
     Super::BeginPlay();
-    Overlay=SNew(SClaraObjectiveMarkers,this).Visibility(EVisibility::HitTestInvisible);
+    TWeakObjectPtr<AClaraStoryHighlights> Weak(this);
+    Overlay=SNew(SClaraObjectiveMarkers,this).Visibility_Lambda([Weak]{return Weak.IsValid()&&AClaraFrontEnd::IsPreparingOffice(Weak->GetWorld())?EVisibility::Collapsed:EVisibility::HitTestInvisible;});
     if(GetWorld()->GetGameViewport())GetWorld()->GetGameViewport()->AddViewportWidgetContent(Overlay.ToSharedRef(),12);
 }
 FVector AClaraStoryHighlights::GetMarkerLocation(AActor* Target) const
@@ -101,6 +139,13 @@ TArray<AActor*> AClaraStoryHighlights::GetTargets() const
 {
     TArray<AActor*> Result;
     for(const auto& Pair:Markers)if(Pair.Key.IsValid())Result.Add(Pair.Key.Get());
+    const auto* PC=GetWorld()->GetFirstPlayerController();
+    const FVector Camera=PC&&PC->PlayerCameraManager?PC->PlayerCameraManager->GetCameraLocation():FVector::ZeroVector;
+    Result.Sort([&](const AActor& A,const AActor& B)
+    {
+        const double A2=FVector::DistSquared(Camera,A.GetActorLocation()),B2=FVector::DistSquared(Camera,B.GetActorLocation());
+        return A2==B2?A.GetName().Compare(B.GetName())<0:A2<B2;
+    });
     return Result;
 }
 void AClaraStoryHighlights::RefreshTargets()
@@ -121,7 +166,7 @@ void AClaraStoryHighlights::RefreshTargets()
         Light->SetCastShadows(false);Light->RegisterComponent();Marker.Glow=Light;
         auto* Diamond=NewObject<UTextRenderComponent>(this);AddInstanceComponent(Diamond);
         Diamond->SetupAttachment(RootComponent);Diamond->SetMobility(EComponentMobility::Movable);
-        Diamond->SetText(FText::FromString(TEXT("◇")));Diamond->SetTextRenderColor(FColor(171,211,184));
+        Diamond->SetText(FText::GetEmpty());Diamond->SetTextRenderColor(FColor(171,211,184));
         Diamond->SetHorizontalAlignment(EHTA_Center);Diamond->SetWorldSize(6);Diamond->SetCollisionEnabled(ECollisionEnabled::NoCollision);
         Diamond->RegisterComponent();Marker.Diamond=Diamond;Markers.Add(Target,Marker);
     }

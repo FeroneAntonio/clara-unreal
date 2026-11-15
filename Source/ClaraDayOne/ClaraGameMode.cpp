@@ -1,4 +1,5 @@
 #include "ClaraGameMode.h"
+#include "ClaraFrontEnd.h"
 #include "ClaraGatewayCheck.h"
 #include "ClaraStoryDirector.h"
 #include "ClaraStoryCast.h"
@@ -7,6 +8,8 @@
 #include "ClaraNetworkDevice.h"
 #include "ClaraRoomVisitor.h"
 #include "ClaraLayoutNavigation.h"
+#include "ClaraAudio.h"
+#include "ClaraDevTour.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/World.h"
@@ -25,13 +28,55 @@ AClaraGameMode::AClaraGameMode()
 void AClaraGameMode::BeginPlay()
 {
     Super::BeginPlay();
-    if(!FApp::IsUnattended())
+    if(FParse::Param(FCommandLine::Get(),TEXT("ClaraFrontEndCheck"))||FParse::Param(FCommandLine::Get(),TEXT("TNESAircraftCheck")))
+    {
+        const bool Good=AClaraFrontEnd::RunSelfTest(GetWorld());
+        UE_LOG(LogTemp,Display,TEXT("CLARA_FRONTEND_CHECK_%s"),Good?TEXT("PASS"):TEXT("FAIL"));
+        FPlatformMisc::RequestExitWithStatus(false,Good?0:1);return;
+    }
+    if(AClaraFrontEnd::ShouldShow())
+    {
+        // Wait until the room controller has installed its own startup input mode.
+        TWeakObjectPtr<AClaraGameMode> Weak(this);
+        GetWorldTimerManager().SetTimerForNextTick([Weak]()
+        {
+            if(!Weak.IsValid())return;
+            auto* FrontEnd=Weak->GetWorld()->SpawnActor<AClaraFrontEnd>();
+            FrontEnd->SetOnEnter([Weak](const FString&){if(Weak.IsValid())Weak->StartOfficeStory();});
+        });
+        return;
+    }
+    StartOfficeStory();
+}
+void AClaraGameMode::StartOfficeStory()
+{
+    if(bOfficeStarted)return;bOfficeStarted=true;
+    // Giro di verifica automatico: -ClaraTour=<file> esegue una sequenza di azioni e salva schermate della scena reale.
+    FString TourFile;const bool bTour=FParse::Value(FCommandLine::Get(),TEXT("ClaraTour="),TourFile);
+    if(!FApp::IsUnattended()&&!bTour)
     {
         FTimerHandle IdleDelay;
         GetWorldTimerManager().SetTimer(IdleDelay,[]()
         {if(auto* Idle=IConsoleManager::Get().FindConsoleVariable(TEXT("t.IdleWhenNotForeground")))Idle->Set(1,ECVF_SetByCode);},3.f,false);
     }
     AClaraOfficeLayout* Layout=GetWorld()->SpawnActor<AClaraOfficeLayout>();
+    WaitForOfficeReady(Layout);
+}
+void AClaraGameMode::WaitForOfficeReady(AClaraOfficeLayout* Layout)
+{
+    if(!IsValid(Layout))return;
+    if(Layout->IsBuildReady()&&!FParse::Param(FCommandLine::Get(),TEXT("ClaraLayoutCheck"))&&!FParse::Param(FCommandLine::Get(),TEXT("ClaraGatewayCheck"))&&!PreparedCast.IsValid())PreparedCast=GetWorld()->SpawnActor<AClaraStoryCast>();
+    if(!Layout->IsBuildReady()||(PreparedCast.IsValid()&&!PreparedCast->IsBuildReady()))
+    {
+        TWeakObjectPtr<AClaraGameMode> Weak(this);TWeakObjectPtr<AClaraOfficeLayout> WeakLayout(Layout);
+        GetWorldTimerManager().SetTimerForNextTick([Weak,WeakLayout](){if(Weak.IsValid())Weak->WaitForOfficeReady(WeakLayout.Get());});return;
+    }
+    CompleteOfficeStory(Layout);
+}
+void AClaraGameMode::CompleteOfficeStory(AClaraOfficeLayout* Layout)
+{
+    FString TourFile;const bool bTour=FParse::Value(FCommandLine::Get(),TEXT("ClaraTour="),TourFile);
+    GetWorld()->SpawnActor<AClaraAudio>();
     APawn* Visitor=GetWorld()->GetFirstPlayerController()->GetPawn();
     if(Visitor)
     {
@@ -42,7 +87,6 @@ void AClaraGameMode::BeginPlay()
     AClaraStoryDirector* Story=nullptr;
     if(!FParse::Param(FCommandLine::Get(),TEXT("ClaraLayoutCheck")))
     {
-        GetWorld()->SpawnActor<AClaraStoryCast>();
         Story=GetWorld()->SpawnActor<AClaraStoryDirector>();
         GetWorld()->SpawnActor<AClaraStoryHighlights>();
     }
@@ -58,6 +102,7 @@ void AClaraGameMode::BeginPlay()
         return;
     }
     if(Story&&FParse::Param(FCommandLine::Get(),TEXT("ClaraStoryDay2")))Story->StartDay2();
+    if(bTour&&Story)StartClaraDevTour(GetWorld(),Story,TourFile);
     if(FParse::Param(FCommandLine::Get(),TEXT("ClaraLayoutCheck")))
     {
         FTimerHandle Check;

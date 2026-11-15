@@ -1,0 +1,404 @@
+[
+  {
+    "speaker": "Alessia",
+    "text": "Eccoti. Oggi è l’ultimo giorno.",
+    "key": "6ef8815631611efd",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Alessia",
+    "text": "Hai già visto cavi, indirizzi e switch. Oggi si esce dalla rete. Fai quello che ti dice Luca, e guarda sempre bene dove sbagli: è lì che si impara.",
+    "key": "cd263393f7845737",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Alessia",
+    "text": "Alla fine ti dico come è andata. Luca ti aspetta in area scrivanie.",
+    "key": "62fff9e5fb7c4af5",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Buongiorno. Oggi vediamo cosa succede quando il traffico deve uscire dalla rete.",
+    "key": "946ac42458503d60",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Il Network Layer, livello 3 di OSI, si occupa degli indirizzi IP e del percorso tra reti diverse. Qui lavora il router.",
+    "key": "a76e81df70c3cf0a",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Il PC confronta destinazione e mask: nella stessa rete cerca direttamente il destinatario; per un’altra rete manda il pacchetto al default gateway.",
+    "key": "391dfd4f5680fdc0",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "In sala server hanno montato un rack nuovo, con R2 e SW2. Prima il fisico: collega R1 a R2, poi R2 a SW2 con due Cat 6.",
+    "key": "bb43702ca4e3fafc",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Bene. Controlla ogni LED: ambra all’inizio è normale, poi verde. Il cavo console porta i comandi, non il traffico.",
+    "key": "90e485a1ed10ddcb",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Prendi il portatile in mano e collega la sua USB console alla porta CONSOLE di R1. Nel terminale scegli R1.",
+    "key": "0151830d71c0ca1e",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Tra i router usiamo 10.0.0.0/30: 255.255.255.252, due host utilizzabili. R1 è 10.0.0.1, R2 è 10.0.0.2.",
+    "key": "f654393ec07d2b46",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Un router ha un indirizzo per ogni rete. Configura Gi0/1, attivala con no shutdown e salva. La scheda sul portatile riepiloga i comandi.",
+    "key": "816c98f47521e736",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "R1 è configurato e salvato. Adesso sposta il cavo console su R2.",
+    "key": "800f1f943b1ceb30",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Imposta nome R2, enable secret Cisco123, password Console123 e login sulla console. Sono credenziali di questo laboratorio.",
+    "key": "594795bbe9cd63d6",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Gi0/0 guarda R1: 10.0.0.2/30. Gi0/1 guarda la rete B: 192.168.2.1/24. Attiva entrambe e salva.",
+    "key": "d9b712c90cd98232",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Leggi show ip route su R2. Di suo conosce soltanto le reti collegate: C indica la rete, L il suo indirizzo locale.",
+    "key": "2250e4eedc2c618a",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Ora sposta la console su SW2. Nome SW2 e le stesse password del laboratorio.",
+    "key": "fdce8526fdbdba12",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Configura VLAN 1 con 192.168.2.2/24, no shutdown e gateway 192.168.2.1. Poi salva.",
+    "key": "a33043dac0c4cea5",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "I dispositivi sono pronti. Il portatile oggi serve soltanto alla console e non è un host della rete.",
+    "key": "5e0d0784c7c8e0bd",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Vai a PC2 e prova ping 192.168.2.2. Osserva la risposta prima di aggiungere le rotte.",
+    "key": "df2c0c605b2a6f34",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Un router impara le reti direttamente collegate. Per le altre gli serve una rotta: la tabella dice dove inoltrare il pacchetto. Senza una rotta adatta la destinazione è irraggiungibile.",
+    "key": "cfa45e4a87c1a6bc",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Una rotta statica è una riga scritta da te: per questa rete, passa da quel router. Quel router è il next-hop.",
+    "key": "e191c5f20a427844",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Leggi show ip route su R1. In configure terminal aggiungi la rotta per 192.168.2.0/24 via 10.0.0.2; poi end, salva e controlla la tabella.",
+    "key": "ddaa702494939337",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Ripeti il ping da PC2. Il next-hop deve essere raggiungibile su una rete collegata al router.",
+    "key": "a12c64e86df4f3bb",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Una rotta vale in un solo senso: il pacchetto può arrivare, ma la risposta ha bisogno di una strada per tornare.",
+    "key": "8911b2f699eedecb",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Su R2 usa una rotta di default: tutto ciò che non conosce va a R1, 10.0.0.1. La rete e la mask della rotta sono entrambe 0.0.0.0.",
+    "key": "dd6ede020d2103fb",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Entra in configure terminal, aggiungi la rotta, poi end e salva. Salva anche R1. Riprova il ping da PC2.",
+    "key": "929b60caede6634d",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Il ping risponde. Nelle tabelle C indica una rete collegata, L un indirizzo locale, S una rotta statica e S con asterisco la candidata di default.",
+    "key": "6d2c4865178d07aa",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Il traceroute invia sonde con TTL crescente. Ogni router lo diminuisce: a zero scarta la sonda e risponde con ICMP time exceeded.",
+    "key": "461c6bcfd82d96db",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Da PC2 esegui traceroute 192.168.2.2. Vedrai R1, R2 e SW2. PC2 è la sorgente e non compare tra i salti.",
+    "key": "d43e1e90ef29ef69",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Un asterisco indica una risposta mancante: su una rete reale può dipendere anche da filtri o limiti ICMP. In questo laboratorio confronta i salti con interfacce e rotte, senza attribuire il guasto al solo timeout.",
+    "key": "3303fc36fbf66bc1",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Il percorso è quello giusto. Una rotta statica dipende da chi la configura: un next-hop modificato può deviare il traffico. Proteggi gli accessi di amministrazione.",
+    "key": "f4585e6f7233ba96",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Gaia è pronta per il collaudo. Parla con lei quando vuoi cominciare.",
+    "key": "b8797884eb36607e",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Gaia",
+    "text": "Il rack nuovo domani va in produzione. Prima lo collaudiamo.",
+    "key": "9fc2e72b271e7d48",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Gaia",
+    "text": "Durante il montaggio alcune impostazioni sono state cambiate. Trovale e correggile.",
+    "key": "51d82a553a092d36",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Gaia",
+    "text": "Hai il portatile con il cavo console, PC2 e i dispositivi. Quando pensi di aver finito, premi TEST. Controllo io.",
+    "key": "c2ce2d741ca1e389",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Ora lavori da solo. Se chiedi aiuto: cavo, IP, gateway, interfaccia, rotta, configurazione salvata. Dal basso verso l’alto.",
+    "key": "33552008fdf739b1",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Gaia",
+    "text": "Cavi, accessi, interfacce, ping, percorso e configurazioni salvate: tutto a posto.",
+    "key": "e7a7679f447fab88",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Gaia",
+    "text": "Ultima verifica. Premi RIAVVIA per caricare le configurazioni salvate e ripetere i controlli.",
+    "key": "135472a1a4f3c4a4",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Gaia",
+    "text": "Rete su, anche dopo il riavvio. Va bene. Alessia ti aspetta alla reception.",
+    "key": "6058cc12ac9662bd",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Bel lavoro. Oggi hai portato il traffico fuori dalla rete: due router, due reti, rotte statiche e quattro guasti da trovare.",
+    "key": "4d10e8d341485957",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Alessia",
+    "text": "Ti ho osservato per tre giorni. Cavi, indirizzi, router. Non sapevi tutto, ma hai provato, hai sbagliato e hai ricominciato: è quello che cerchiamo.",
+    "key": "c6f775e7440a9217",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Alessia",
+    "text": "Benvenuto in TNES.",
+    "key": "8113121ea31153ba",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Dai, riprova. Leggi il messaggio del terminale e controlla il modo del prompt, l’interfaccia e la parte di rete dell’indirizzo.",
+    "key": "433597b37aa46fb0",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Controlla ogni cavo. R1 Gi0/1 guarda R2 Gi0/0; R2 Gi0/1 guarda SW2. Un LED acceso da solo non basta.",
+    "key": "e52a7d90fbb8a52e",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Controlla show running-config e show ip interface brief. Nome, accessi, indirizzo e mask, interfaccia attiva. Alla fine salva.",
+    "key": "5b0487607d02caca",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Confronta la destinazione con show ip route su R1. Il next-hop deve essere raggiungibile sul collegamento fra i router.",
+    "key": "86cf569043711147",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "R2 sa rispondere alla rete A? Una rotta va in un solo senso. Controlla la tabella e la configurazione salvata.",
+    "key": "214153f55b3d7a34",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Esegui traceroute da PC2. Un timeout è un indizio: confrontalo con show ip route e show ip interface brief sui due router.",
+    "key": "c2ae55bf93060558",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Switch e gateway devono avere la stessa parte di rete. Controlla anche la maschera.",
+    "key": "30aa305f7446a4e2",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Controlla show ip interface brief: le interfacce dei router sono tutte up?",
+    "key": "909c2869bb0335bc",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Luca",
+    "text": "Confronta running-config e startup-config. Il riavvio carica soltanto ciò che hai salvato.",
+    "key": "fdee619979347183",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Gaia",
+    "text": "Manca il collegamento PC2 — SW1.",
+    "key": "6a9f2ff1b08ceedd",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Gaia",
+    "text": "Manca il collegamento SW1 — R1.",
+    "key": "e03459e4295163b6",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Gaia",
+    "text": "Manca il collegamento R1 — R2.",
+    "key": "5f49a01b66822be0",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Gaia",
+    "text": "Manca il collegamento R2 — SW2.",
+    "key": "1be7e235017e789e",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Gaia",
+    "text": "R1: controlla nome, accessi, IP, mask e interfacce; su SW2 anche il gateway.",
+    "key": "589c900736b43912",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Gaia",
+    "text": "La configurazione di R1 non è salvata.",
+    "key": "74c65d73340fb7b1",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Gaia",
+    "text": "R2: controlla nome, accessi, IP, mask e interfacce; su SW2 anche il gateway.",
+    "key": "67634b50ae6efc89",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Gaia",
+    "text": "La configurazione di R2 non è salvata.",
+    "key": "0a331a370288f3d2",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Gaia",
+    "text": "SW2: controlla nome, accessi, IP, mask e interfacce; su SW2 anche il gateway.",
+    "key": "2f83dfaedb6c8ef6",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Gaia",
+    "text": "La configurazione di SW2 non è salvata.",
+    "key": "0e50867ebc5c42cb",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Gaia",
+    "text": "La rotta di R1 verso la rete B non è corretta.",
+    "key": "2ee99472ca7f1a5f",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Gaia",
+    "text": "La rotta di ritorno di R2 non è corretta.",
+    "key": "d670b64de382112d",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Gaia",
+    "text": "192.168.1.1 non risponde al ping da PC2.",
+    "key": "fa33e6c22e208976",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Gaia",
+    "text": "10.0.0.2 non risponde al ping da PC2.",
+    "key": "5d23276dff2b5081",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Gaia",
+    "text": "192.168.2.2 non risponde al ping da PC2.",
+    "key": "62959e9919fa93ac",
+    "kind": "day3"
+  },
+  {
+    "speaker": "Gaia",
+    "text": "Il traceroute da PC2 a SW2 non è completo.",
+    "key": "64c8a010df27473f",
+    "kind": "day3"
+  }
+]

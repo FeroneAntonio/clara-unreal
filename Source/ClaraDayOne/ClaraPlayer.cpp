@@ -1,4 +1,5 @@
 #include "ClaraPlayer.h"
+#include "Fonts/CompositeFont.h"
 
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -356,7 +357,7 @@ void AClaraPlayer::OpenCourseMaterial()
     if (!bCableConnected) { Notify(TEXT("Materiale non disponibile nel modello locale: collegamento dati interrotto. Quale confronto puoi fare?")); return; }
     if (!bFirstPing) { Notify(TEXT("Prima raccogli una prova di risposta dal terminale del desktop.")); return; }
     bServiceOpened = true;
-    Say(TEXT("Dispense · anteprima del servizio locale"), TEXT("CLARA · Lezione introduttiva: osservare, formulare un'ipotesi, verificare. Il materiale e' disponibile nel modello locale. Il ping verificava una risposta; aprire questo documento verifica separatamente la richiesta. Ora la reception chiede una prova sul destinatario 192.168.10.30."), Stage <= EClaraStage::Service ? EClaraStage::Transfer : Stage);
+    Say(TEXT("Dispense · anteprima del servizio locale"), TEXT("TNES · Lezione introduttiva: osservare, formulare un'ipotesi, verificare. Il materiale e' disponibile nel modello locale. Il ping verificava una risposta; aprire questo documento verifica separatamente la richiesta. Ora la reception chiede una prova sul destinatario 192.168.10.30."), Stage <= EClaraStage::Service ? EClaraStage::Transfer : Stage);
 }
 
 void AClaraPlayer::ReadCurrentTicket()
@@ -677,7 +678,8 @@ void AClaraPlayerController::OpenTerminal(bool bForSwitch)
         ? FLinearColor(0.96f, 0.96f, 0.94f, 1.f) : FLinearColor(0.016f, 0.023f, 0.026f, 1.f);
     const FLinearColor Foreground = bSwitchTerminal
         ? FLinearColor(0.005f, 0.007f, 0.005f, 1.f) : FLinearColor(0.89f, 0.93f, 0.88f, 1.f);
-    const FSlateFontInfo MonoFont(FPaths::EngineContentDir() / TEXT("Slate/Fonts/DroidSansMono.ttf"), 14);
+    static const auto Mono=MakeShared<FCompositeFont>(TEXT("Regular"),FPaths::EngineContentDir()/TEXT("Slate/Fonts/DroidSansMono.ttf"),EFontHinting::Default,EFontLoadingPolicy::LazyLoad);
+    const FSlateFontInfo MonoFont(Mono,14);
     const FSlateFontInfo ButtonFont = FCoreStyle::GetDefaultFontStyle(TEXT("Regular"), 14);
     static const FEditableTextBoxStyle InlineInputStyle = []()
     {

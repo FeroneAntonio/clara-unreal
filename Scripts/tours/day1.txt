@@ -1,0 +1,300 @@
+# Giro di verifica del Giorno 1, allineato al copione del gruppo.
+# Ogni riga: secondi di attesa, azione, argomenti. Avvio:
+#   UnrealEditor ClaraDayOne.uproject -game -windowed -ResX=1280 -ResY=800 -ClaraLocalLab -ClaraFreshStory
+#       -ClaraTour=<questo file> -ClaraShotDir=<cartella delle schermate>
+16 expect phase 0
+0 shot 00-avvio
+0.5 pos 160 380 90 -4 24
+1.5 expect phase 0
+0 shot 01-reception
+0.3 talk Alessia
+1.0 expect phase 0
+0 shot 02-alessia
+0.3 next
+0.3 next
+0.3 next
+0.5 next
+0.8 expect phase 1
+0 shot 03-obiettivo-badge
+0.3 prop Badge
+1.0 expect phase 2
+0 shot 04-alessia-indica-luca
+0.3 next
+0.5 next
+0.5 pos 680 900 90 -4 90
+1.5 expect phase 2
+0 shot 05-laboratorio
+0.3 talk Luca
+1.0 expect phase 2
+0 shot 06-luca
+0.3 next
+0.5 next
+0.5 pos 1135 1010 90 -28 90
+1.2 expect phase 3
+0 shot 07-banco-portatile
+0.3 pickup
+1.0 expect phase 4
+0 shot 08-luca-compito
+0.3 next
+0.3 next
+0.5 next
+0.5 pos 1120 1185 90 -38 90
+1.5 expect phase 4
+0 shot 09-tavolo-cavi
+0.3 take ethernet
+1.0 expect phase 4
+0 shot 10-cavo-in-mano
+0.3 device SW1
+1.5 expect phase 4
+0 shot 11-switch-primo-piano
+0.3 port Gi1/0/5
+0.8 expect phase 4
+0 shot 12-prova-cat6
+0.3 port Console
+0.8 expect phase 4
+0 shot 13-prova-cat6-su-console
+0.3 closedevice
+0.3 box console
+0.8 expect phase 4
+0 shot 14-scatola-sbagliata
+0.3 box ethernet
+0.5 take console
+0.3 device SW1
+0.5 port Gi1/0/5
+0.8 expect phase 4
+0 shot 15-console-nessun-segnale
+0.3 port Console
+0.8 expect phase 4
+0 shot 16-console-ok
+0.3 closedevice
+0.3 box console
+0.5 take fiber
+0.3 device SW1
+0.5 port Gi1/0/25
+0.8 expect phase 4
+0 shot 17-fibra-slot-vuoto
+0.3 device UPLINK
+0.8 port Optical
+0.8 expect phase 4
+0 shot 18-fibra-presa-ottica
+0.3 closedevice
+0.3 prop Coffee
+1.0 expect phase 4
+0 shot 19-cavo-del-caffe
+0.3 next
+0.5 next
+0.3 box fiber
+1.2 expect phase 5
+0 shot 20-luca-spiega-il-ping
+0.3 next
+0.3 next
+0.3 next
+0.5 next
+0.5 laptop
+1.2 expect phase 5
+0 shot 21-desktop
+0.3 screen terminal
+1.0 expect phase 5
+0 shot 22-terminale
+0.3 cmd help
+1.0 expect phase 5
+0 shot 23-help
+0.3 cmd ping 192.168.1.11
+17.0 expect phase 5
+0 shot 24-primo-ping-senza-cavi
+0.3 next
+0.5 next
+0.5 closelaptop
+0.5 device SW1
+0.5 use ethernet
+0.3 port Gi1/0/3
+0.5 device LAPTOP
+0.5 port Ethernet
+0.8 expect phase 5
+0 shot 25-portatile-collegato
+0.3 device SW1
+0.3 view -90 14 60
+1.0 expect phase 5
+0 shot 26-led-ambra
+3.5 expect phase 5
+0 shot 27-led-verde
+0.3 closedevice
+1.0 expect phase 6
+0 shot 28-luca-spiega-i-led
+0.3 next
+0.3 next
+0.3 next
+0.5 next
+0.5 laptop
+0.3 screen terminal
+0.3 cmd ping 192.168.1.11
+17.0 expect phase 6
+0 shot 29-ping-con-un-solo-cavo
+0.5 next
+0.5 closelaptop
+0.5 device PC2
+1.0 expect phase 6
+0 shot 30-pc2
+0.3 port Ethernet
+0.3 device SW1
+0.3 port Gi1/0/7
+4.0 closedevice
+1.0 expect phase 8
+0 shot 31-banco-due-cavi
+0.5 laptop
+0.3 screen terminal
+0.3 cmd ping 192.168.1.11
+17.0 expect phase 9
+0 shot 32-ping-riuscito
+0.3 next
+0.3 next
+0.3 next
+0.5 next
+0.5 closelaptop
+0.3 use console
+0.3 device LAPTOP
+0.5 port ConsoleUSB
+0.8 expect phase 9
+0 shot 33-console-lato-portatile
+0.3 device SW1
+0.5 port Console
+0.8 closedevice
+1.0 expect phase 10
+0 shot 34-luca-console
+0.3 next
+0.3 next
+0.5 next
+0.5 laptop
+0.3 screen terminal
+0.3 cmd ipconfig /all
+1.0 expect phase 10
+0 shot 35-ipconfig-all
+0.3 target SW1
+0.5 cmd show mac address-table
+1.2 expect phase 10
+0 shot 36-tabella-mac-vuota
+0.3 next
+0.3 next
+0.5 next
+0.3 target LAPTOP
+0.3 cmd ping 192.168.1.11
+17.0 target SW1
+0.3 cmd show mac address-table
+1.2 expect phase 10
+0 shot 37-tabella-mac-piena
+0.3 next
+0.5 next
+1.0 expect phase 10
+0 shot 38-domanda-porta
+0.3 answer Gi1/0/3
+1.2 expect phase 11
+0 shot 39-luca-osi
+0.3 next
+0.5 next
+1.0 expect phase 11
+0 shot 40-livelli-osi
+0.3 solve
+1.2 expect phase 12
+0 shot 41-luca-stack
+0.3 next
+0.3 next
+0.5 next
+1.0 expect phase 12
+0 shot 42-livelli-tcpip
+0.3 solve
+1.2 expect phase 13
+0 shot 43-luca-router-fibra
+0.3 next
+0.3 next
+0.5 next
+0.5 device SW1
+0.3 use ethernet
+0.3 port Gi1/0/1
+0.3 device R1
+0.8 expect phase 13
+0 shot 44-router-primo-piano
+0.3 port Gi0/0
+0.3 use sfp_module
+0.3 device SW1
+0.3 port Gi1/0/25
+0.8 expect phase 13
+0 shot 45-modulo-sfp
+0.3 use fiber
+0.3 port Gi1/0/25
+0.3 device UPLINK
+0.5 port Optical
+0.8 expect phase 13
+0 shot 46-fibra-collegata
+4.0 closedevice
+1.0 expect phase 14
+0 shot 47-luca-ultima-prova
+0.3 next
+0.3 next
+0.5 next
+0.5 device SW1
+0.3 use ethernet
+0.3 port Gi1/0/10
+0.3 device LAPTOP
+0.3 port Ethernet
+0.3 device PC2
+0.3 port Ethernet
+0.3 device SW1
+0.3 port Gi1/0/12
+4.0 closedevice
+0.5 laptop
+0.3 screen terminal
+0.3 target LAPTOP
+0.3 cmd ping 192.168.1.11
+17.0 expect phase 15
+0 shot 48-ping-prova-autonoma
+0.3 target SW1
+0.3 cmd show mac address-table
+0.5 answer Gi1/0/10
+1.2 expect phase 15
+0 shot 49-luca-chiusura
+0.3 next
+0.3 next
+0.5 next
+1.5 expect phase 16
+0 shot 50-rapporto
+0.5 close
+0.5 pos 1510 900 90 -6 90
+2.0 expect phase 16
+0 shot 51-sala-apparati
+0.5 pos 1220 300 90 -6 90
+2.0 expect phase 16
+0 shot 52-cyber
+0.5 pos 300 880 90 -6 180
+2.0 expect phase 16
+0 shot 53-briefing
+# Il rapporto resta disponibile prima di scegliere il giorno successivo.
+0.5 notebook
+0.2 expect page report
+0 expect clock 18:00
+0 expect transition inactive
+0 shot 54-riepilogo-giorno1
+0.5 nextday
+0.1 expect phase 16
+0 expect transition active
+0 expect clock 18:00
+1.5 shot 55-zoom-orologio
+10.6 shot 56-orologio-mattina
+2.5 expect phase 100
+0 expect clock 09:00
+0 expect transition inactive
+0 expect page none
+0 shot 56-mattina-giorno2
+1.0 notebook
+1.0 shot 57-taccuino
+0.5 close
+0.5 inventory
+1.0 shot 58-borsa
+0.5 close
+0.5 laptop
+0.5 screen desktop
+1.0 shot 59-desktop
+0.5 screen terminal
+0.5 cmd help
+1.0 shot 60-terminale-aiuto
+0.5 closelaptop
+1.0 quit

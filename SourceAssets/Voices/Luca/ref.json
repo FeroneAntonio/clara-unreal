@@ -1,0 +1,47 @@
+{
+  "descrizione": "A man of about thirty-five with a deep, resonant bass-baritone voice, low pitch, relaxed chest voice. He is a network technician mentoring a new colleague: friendly, calm and reassuring, unhurried and natural. Clear standard Italian diction, no strong regional accent. Close-microphone studio recording, dry, no reverb, no music.",
+  "testo": "Ciao! Luca, piacere. Il portatile laggiù è il tuo: prendilo, ti servirà. Oggi montiamo la rete da zero, un passo alla volta.",
+  "scelto": "candidato-4.wav",
+  "candidati": [
+    {
+      "file": "candidato-1.wav",
+      "testo_sentito": "Ciao. Luca, piacere.  Il portatile è la giù e il tuo. Prendelo ti servirà.  Oggi montiamo la rete da zero. Un passo alla volta.",
+      "corrispondenza": 0.87,
+      "altezza_hz": 158.0,
+      "secondi": 8.24,
+      "caratteri_al_secondo": 15.0,
+      "punteggio": 0.861,
+      "secondi_di_calcolo": 54.5
+    },
+    {
+      "file": "candidato-2.wav",
+      "testo_sentito": "Ciao!  Luca, piacere.  Il portatilo è la giù e il tuo.  Prendilo, ti servirà.  Oggi montiamo la rete da zero, un passo alla volta.",
+      "corrispondenza": 0.87,
+      "altezza_hz": 115.5,
+      "secondi": 11.12,
+      "caratteri_al_secondo": 11.2,
+      "punteggio": 0.903,
+      "secondi_di_calcolo": 75.6
+    },
+    {
+      "file": "candidato-3.wav",
+      "testo_sentito": "Ciao. Luca, piacere. Il portatile è laggiù al tuo. Prendilo, ti servirà.  Oggi montiamo la rete da zero. Un passo alla volta.",
+      "corrispondenza": 0.909,
+      "altezza_hz": 104.8,
+      "secondi": 12.32,
+      "caratteri_al_secondo": 10.1,
+      "punteggio": 0.91,
+      "secondi_di_calcolo": 100.2
+    },
+    {
+      "file": "candidato-4.wav",
+      "testo_sentito": "Ciao!  Luca, piacere. Il portatile laggiù è il tuo. Prendi lo ti servirà.  Oggi montiamo la rete da zero. Un passo alla volta.",
+      "corrispondenza": 0.933,
+      "altezza_hz": 101.8,
+      "secondi": 11.68,
+      "caratteri_al_secondo": 10.6,
+      "punteggio": 0.926,
+      "secondi_di_calcolo": 82.8
+    }
+  ]
+}

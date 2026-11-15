@@ -1,7 +1,10 @@
 #include "ClaraRoomVisitor.h"
+#include "ClaraFrontEnd.h"
+#include "ClaraNarrativeCamera.h"
 #include "ClaraOfficeLayout.h"
 #include "ClaraNetworkDevice.h"
 #include "ClaraStoryDirector.h"
+#include "ClaraAudio.h"
 #include "Camera/CameraComponent.h"
 #include "Camera/CameraActor.h"
 #include "Components/CapsuleComponent.h"
@@ -15,6 +18,8 @@
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Layout/SBorder.h"
 #include "Widgets/Text/STextBlock.h"
+#include "Misc/CommandLine.h"
+#include "Misc/Parse.h"
 
 AClaraRoomVisitor::AClaraRoomVisitor()
 {
@@ -72,7 +77,7 @@ void AClaraRoomController::BeginPlay()
         Views.Add(C);
     }
     TWeakObjectPtr<AClaraRoomController> Weak(this);
-    auto StoryRoomVisibility=[Weak](){return Weak.IsValid()&&Weak->GetStory()?EVisibility::Collapsed:EVisibility::Visible;};
+    auto StoryRoomVisibility=[Weak](){if(!Weak.IsValid()||Weak->GetStory())return EVisibility::Collapsed;TActorIterator<AClaraFrontEnd> It(Weak->GetWorld());if(It)return EVisibility::Collapsed;return EVisibility::Visible;};
     auto Row=SNew(SHorizontalBox).Visibility_Lambda(StoryRoomVisibility);
     const TCHAR* Names[]={TEXT("Esplora"),TEXT("1 Piantina"),TEXT("2 Ingresso"),TEXT("3 Banco reti"),TEXT("4 Cyber"),TEXT("5 Apparati"),TEXT("6 Assonometria"),TEXT("7 Sedia")};
     for(int32 I=0;I<8;++I)
@@ -95,7 +100,7 @@ void AClaraRoomController::BeginPlay()
         +SOverlay::Slot().HAlign(HAlign_Center).VAlign(VAlign_Bottom).Padding(0,0,0,20)[Row]
         +SOverlay::Slot().HAlign(HAlign_Left).VAlign(VAlign_Top).Padding(22,18)
         [SNew(SVerticalBox).Visibility_Lambda(StoryRoomVisibility)
-            +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Text(FText::FromString(TEXT("CLARA  /  STUDIO DEGLI SPAZI"))).ColorAndOpacity(FLinearColor(.85,.90,.86))]
+            +SVerticalBox::Slot().AutoHeight()[SNew(STextBlock).Text(FText::FromString(TEXT("TNES  /  STUDIO DEGLI SPAZI"))).ColorAndOpacity(FLinearColor(.85,.90,.86))]
             +SVerticalBox::Slot().AutoHeight().Padding(0,5)[SNew(STextBlock).Text(FText::FromString(TEXT("WASD cammina  ·  Shift passo rapido  ·  destro guarda  ·  clic sedia/apparato: primo piano  ·  R torna all’ingresso"))).ColorAndOpacity(FLinearColor(.75,.80,.77))]];
     if(GetWorld()->GetGameViewport())GetWorld()->GetGameViewport()->AddViewportWidgetContent(Toolbar.ToSharedRef(),10);
 }
@@ -127,6 +132,7 @@ void AClaraRoomController::View(int32 Index)
 }
 void AClaraRoomController::ResumeWalk()
 {
+    if(const auto* Camera=FindComponentByClass<UClaraNarrativeCamera>();Camera&&Camera->IsActive())return;
     if(IsDeviceOpen())CloseDevice();
     if(ActiveView!=-1 || GetViewTarget()!=GetPawn())
     {
@@ -155,16 +161,20 @@ AClaraStoryDirector* AClaraRoomController::GetStory() const
 }
 bool AClaraRoomController::IsStoryModal() const
 {
-    const auto* Story=GetStory();
-    return Story&&(Story->IsScreenOpen()||!Story->GetPage().IsEmpty());
+    const auto* Camera=FindComponentByClass<UClaraNarrativeCamera>();if(Camera&&Camera->IsActive()&&!IsDeviceOpen())return true;
+    const auto* Story=GetStory();return Story&&(Story->IsScreenOpen()||!Story->GetPage().IsEmpty());
 }
 bool AClaraRoomController::InputKey(const FInputKeyEventArgs& P)
 {
     AClaraStoryDirector* Story=GetStory();
     if(Story)
     {
+        if(P.Key==EKeys::V&&P.Event==IE_Pressed&&!Story->IsScreenOpen())
+        {UClaraNarrativeCamera::Get(this)->ToggleReducedMotion();Pointer();return true;}
         if(P.Key==EKeys::Escape&&P.Event==IE_Pressed)
         {
+            // Esc su un dialogo lo porta a termine: la storia non resta mai a meta' di una battuta.
+            if(Story->GetPage()==TEXT("dialogue")){Story->FinishDialogue();Pointer();return true;}
             if(!Story->GetPage().IsEmpty()){Story->ClosePage();Pointer();return true;}
             if(Story->IsScreenOpen()){Story->CloseLaptopScreen();Pointer();return true;}
         }
@@ -177,17 +187,20 @@ bool AClaraRoomController::InputKey(const FInputKeyEventArgs& P)
             if(Story->GetPage()==TEXT("dialogue")&&(P.Key==EKeys::E||P.Key==EKeys::SpaceBar||P.Key==EKeys::Enter))
             {Story->ContinueDialogue();return true;}
             if(!Story->GetPage().IsEmpty())return Super::InputKey(P);
+            if(const auto* Camera=FindComponentByClass<UClaraNarrativeCamera>();Camera&&Camera->IsActive()&&!IsDeviceOpen())return true;
             if(P.Key==EKeys::H){Story->RequestHint();return true;}
+            if(P.Key==EKeys::M){if(AClaraAudio* Audio=AClaraAudio::Get(this))Audio->SetMuted(!Audio->IsMuted());return true;}
             if(P.Key==EKeys::Q){Story->PlaceLaptop();return true;}
             if(P.Key==EKeys::T){Story->OpenLaptopScreen();return true;}
-            if(P.Key==EKeys::E&&!IsDeviceOpen()){Story->InteractFocused();Pointer();return true;}
+            if(P.Key==EKeys::E&&!IsDeviceOpen())
+            {
+                AActor* Target=Story->FindInteractionTarget();
+                if(!Story->HandleInteraction(Target))if(auto* Device=Cast<AClaraNetworkDevice>(Target))OpenDevice(Device);
+                Pointer();return true;
+            }
         }
         if(!Story->GetPage().IsEmpty())return Super::InputKey(P);
-    }
-    if((P.Key==EKeys::LeftShift || P.Key==EKeys::RightShift) && (P.Event==IE_Pressed || P.Event==IE_Released))
-    {
-        if(auto* C=Cast<ACharacter>(GetPawn()))C->GetCharacterMovement()->MaxWalkSpeed=P.Event==IE_Pressed?480.f:330.f;
-        return true;
+        if(const auto* Camera=FindComponentByClass<UClaraNarrativeCamera>();Camera&&Camera->IsActive()&&!IsDeviceOpen())return true;
     }
     if(IsDeviceOpen())
     {
@@ -198,7 +211,7 @@ bool AClaraRoomController::InputKey(const FInputKeyEventArgs& P)
         {ZoomDevice(P.Key==EKeys::MouseScrollUp?-8.f:8.f);return true;}
         if(P.Key==EKeys::LeftMouseButton||P.Key==EKeys::RightMouseButton)
         {
-            if(P.Event==IE_Pressed){bDeviceDragging=true;bDeviceLeftDrag=P.Key==EKeys::LeftMouseButton;bDeviceMoved=false;return true;}
+            if(P.Event==IE_Pressed){bDeviceDragging=true;bDeviceLeftDrag=P.Key==EKeys::LeftMouseButton;bDeviceMoved=false;DeviceDragTravel=0;return true;}
             if(P.Event==IE_Released)
             {if(bDeviceDragging&&bDeviceLeftDrag&&!bDeviceMoved)ClickDevicePort();bDeviceDragging=false;Pointer();return true;}
         }
@@ -213,11 +226,17 @@ bool AClaraRoomController::InputKey(const FInputKeyEventArgs& P)
         if(P.Event==IE_Released){Pointer();return true;}
     }
     if(P.Event!=IE_Pressed)return Super::InputKey(P);
-    if(P.Key==EKeys::R){ReturnToEntrance();return true;}
+    // Scorciatoie dello studio degli spazi: nella storia un tasto premuto per sbaglio non deve
+    // teletrasportare il giocatore ne' cambiare camera. Restano con -ClaraDevKeys.
+    const bool bStudioKeys=!Story||FParse::Param(FCommandLine::Get(),TEXT("ClaraDevKeys"));
     if(P.Key==EKeys::Escape || P.Key==EKeys::Zero){View(-1);return true;}
-    if(P.Key==EKeys::Eight){OpenFirstDevice();return true;}
-    const FKey Keys[]={EKeys::One,EKeys::Two,EKeys::Three,EKeys::Four,EKeys::Five,EKeys::Six,EKeys::Seven};
-    for(int32 I=0;I<7;++I)if(P.Key==Keys[I]){View(I);return true;}
+    if(bStudioKeys)
+    {
+        if(P.Key==EKeys::R){ReturnToEntrance();return true;}
+        if(P.Key==EKeys::Eight){OpenFirstDevice();return true;}
+        const FKey Keys[]={EKeys::One,EKeys::Two,EKeys::Three,EKeys::Four,EKeys::Five,EKeys::Six,EKeys::Seven};
+        for(int32 I=0;I<7;++I)if(P.Key==Keys[I]){View(I);return true;}
+    }
     if(P.Key==EKeys::LeftMouseButton)
     {
         FHitResult Hit;
@@ -226,7 +245,7 @@ bool AClaraRoomController::InputKey(const FInputKeyEventArgs& P)
             if(Story&&Story->HandleInteraction(Story->FindInteractionTarget())){Pointer();return true;}
             if(auto* Device=Cast<AClaraNetworkDevice>(Hit.GetActor())){OpenDevice(Device);return true;}
             UPrimitiveComponent* Part=Hit.GetComponent();
-            if(Part && Part->ComponentHasTag(TEXT("Inspectable")))
+            if(bStudioKeys && Part && Part->ComponentHasTag(TEXT("Inspectable")))
             {
                 if(!InspectCamera)InspectCamera=GetWorld()->SpawnActor<ACameraActor>();
                 const FVector Center=Part->Bounds.Origin;

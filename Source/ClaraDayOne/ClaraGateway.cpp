@@ -5,6 +5,7 @@
 #include "Serialization/JsonSerializer.h"
 #include "Misc/CommandLine.h"
 #include "Misc/App.h"
+#include "HAL/PlatformProperties.h"
 #include "Misc/Parse.h"
 #include "HAL/PlatformMisc.h"
 #include "Async/Async.h"
@@ -55,7 +56,9 @@ void UClaraGateway::Initialize(bool AllowNetwork)
     FString Config=FPlatformMisc::GetEnvironmentVariable(TEXT("CML_GATEWAY_URL"));Config.TrimStartAndEndInline();
     BaseURL=Config.IsEmpty()?TEXT("https://api-cml.kappino.me"):Config;
     while(BaseURL.EndsWith(TEXT("/")))BaseURL.LeftChopInline(1);
-    const bool Local=FParse::Param(FCommandLine::Get(),TEXT("ClaraLocalLab"));
+    // Standalone demo starts in the labelled local lab; live CML is an explicit launch mode.
+    const bool Local=FParse::Param(FCommandLine::Get(),TEXT("ClaraLocalLab"))
+        ||(FPlatformProperties::RequiresCookedData()&&!FParse::Param(FCommandLine::Get(),TEXT("ClaraLiveCML")));
     const bool Check=FParse::Param(FCommandLine::Get(),TEXT("ClaraGatewayCheck"))||FParse::Param(FCommandLine::Get(),TEXT("ClaraGatewayPortCheck"));
     bEnabled=AllowNetwork&&!Local&&(!FApp::IsUnattended()||Check)&&ValidateBaseURL(BaseURL);
     LastError=!ValidateBaseURL(BaseURL)?TEXT("Indirizzo gateway HTTPS non valido"):FString();

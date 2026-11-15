@@ -1,0 +1,37 @@
+{
+  "descrizione": "A mature woman of about forty-five with a low, steady alto voice. She is the technical head of the company: dry, firm and authoritative, short sentences, measured pace, no theatrical emphasis. Clear standard Italian diction, no strong regional accent. Close-microphone studio recording, dry, no reverb, no music.",
+  "testo": "Fermi tutti. Il piano due è senza rete da dieci minuti. Quando pensi di aver finito, premi TEST. Controllo io.",
+  "scelto": "candidato-2.wav",
+  "candidati": [
+    {
+      "file": "candidato-1.wav",
+      "testo_sentito": "Fermi tutti!  Il piano 2 è senza rete da dieci minuti.  Quando pensi di aver finito, premi test.  Controllo io.",
+      "corrispondenza": 0.95,
+      "altezza_hz": 220.4,
+      "secondi": 10.08,
+      "caratteri_al_secondo": 10.9,
+      "punteggio": 0.937,
+      "secondi_di_calcolo": 74.3
+    },
+    {
+      "file": "candidato-2.wav",
+      "testo_sentito": "Fermi tutti.  Il piano 2 è senza rete da 10 minuti.  Quando pensi di aver finito, premi test.  Controllo io.",
+      "corrispondenza": 0.9,
+      "altezza_hz": 215.0,
+      "secondi": 7.92,
+      "caratteri_al_secondo": 13.9,
+      "punteggio": 0.944,
+      "secondi_di_calcolo": 59.4
+    },
+    {
+      "file": "candidato-3.wav",
+      "testo_sentito": "Fermi tutti.  Il piano 2 è senza rete da 10 minuti.  Quando pensi di aver finito, premi test.  Controllo io.",
+      "corrispondenza": 0.9,
+      "altezza_hz": 276.8,
+      "secondi": 9.28,
+      "caratteri_al_secondo": 11.9,
+      "punteggio": 0.524,
+      "secondi_di_calcolo": 65.6
+    }
+  ]
+}

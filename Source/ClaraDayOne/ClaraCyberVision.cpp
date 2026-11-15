@@ -1,0 +1,13 @@
+#include "ClaraCyberVision.h"
+#include "ClaraCyberWidgets.h"
+#include "ClaraCyberSubsystem.h"
+#include "Styling/CoreStyle.h"
+#include "Widgets/SBoxPanel.h"
+#include "Widgets/Layout/SWrapBox.h"
+#include "Widgets/Input/SButton.h"
+#include "Widgets/Text/STextBlock.h"
+namespace{
+TSharedRef<SWidget> VText(const FString& s){return SNew(STextBlock).Text(FText::FromString(s)).Font(FCoreStyle::GetDefaultFontStyle("Regular",15)).ColorAndOpacity(FLinearColor(0.075f,0.11f,0.15f)).AutoWrapText(true);}
+TSharedRef<SWidget> VButton(const FString& s,TFunction<void()> f){return SNew(SButton).ContentPadding(FMargin(10,5)).ButtonColorAndOpacity(FLinearColor(0.025f,0.34f,0.39f)).OnClicked_Lambda([f]{f();return FReply::Handled();})[ClaraCyberButtonLabel(s)];}
+}
+TSharedRef<SWidget> MakeClaraCyberVision(UClaraCyberSubsystem* Lab,TFunction<void(const FString&)> OnResult){TSharedRef<SVerticalBox> box=SNew(SVerticalBox);if(!Lab)return box;TWeakObjectPtr<UClaraCyberSubsystem> weak=Lab;const auto& state=Lab->GetState();box->AddSlot().AutoHeight()[VText(TEXT("Network Vision / Analisi del traffico"))];if(state.day==1){box->AddSlot().AutoHeight()[VText(TEXT("Postazione  ─────►  Server servizi didattici · 192.168.10.20"))];const int ports[]={21,22,23,443,8080};for(int i=0;i<5;i++){int p=ports[i];FString label=FString::Printf(TEXT("Porta %d · %s"),p,state.ports[i]?TEXT("aperta"):TEXT("chiusa"));box->AddSlot().AutoHeight().Padding(2)[VButton(label,[weak,OnResult,p]{if(weak.IsValid()){weak->Action(TEXT("inspect"),p,FString());OnResult(weak->LastFeedback());}})];}}else if(state.day==2){box->AddSlot().AutoHeight()[VText(TEXT("POSTAZIONI  ─────►  FIREWALL  ─────►  SERVER PRENOTAZIONI"))];const TCHAR* hosts[]={TEXT("192.168.10.50"),TEXT("192.168.10.30"),TEXT("192.168.10.99")};const TCHAR* names[]={TEXT("Reception"),TEXT("Aula"),TEXT("Ospiti")};for(int i=0;i<3;i++){FString ip(hosts[i]),label=FString(names[i])+TEXT(" · ")+ip;box->AddSlot().AutoHeight().Padding(2)[VButton(label,[weak,OnResult,ip]{if(!weak.IsValid())return;const FString cmd=TEXT("ping -I ")+ip+TEXT(" 192.168.20.10");FString result=weak->Command(cmd);OnResult(result);})];}}else if(state.day==3){box->AddSlot().AutoHeight()[VText(TEXT("PC amministrazione → Server prenotazioni\nConfronta i dati visibili nei due canali."))];for(int encrypted=state.path[2]=='B'?1:0;encrypted<2;encrypted++){const bool secure=encrypted!=0;box->AddSlot().AutoHeight().Padding(2)[VButton(secure?(state.path[2]=='B'?TEXT("Osserva pacchetto cifrato"):TEXT("Confronta TLS")):TEXT("Osserva HTTP"),[weak,OnResult,secure]{if(!weak.IsValid())return;weak->Action(TEXT("vision"),secure?1:0,FString());OnResult(weak->LastFeedback());})];}}return box;}

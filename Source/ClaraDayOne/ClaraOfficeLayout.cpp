@@ -1,4 +1,6 @@
 #include "ClaraOfficeLayout.h"
+#include "ClaraFrontEnd.h"
+#include "TimerManager.h"
 #include "ClaraNetworkDevice.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/TextRenderComponent.h"
@@ -74,11 +76,32 @@ void AClaraOfficeLayout::BeginPlay()
     Wood=LoadObject<UMaterialInterface>(nullptr,TEXT("/Game/Materials/M_Wood.M_Wood"));
     Glass=LoadObject<UMaterialInterface>(nullptr,TEXT("/Game/Materials/M_Glass.M_Glass"));
     if (!ensure(Cube && Cylinder && Sphere && Base)) return;
-    Architecture();
-    RoomOffsetY=60; Reception(); Cyber();
-    RoomOffsetY=200; Lounge(); Network(); Apparatus();
-    RoomOffsetY=0; Details();
-    UE_LOG(LogTemp,Display,TEXT("CLARA_LAYOUT_READY: 5 zones, 1900x1440 cm, no people or mission actors."));
+    if(AClaraFrontEnd::IsPreparingOffice(GetWorld()))
+    {
+        TWeakObjectPtr<AClaraOfficeLayout> Weak(this);
+        GetWorldTimerManager().SetTimerForNextTick([Weak](){if(Weak.IsValid())Weak->BuildNextStage();});
+    }
+    else while(!bBuildReady)BuildNextStage();
+}
+void AClaraOfficeLayout::BuildNextStage()
+{
+    switch(BuildStage++)
+    {
+        case 0:Architecture();break;
+        case 1:RoomOffsetY=60;Reception();break;
+        case 2:Cyber();break;
+        case 3:RoomOffsetY=200;Lounge();break;
+        case 4:Network();break;
+        case 5:Apparatus();break;
+        case 6:RoomOffsetY=0;Details();break;
+        default:bBuildReady=true;return;
+    }
+    if(BuildStage==7){bBuildReady=true;UE_LOG(LogTemp,Display,TEXT("CLARA_LAYOUT_READY: five zones built; staged=%d"),AClaraFrontEnd::IsPreparingOffice(GetWorld()));return;}
+    if(AClaraFrontEnd::IsPreparingOffice(GetWorld()))
+    {
+        TWeakObjectPtr<AClaraOfficeLayout> Weak(this);
+        GetWorldTimerManager().SetTimerForNextTick([Weak](){if(Weak.IsValid())Weak->BuildNextStage();});
+    }
 }
 void AClaraOfficeLayout::ShowPlan(bool bPlan)
 {
@@ -318,7 +341,7 @@ void AClaraOfficeLayout::Reception()
     // One working surface; the front panel belongs to this same reception desk.
     Table({340,300,0},{250,85}); Computer({305,300,0}); Chair({305,390,0},180);
     Shape(TEXT("ReceptionModestyPanel"),{340,258,39},{240,3,60},Teal);
-    Text(TEXT("CLARA"),{340,256,43},12);
+    Text(TEXT("TNES"),{340,256,43},12);
     for(float X : {270.f,425.f}) Chair({X,130,0});
     Shape(TEXT("Printer"),{440,300,90},{40,33,20},Paper,false);
     Shape(TEXT("PrinterOutput"),{440,282,89},{29,1.5,4},Ink,false);
@@ -326,7 +349,7 @@ void AClaraOfficeLayout::Reception()
     for(int32 I=0;I<4;++I) Shape(TEXT("VisitorBadge"),{232+I*8.f,270,81.3},{5,9,.3},Paper,false);
     Shape(TEXT("PhoneBase"),{354,270,82},{18,22,4},Ink,false);
     Shape(TEXT("PhoneHandset"),{354,269,86},{20,6,5},Ink,false,FRotator::ZeroRotator,Sphere);
-    Text(TEXT("CLARA"),{12,295,225},32,{0,0,0});
+    Text(TEXT("TNES"),{12,295,225},32,{0,0,0});
     Text(TEXT("NAPOLI / ACCOGLIENZA"),{12,295,190},8,{0,0,0});
     Plant({505,80,0},120); Plant({505,350,0},105);
 }

@@ -73,7 +73,7 @@ namespace ClaraDesktop
                         [
                             SNew(SVerticalBox)
                             + SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Right)
-                            [ Text(TEXT("CLARA"), 48, FLinearColor(0.17f, 0.22f, 0.22f), true) ]
+                            [ Text(TEXT("TNES"), 48, FLinearColor(0.17f, 0.22f, 0.22f), true) ]
                             + SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Right).Padding(0, 8)
                             [ Text(TEXT("LABORATORIO  /  NAPOLI"), 12, FLinearColor(0.24f, 0.30f, 0.29f)) ]
                         ]

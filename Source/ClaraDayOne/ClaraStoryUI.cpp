@@ -1,4 +1,9 @@
+#include "ClaraFrontEnd.h"
+#include "ClaraNarrativeCamera.h"
 #include "ClaraStoryDirector.h"
+#include "ClaraAudioSettings.h"
+#include "Widgets/Input/SComboButton.h"
+#include "ClaraCyberUI.h"
 #include "Framework/Application/SlateApplication.h"
 #include "InputCoreTypes.h"
 #include "Misc/Paths.h"
@@ -11,12 +16,17 @@
 #include "Widgets/Input/SEditableTextBox.h"
 #include "Widgets/Layout/SBorder.h"
 #include "Widgets/Layout/SBox.h"
+#include "Widgets/Layout/SScaleBox.h"
 #include "Widgets/Layout/SScrollBox.h"
 #include "Widgets/Layout/SSeparator.h"
 #include "Widgets/Layout/SUniformGridPanel.h"
+#include "Widgets/Layout/SWrapBox.h"
 #include "Brushes/SlateColorBrush.h"
 #include "Widgets/SBoxPanel.h"
 #include "Widgets/Text/STextBlock.h"
+#include "Fonts/CompositeFont.h"
+#include "Fonts/FontMeasure.h"
+#include "Rendering/SlateRenderer.h"
 
 namespace ClaraStoryUI
 {
@@ -25,11 +35,12 @@ namespace ClaraStoryUI
     const FLinearColor Teal(.025f,.34f,.35f,1.f), Sand(.75f,.57f,.30f,1.f), Night(.025f,.06f,.075f,1.f);
     FSlateFontInfo Font(int32 Size,bool Bold=false)
     {
-        return FCoreStyle::GetDefaultFontStyle(Bold?"Bold":"Regular",Size);
+        return FCoreStyle::GetDefaultFontStyle(Bold?"Medium":"Regular",Size);
     }
     FSlateFontInfo TerminalFont(int32 Size)
     {
-        return FSlateFontInfo(FPaths::EngineContentDir()/TEXT("Slate/Fonts/DroidSansMono.ttf"),Size);
+        static const auto Mono=MakeShared<FCompositeFont>(TEXT("Regular"),FPaths::EngineContentDir()/TEXT("Slate/Fonts/DroidSansMono.ttf"),EFontHinting::Default,EFontLoadingPolicy::LazyLoad);
+        return FSlateFontInfo(Mono,Size);
     }
     TSharedRef<SWidget> Text(const FString& Value,int32 Size=18,FLinearColor Color=Ink,bool Bold=false)
     {
@@ -40,7 +51,16 @@ namespace ClaraStoryUI
         return SNew(STextBlock).Text_Lambda([Getter=MoveTemp(Getter)]{return FText::FromString(Getter());})
             .Font(Font(Size,Bold)).ColorAndOpacity(Color).AutoWrapText(true);
     }
-    TSharedRef<SWidget> Button(const FString& Label,TFunction<void()> Action,bool Primary=false)
+    TSharedRef<SWidget> Label(const FString& Value,int32 Size=14,FLinearColor Color=Ink,bool Bold=false)
+    {
+        return SNew(STextBlock).Text(FText::FromString(Value)).Font(Font(Size,Bold)).ColorAndOpacity(Color).AutoWrapText(false);
+    }
+    TSharedRef<SWidget> LiveLabel(TFunction<FString()> Getter,int32 Size=14,FLinearColor Color=Ink,bool Bold=false)
+    {
+        return SNew(STextBlock).Text_Lambda([Getter=MoveTemp(Getter)]{return FText::FromString(Getter());})
+            .Font(Font(Size,Bold)).ColorAndOpacity(Color).AutoWrapText(false);
+    }
+    TSharedRef<SWidget> Button(const FString& Caption,TFunction<void()> Action,bool Primary=false)
     {
         static const FButtonStyle Flat=FButtonStyle()
             .SetNormal(FSlateColorBrush(FLinearColor::White))
@@ -49,7 +69,7 @@ namespace ClaraStoryUI
         return SNew(SButton).ButtonStyle(&Flat).ButtonColorAndOpacity(Primary?Teal:FLinearColor(.85f,.88f,.85f,1.f))
             .ForegroundColor(Primary?FLinearColor::White:Ink).ContentPadding(FMargin(16,11))
             .OnClicked_Lambda([Action=MoveTemp(Action)]{Action();return FReply::Handled();})
-            [Text(Label,18,Primary?FLinearColor::White:Ink,true)];
+            [Label(Caption,15,Primary?FLinearColor::White:Ink,true)];
     }
     TSharedRef<SWidget> CardWrap(TSharedRef<SWidget> Content,FMargin Padding=FMargin(22))
     {
@@ -167,16 +187,16 @@ namespace ClaraStoryUI
             .SetPadding(FMargin(1,4)).SetFont(TerminalFont(18));
         return Style;
     }
-    TSharedRef<SWidget> TerminalLive(TFunction<FString()> Getter,int32 Size=18,FLinearColor Color=TerminalText)
+    TSharedRef<SWidget> TerminalLive(TFunction<FString()> Getter,int32 Size=18,FLinearColor Color=TerminalText,bool Wrap=true)
     {
         return SNew(STextBlock).Text_Lambda([Getter=MoveTemp(Getter)]{return FText::FromString(Getter());})
-            .Font(TerminalFont(Size)).ColorAndOpacity(Color).AutoWrapText(true);
+            .Font(TerminalFont(Size)).ColorAndOpacity(Color).AutoWrapText(Wrap);
     }
     TSharedRef<SWidget> TerminalButton(const FString& Label,TFunction<void()> Action,bool Primary=false)
     {
         return SNew(SButton).ButtonStyle(&TerminalButtonStyle()).ContentPadding(FMargin(8,5))
             .OnClicked_Lambda([Action=MoveTemp(Action)]{Action();return FReply::Handled();})
-            [Text(Label,14,Primary?TerminalPrompt:TerminalMuted)];
+            [ClaraStoryUI::Label(Label,14,Primary?TerminalPrompt:TerminalMuted)];
     }
 
     class STerminal final:public SCompoundWidget
@@ -186,13 +206,20 @@ namespace ClaraStoryUI
         void Construct(const FArguments& Args)
         {
             Director=Args._Director;
+            ActiveTarget=Director.IsValid()?Director->GetTerminalTarget():FString();
+            HistoryIndex=Director.IsValid()?Director->GetTerminalHistory().Num():0;
             TSharedRef<SHorizontalBox> Targets=SNew(SHorizontalBox);
             TArray<FString> Sessions{TEXT("LAPTOP")};
-            if(Director.IsValid()&&Director->GetPhase()==109){Sessions.Add(TEXT("SW-A"));Sessions.Add(TEXT("SW-B"));}
+            if(Director.IsValid()&&Director->GetDay()==3)Sessions={TEXT("LAPTOP"),TEXT("PC2"),TEXT("R1"),TEXT("R2"),TEXT("SW2")};
+            else if(Director.IsValid()&&Director->GetPhase()==109){Sessions.Add(TEXT("SW-A"));Sessions.Add(TEXT("SW-B"));}
             else Sessions.Add(Director.IsValid()&&Director->GetDay()==2?TEXT("SW-PROVA"):TEXT("SW1"));
             for(const FString& Id:Sessions)
-                Targets->AddSlot().AutoWidth().Padding(0,0,12,0)[TerminalButton(Id==TEXT("LAPTOP")?TEXT("PC · Linux"):TEXT("Console · ")+Id,
-                    [this,Id]{if(Director.IsValid()){Director->SelectTerminalTarget(Id);Help.Reset();}FocusInput();})];
+                Targets->AddSlot().AutoWidth().Padding(0,0,12,0)[SNew(SButton)
+                    .ButtonStyle(&TerminalButtonStyle()).ContentPadding(FMargin(8,5))
+                    .OnClicked_Lambda([this,Id]{if(Director.IsValid()){if(Director->IsTerminalPasswordInput())Fill(TEXT(""),false);Director->SelectTerminalTarget(Id);SyncSession();Help.Reset();}FocusInput();return FReply::Handled();})[
+                        SNew(STextBlock).Text(FText::FromString(Id==TEXT("PC2")?TEXT("PC2 · rete"):Id==TEXT("LAPTOP")?(Director.IsValid()&&Director->GetDay()==3?TEXT("Portatile · console"):TEXT("PC · Linux")):TEXT("Console · ")+Id))
+                        .Font(Font(14)).ColorAndOpacity_Lambda([this,Id]{return Director.IsValid()&&Director->GetTerminalTarget()==Id?TerminalPrompt:TerminalMuted;})
+                    ]];
             const auto D=Director;
             TSharedRef<SEditableTextBox> PortAnswer=AnswerInput(D,16);
             PortAnswer->SetStyle(&TerminalInputStyle());
@@ -214,10 +241,12 @@ namespace ClaraStoryUI
                     ]
                 ]
                 +SVerticalBox::Slot().AutoHeight()[SNew(SHorizontalBox)
-                    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,8,0)[TerminalLive([this]{return Director.IsValid()?Director->GetTerminalPrompt():TEXT(">");},18,TerminalPrompt)]
+                    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,8,0)[TerminalLive([this]{return Director.IsValid()?Director->GetTerminalPrompt():TEXT(">");},18,TerminalPrompt,false)]
                     +SHorizontalBox::Slot().FillWidth(1.f)[
                         SAssignNew(Input,SEditableTextBox).Style(&TerminalInputStyle()).Font(TerminalFont(18)).MinDesiredWidth(250).ClearKeyboardFocusOnCommit(false)
-                        .HintText(FText::FromString(TEXT("")))
+                        .IsPassword_Lambda([D]{return D.IsValid()&&D->IsTerminalPasswordInput();})
+                        .IsReadOnly_Lambda([D]{return D.IsValid()&&D->IsTerminalBusy();})
+                        .HintText_Lambda([D]{return FText::FromString(D.IsValid()&&D->IsTerminalBusy()?TEXT("Ping in corso · Ctrl+C per interrompere"):D.IsValid()&&D->IsTerminalPasswordInput()?TEXT("Password del laboratorio"):TEXT("Scrivi un comando · help per iniziare"));})
                         .OnTextCommitted(this,&STerminal::Commit)
                         .OnTextChanged(this,&STerminal::Changed)
                         .OnKeyDownHandler(this,&STerminal::KeyDown)
@@ -228,7 +257,7 @@ namespace ClaraStoryUI
                         SNew(SVerticalBox)
                         +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,6)[TerminalLive([D]{return D.IsValid()?D->GetQuestion():FString();},16,TerminalMuted)]
                         +SVerticalBox::Slot().AutoHeight()[SNew(SHorizontalBox)
-                            +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,10,0)[Text(TEXT("Porta >"),16,TerminalPrompt)]
+                            +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,10,0)[Label(TEXT("Porta >"),16,TerminalPrompt)]
                             +SHorizontalBox::Slot().FillWidth(1)[PortAnswer]
                             +SHorizontalBox::Slot().AutoWidth().Padding(10,0,0,0)[TerminalButton(TEXT("Verifica"),[D,PortAnswer]{if(D.IsValid()){D->SubmitAnswer(PortAnswer->GetText().ToString());PortAnswer->SetText(FText::GetEmpty());}},true)]
                         ]
@@ -241,6 +270,15 @@ namespace ClaraStoryUI
             SCompoundWidget::Tick(G,Time,Delta);
             if(Director.IsValid())
             {
+                if(!Director->GetPage().IsEmpty())InitialFocusPending=true;
+                if(InitialFocusPending&&Director->GetPage().IsEmpty())
+                {
+                    InitialFocusPending=false;
+                    FocusInput();
+                }
+                SyncSession();
+                const bool Password=Director->IsTerminalPasswordInput();
+                if(Password!=PasswordMode){PasswordMode=Password;Drafts.Remove(ActiveTarget);Help.Reset();Fill(TEXT(""),false);}
                 const FString Current=Director->GetTranscript();
                 if(Current!=LastTranscript){LastTranscript=Current;if(Scroll.IsValid())Scroll->ScrollToEnd();}
             }
@@ -249,30 +287,41 @@ namespace ClaraStoryUI
         TWeakObjectPtr<AClaraStoryDirector> Director;
         TSharedPtr<SEditableTextBox> Input;
         TSharedPtr<SScrollBox> Scroll;
-        TArray<FString> History;
+        TMap<FString,FString> Drafts;
         int32 HistoryIndex=0;
-        FString Help,LastTranscript;
-        bool Updating=false;
+        FString Help,LastTranscript,ActiveTarget;
+        bool Updating=false,InitialFocusPending=true,PasswordMode=false;
         void FocusInput(){if(Input.IsValid())FSlateApplication::Get().SetKeyboardFocus(Input);}
-        void Fill(const FString& Value){if(!Input.IsValid())return;Updating=true;Input->SetText(FText::FromString(Value));Input->GoTo(ETextLocation::EndOfDocument);Updating=false;FocusInput();}
+        void Fill(const FString& Value,bool Focus=true){if(!Input.IsValid())return;Updating=true;Input->SetText(FText::FromString(Value));Input->GoTo(ETextLocation::EndOfDocument);Updating=false;if(Focus)FocusInput();}
+        void SyncSession()
+        {
+            if(!Director.IsValid()||ActiveTarget==Director->GetTerminalTarget())return;
+            if(Input.IsValid()&&!PasswordMode)Drafts.Add(ActiveTarget,Input->GetText().ToString());
+            ActiveTarget=Director->GetTerminalTarget();HistoryIndex=Director->GetTerminalHistory().Num();Help.Reset();
+            Fill(Drafts.FindRef(ActiveTarget),Director->GetPage().IsEmpty());
+        }
         void Submit()
         {
             if(!Director.IsValid()||!Input.IsValid())return;
-            FString Command=Input->GetText().ToString();Command.TrimStartAndEndInline();if(Command.IsEmpty()&&Director->GetTerminalTarget()==TEXT("LAPTOP"))return;
-            if(!Command.IsEmpty()&&(History.IsEmpty()||History.Last()!=Command))History.Add(Command);
-            HistoryIndex=History.Num();Director->RunCommand(Command);Help.Reset();Fill(TEXT(""));
+            SyncSession();if(Director->IsTerminalBusy())return;const bool PasswordInput=Director->IsTerminalPasswordInput();
+            FString Command=Input->GetText().ToString();if(!PasswordInput)Command.TrimStartAndEndInline();if(Command.IsEmpty()&&!PasswordInput&&Director->GetTerminalTarget()==TEXT("LAPTOP"))return;
+            Director->RunCommand(Command);PasswordMode=Director->IsTerminalPasswordInput();HistoryIndex=Director->GetTerminalHistory().Num();
+            Drafts.Remove(ActiveTarget);Help.Reset();Fill(TEXT(""),Director->GetPage().IsEmpty());
             if(Scroll.IsValid())Scroll->ScrollToEnd();
         }
         void Commit(const FText&,ETextCommit::Type Type){if(Type==ETextCommit::OnEnter)Submit();}
         void Changed(const FText& Value)
         {
-            if(Updating||!Director.IsValid())return;
+            if(Updating||!Director.IsValid()||Director->IsTerminalReadingBanner()||Director->IsTerminalPasswordInput()||Director->IsTerminalBusy())return;
             int32 Index;const FString TextValue=Value.ToString();
+            if(TextValue.TrimStart().StartsWith(TEXT("banner motd "),ESearchCase::IgnoreCase))return;
             if(TextValue.FindChar(TEXT('?'),Index)){const FString Prefix=TextValue.Left(Index);Help=Director->CommandHelp(Prefix);Fill(Prefix);}
         }
         FReply KeyDown(const FGeometry&,const FKeyEvent& Event)
         {
             if(!Director.IsValid()||!Input.IsValid())return FReply::Unhandled();
+            if(Event.GetKey()==EKeys::C&&Event.IsControlDown()&&Director->CancelTerminalCommand()){Help.Reset();Fill(TEXT(""));return FReply::Handled();}
+            if((Director->IsTerminalPasswordInput()||Director->IsTerminalBusy())&&(Event.GetKey()==EKeys::Tab||Event.GetKey()==EKeys::Up||Event.GetKey()==EKeys::Down))return FReply::Handled();
             if(Event.GetKey()==EKeys::Tab)
             {
                 const FString Prefix=Input->GetText().ToString(),Complete=Director->CompleteCommand(Prefix);
@@ -281,8 +330,10 @@ namespace ClaraStoryUI
             }
             if(Event.GetKey()==EKeys::Up||Event.GetKey()==EKeys::Down)
             {
+                const auto History=Director->GetTerminalHistory();
+                if(HistoryIndex==History.Num())Drafts.Add(ActiveTarget,Input->GetText().ToString());
                 HistoryIndex=FMath::Clamp(HistoryIndex+(Event.GetKey()==EKeys::Up?-1:1),0,History.Num());
-                Fill(HistoryIndex<History.Num()?History[HistoryIndex]:FString());return FReply::Handled();
+                Fill(HistoryIndex<History.Num()?History[HistoryIndex]:Drafts.FindRef(ActiveTarget));return FReply::Handled();
             }
             return FReply::Unhandled();
         }
@@ -303,6 +354,7 @@ namespace ClaraStoryUI
 
     TSharedRef<SWidget> ActivityBody(TWeakObjectPtr<AClaraStoryDirector> D,const FString& Page)
     {
+            if(Page==TEXT("puzzle")&&D.IsValid()&&D->IsTowerPuzzle())return MakeClaraLayerTower(D.Get());
             TSharedRef<SVerticalBox> Body=SNew(SVerticalBox);
             if(Page==TEXT("notebook"))
             {
@@ -321,9 +373,9 @@ namespace ClaraStoryUI
                     const FString Kind=Cable.Kind;
                     Body->AddSlot().AutoHeight().Padding(0,0,0,8)[SNew(SHorizontalBox)
                         +SHorizontalBox::Slot().FillWidth(1)[Button(Cable.Label,[D,Kind]{if(D.IsValid())D->SelectSortingCable(Kind);})]
-                        +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(14,0)[Live([D,Kind]{return D.IsValid()&&D->IsCableSorted(Kind)?TEXT("Classificato"):TEXT("Da esaminare");},16,Teal)]];
+                        +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(14,0)[LiveLabel([D,Kind]{return D.IsValid()&&D->IsCableSorted(Kind)?TEXT("Classificato"):TEXT("Da esaminare");},16,Teal)]];
                 }
-                Body->AddSlot().AutoHeight().Padding(0,16,0,12)[Live([D]{return FString(TEXT("Cavo selezionato: "))+(D.IsValid()?D->GetSortingCable():FString());},19,Teal,true)];
+                Body->AddSlot().AutoHeight().Padding(0,16,0,12)[Live([D]{return FString(TEXT("Cavo selezionato: "))+(D.IsValid()?D->GetSortingCable():FString());},16,Teal)];
                 TSharedRef<SHorizontalBox> Bins=SNew(SHorizontalBox);
                 for(const auto& Pair:TArray<TPair<FString,FString>>{{TEXT("ethernet"),TEXT("Scatola Ethernet")},{TEXT("console"),TEXT("Scatola console")},{TEXT("fiber"),TEXT("Scatola fibra")},{TEXT("coffee"),TEXT("Restituisci a Luca")}})
                     Bins->AddSlot().FillWidth(1).Padding(0,0,8,0)[Button(Pair.Value,[D,Kind=Pair.Key]{if(D.IsValid())D->SortCable(Kind);},true)];
@@ -338,8 +390,8 @@ namespace ClaraStoryUI
                     const FLinearColor RowColor=I%2?FLinearColor(.86f,.91f,.87f,1):FLinearColor(.94f,.88f,.75f,1);
                     Body->AddSlot().AutoHeight().Padding(0,0,0,8)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(RowColor).Padding(12)[
                         SNew(SHorizontalBox)
-                        +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,14,0)[Text(FString::FromInt(I+1),24,Teal,true)]
-                        +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[Live([D,I]{const auto Values=D.IsValid()?D->GetPuzzleItems():TArray<FString>();return Values.IsValidIndex(I)?Values[I]:FString();},20,Ink,true)]
+                        +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,14,0)[Label(FString::FromInt(I+1),24,Teal,true)]
+                        +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[Live([D,I]{const auto Values=D.IsValid()?D->GetPuzzleItems():TArray<FString>();return Values.IsValidIndex(I)?Values[I]:FString();},17,Ink)]
                         +SHorizontalBox::Slot().AutoWidth().Padding(10,0,6,0)[Button(TEXT("Su"),[D,I]{if(D.IsValid())D->MovePuzzleItem(I,-1);})]
                         +SHorizontalBox::Slot().AutoWidth()[Button(TEXT("Giù"),[D,I]{if(D.IsValid())D->MovePuzzleItem(I,1);})]
                     ]];
@@ -349,16 +401,22 @@ namespace ClaraStoryUI
             else if(Page==TEXT("subnet"))
             {
                 TSharedRef<SEditableTextBox> Answer=AnswerInput(D,23);
-                Body->AddSlot().AutoHeight().Padding(0,0,0,16)[Live([D]{return D.IsValid()?D->GetQuestion():FString();},23,Ink,true)];
+                Body->AddSlot().AutoHeight().Padding(0,0,0,16)[Live([D]{return D.IsValid()?D->GetQuestion():FString();},20,Ink,true)];
                 Body->AddSlot().AutoHeight().Padding(0,0,0,20)[Live([D]{return D.IsValid()?D->GetAnswerHint():FString();},18,Muted)];
                 Body->AddSlot().AutoHeight().Padding(0,0,0,15)[Answer];
                 Body->AddSlot().AutoHeight()[Button(TEXT("Controlla il passaggio"),[D,Answer]{if(D.IsValid()){D->SubmitAnswer(Answer->GetText().ToString());Answer->SetText(FText::GetEmpty());}},true)];
             }
             else if(Page==TEXT("report"))
             {
-                Body->AddSlot().AutoHeight().Padding(0,0,0,18)[Live([D]{return D.IsValid()?D->GetNotebookText():FString();},19)];
-                Body->AddSlot().AutoHeight().Padding(0,0,0,14)[Text(TEXT("Le prove contano: un collegamento fisico, una risposta di rete e un accesso autenticato verificano cose diverse. Conserva il metodo, non soltanto la sequenza dei comandi."),19,Muted)];
-                if(D->GetPhase()==16)Body->AddSlot().AutoHeight()[Button(TEXT("Inizia il giorno 2"),[D]{if(D.IsValid())D->StartDay2();},true)];
+                Body->AddSlot().AutoHeight().Padding(0,0,0,14)[Text(D->GetDay()==1?TEXT("Bel lavoro oggi: cavi in ordine, rete su, MAC letto, ping fatto."):TEXT("Rete su. Configurazioni salvate, anche dopo il riavvio."),23,Ink,true)];
+                TSharedRef<SWrapBox> Next=SNew(SWrapBox).UseAllottedSize(true).InnerSlotPadding(FVector2D(12,10));
+                if(D->GetPhase()==16)Next->AddSlot()[Button(TEXT("Inizia il Giorno 2"),[D]{if(D.IsValid())D->BeginNextDayTransition();},true)];
+                if(D->GetPhase()==110)Next->AddSlot()[Button(TEXT("Continua → Giorno 3"),[D]{if(D.IsValid())D->BeginNextDayTransition();},true)];
+                Next->AddSlot()[Button(TEXT("Nuova partita dal Giorno 1"),[D]{if(D.IsValid())D->RestartStory();})];
+                Body->AddSlot().AutoHeight().Padding(0,0,0,18)[Next];
+                Body->AddSlot().AutoHeight().Padding(0,0,0,16)[Text(TEXT("Le prove contano: un collegamento fisico, una risposta di rete e un accesso autenticato verificano cose diverse. Conserva il metodo, non soltanto la sequenza dei comandi."),17,Muted)];
+                Body->AddSlot().AutoHeight().Padding(0,0,0,8)[Text(TEXT("I TUOI APPUNTI"),13,Muted,true)];
+                Body->AddSlot().AutoHeight()[Live([D]{return D.IsValid()?D->GetNotebookText():FString();},17)];
             }
             else Body->AddSlot().AutoHeight()[Live([D]{return D.IsValid()?D->GetObjective():FString();},20)];
             return SNew(SScrollBox)+SScrollBox::Slot()[Body];
@@ -394,7 +452,7 @@ namespace ClaraStoryUI
     public:
         SLATE_BEGIN_ARGS(SItemSketch){} SLATE_ARGUMENT(FString,Item) SLATE_END_ARGS()
         void Construct(const FArguments& A){Item=A._Item;}
-        FVector2D ComputeDesiredSize(float)const override{return {120,80};}
+        FVector2D ComputeDesiredSize(float)const override{return {110,64};}
         int32 OnPaint(const FPaintArgs&,const FGeometry& G,const FSlateRect&,FSlateWindowElementList& O,int32 L,const FWidgetStyle&,bool)const override
         {
             const auto* B=FCoreStyle::Get().GetBrush("WhiteBrush");const FVector2D C=G.GetLocalSize()/2;
@@ -422,74 +480,222 @@ namespace ClaraStoryUI
     public:
         SLATE_BEGIN_ARGS(SStoryPanel){} SLATE_ARGUMENT(AClaraStoryDirector*,Director) SLATE_END_ARGS()
         void Construct(const FArguments& Args){Director=Args._Director;Rebuild();}
+        bool SupportsKeyboardFocus()const override{return true;}
+        FReply OnKeyDown(const FGeometry& Geometry,const FKeyEvent& Event)override
+        {
+            if(Director.IsValid()&&Director->GetPage()==TEXT("dialogue"))
+            {
+                const FKey Key=Event.GetKey();
+                if(Key==EKeys::V){if(auto* PC=Director->GetWorld()->GetFirstPlayerController())UClaraNarrativeCamera::Get(PC)->ToggleReducedMotion();}
+                else if(Key==EKeys::Escape)Director->FinishDialogue();
+                else if(Key==EKeys::Enter||Key==EKeys::SpaceBar||Key==EKeys::E)Director->ContinueDialogue();
+                else if(Key==EKeys::Tab)return FReply::Unhandled();
+                return FReply::Handled();
+            }
+            return SCompoundWidget::OnKeyDown(Geometry,Event);
+        }
         void Tick(const FGeometry& G,double Time,float Delta)override
         {
             SCompoundWidget::Tick(G,Time,Delta);if(!Director.IsValid())return;
             FString Next=Director->GetPage()+TEXT("|")+Director->GetDialogue()+TEXT("|")+FString::FromInt(Director->GetPhase());
             for(const auto& Choice:Director->GetChoices())Next+=TEXT("|")+Choice;
+            if(Director->GetPage()==TEXT("notebook"))Next+=TEXT("|")+FString::FromInt(NotebookPage)+TEXT("|")+Director->GetNotebookText();
             if(Next!=Signature){Signature=Next;Rebuild();}
+            if(Director->GetPage()==TEXT("dialogue")&&!DialogueFocused)
+            {
+                DialogueFocused=true;
+                FSlateApplication::Get().SetKeyboardFocus(SharedThis(this));
+            }
         }
     private:
         TWeakObjectPtr<AClaraStoryDirector> Director;
         FString Signature,SelectedItem=TEXT("laptop");
+        bool DialogueFocused=false;
+        int32 NotebookPage=0,NotebookChapterPage=1;
+        FString NotebookTitle,NotebookContent,NotebookChapter;
         TSharedRef<SWidget> Notebook()
         {
             auto D=Director;
-            auto PageText=SNew(SVerticalBox)
-                +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,24)[Text(TEXT("APPUNTI DI LABORATORIO"),14,Muted,true)]
-                +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,20)[Text(TEXT("Il primo messaggio"),28,Ink,true)]
-                +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,18)[Live([D]{return D.IsValid()?D->GetObjective():FString();},21,Ink)]
-                +SVerticalBox::Slot().AutoHeight().Padding(0,20,0,14)[Text(TEXT("Da ricordare"),22,Teal,true)]
-                +SVerticalBox::Slot().AutoHeight()[Text(TEXT("Osserva le prese.\nRicostruisci il percorso.\nProva, poi leggi la risposta.\nUn errore e' un indizio."),19,Ink)]
-                +SVerticalBox::Slot().FillHeight(1)[SNew(SBox)]
-                +SVerticalBox::Slot().AutoHeight()[Text(TEXT("CLARA  /  taccuino personale"),13,Muted)];
-            return SNew(SOverlay)+SOverlay::Slot().HAlign(HAlign_Center).VAlign(VAlign_Center).Padding(30)[
-                SNew(SBox).WidthOverride(1060).HeightOverride(650)[SNew(SNotebookPaper)[
+            FString Notes=D->GetNotebookText();
+            Notes.RemoveFromStart(D->GetTitle()+TEXT("\n\n"));
+            TArray<FString> Blocks;Notes.ParseIntoArray(Blocks,TEXT("\n\n"),true);
+            struct FNotebookPage { FString Chapter,Body; int32 ChapterPage=1; };
+            TArray<FNotebookPage> Pages;
+            TArray<TPair<FString,int32>> Chapters;
+            const auto Measure=FSlateApplication::Get().GetRenderer()->GetFontMeasureService();
+            // Match the fixed paper column; keep each sheet short without shrinking the font.
+            constexpr float TextWidth=416.f;
+            constexpr int32 LinesPerPage=9;
+            auto AddChapter=[&](const FString& Title,const FString& Body)
+            {
+                Chapters.Add({Title,Pages.Num()});
+                TArray<FString> Paragraphs;Body.ParseIntoArrayLines(Paragraphs,false);
+                FString Sheet;int32 Lines=0,ChapterPage=1;
+                auto AddLine=[&](const FString& Line)
+                {
+                    if(Lines==LinesPerPage)
+                    {
+                        Pages.Add({Title,Sheet.TrimEnd(),ChapterPage++});
+                        Sheet.Empty();Lines=0;
+                    }
+                    if(Line.IsEmpty()&&Lines==0)return;
+                    if(Lines>0)Sheet+=TEXT("\n");
+                    Sheet+=Line;++Lines;
+                };
+                for(const FString& Paragraph:Paragraphs)
+                {
+                    TArray<FString> Words;Paragraph.ParseIntoArrayWS(Words);
+                    FString Line;
+                    for(const FString& Word:Words)
+                    {
+                        const FString Candidate=Line.IsEmpty()?Word:Line+TEXT(" ")+Word;
+                        if(!Line.IsEmpty()&&Measure->Measure(Candidate,Font(18)).X>TextWidth)
+                        {AddLine(Line);Line=Word;}
+                        else Line=Candidate;
+                    }
+                    if(!Line.IsEmpty())AddLine(Line);
+                    AddLine(TEXT(""));
+                }
+                if(!Sheet.TrimStartAndEnd().IsEmpty())Pages.Add({Title,Sheet.TrimEnd(),ChapterPage});
+                if(Pages.Num()==Chapters.Last().Value)Pages.Add({Title,TEXT("Le osservazioni di questo capitolo compariranno qui."),1});
+#if DO_CHECK
+                TArray<FString> OriginalWords,PrintedWords;
+                Body.ParseIntoArrayWS(OriginalWords);
+                for(int32 I=Chapters.Last().Value;I<Pages.Num();++I)
+                {
+                    TArray<FString> Words;Pages[I].Body.ParseIntoArrayWS(Words);PrintedWords.Append(Words);
+                }
+                check(OriginalWords.IsEmpty()||OriginalWords==PrintedWords);
+#endif
+            };
+            for(const FString& Block:Blocks)
+            {
+                int32 Break=INDEX_NONE;
+                if(Block.FindChar(TEXT('\n'),Break))AddChapter(Block.Left(Break),Block.Mid(Break+1));
+                else AddChapter(TEXT("APPUNTI"),Block);
+            }
+            if(Pages.IsEmpty())AddChapter(TEXT("APPUNTI"),TEXT("Le osservazioni raccolte durante le attività compariranno qui."));
+            AddChapter(TEXT("DA RICORDARE"),TEXT("Osserva le prese.\nRicostruisci il percorso.\nProva, poi leggi la risposta.\nUn errore è un indizio."));
+            if(NotebookTitle!=D->GetTitle()){NotebookTitle=D->GetTitle();NotebookPage=0;}
+            else if(NotebookContent!=Notes&&!NotebookChapter.IsEmpty())
+            {
+                for(int32 I=0;I<Pages.Num();++I)
+                    if(Pages[I].Chapter==NotebookChapter&&Pages[I].ChapterPage<=NotebookChapterPage)NotebookPage=I;
+            }
+            NotebookContent=Notes;
+            NotebookPage=FMath::Clamp(NotebookPage,0,Pages.Num()-1);
+            const int32 Count=Pages.Num();
+            const FNotebookPage& Current=Pages[NotebookPage];
+            NotebookChapter=Current.Chapter;NotebookChapterPage=Current.ChapterPage;
+            int32 ChapterIndex=0;
+            for(int32 I=0;I<Chapters.Num();++I)if(Chapters[I].Value<=NotebookPage)ChapterIndex=I;
+            const int32 ChapterEnd=Chapters.IsValidIndex(ChapterIndex+1)?Chapters[ChapterIndex+1].Value:Count;
+            static const FButtonStyle PaperButton=FButtonStyle()
+                .SetNormal(FSlateColorBrush(FLinearColor::White))
+                .SetHovered(FSlateColorBrush(FLinearColor(.87f,.93f,.88f)))
+                .SetPressed(FSlateColorBrush(FLinearColor(.74f,.84f,.78f)));
+            const auto PageButton=[&](const FString& Caption,int32 Index,bool Enabled=true,bool Active=false)
+            {
+                return SNew(SButton).ButtonStyle(&PaperButton).IsEnabled(Enabled)
+                    .ButtonColorAndOpacity(Active?FLinearColor(.77f,.87f,.79f):FLinearColor(.96f,.94f,.85f))
+                    .ContentPadding(FMargin(10,10)).ToolTipText(FText::FromString(Caption))
+                    // Rebuild on the following Tick, after Slate finishes this input callback.
+                    .OnClicked_Lambda([this,Index]{NotebookPage=Index;return FReply::Handled();})
+                    [SNew(STextBlock).Text(FText::FromString(Caption)).Font(Font(15,Active))
+                        .ColorAndOpacity(Ink).AutoWrapText(false).OverflowPolicy(ETextOverflowPolicy::Ellipsis)];
+            };
+            auto Index=SNew(SVerticalBox);
+            TSharedPtr<SWidget> SelectedChapter;
+            for(int32 I=0;I<Chapters.Num();++I)
+            {
+                auto ChapterButton=PageButton(FString::Printf(TEXT("%02d   %s"),I+1,*Chapters[I].Key),Chapters[I].Value,true,I==ChapterIndex);
+                Index->AddSlot().AutoHeight().Padding(0,0,0,4)[ChapterButton];
+                if(I==ChapterIndex)SelectedChapter=ChapterButton;
+            }
+            auto IndexScroll=SNew(SScrollBox)+SScrollBox::Slot()[Index];
+            IndexScroll->ScrollDescendantIntoView(SelectedChapter,false);
+            auto Contents=SNew(SVerticalBox)
+                +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,10)[Text(TEXT("TNES / APPUNTI DI LABORATORIO"),12,Muted,true)]
+                +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,24)[Text(D->GetTitle(),22,Ink,true)]
+                +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,10)[Text(TEXT("Capitoli"),18,Teal,true)]
+                +SVerticalBox::Slot().FillHeight(1)[IndexScroll]
+                +SVerticalBox::Slot().AutoHeight().Padding(0,18,0,0)[Text(TEXT("Scegli un capitolo. Le note si aggiungono mentre impari."),13,Muted)];
+            return SNew(SOverlay)+SOverlay::Slot().HAlign(HAlign_Fill).VAlign(VAlign_Fill).Padding(30)[
+                SNew(SScaleBox).Stretch(EStretch::ScaleToFit).StretchDirection(EStretchDirection::DownOnly)[SNew(SBox).WidthOverride(1060).HeightOverride(650)[SNew(SNotebookPaper)[
                     SNew(SHorizontalBox)
-                    +SHorizontalBox::Slot().FillWidth(1).Padding(62,40,34,40)[PageText]
-                    +SHorizontalBox::Slot().FillWidth(1).Padding(52,38,35,35)[SNew(SVerticalBox)
-                        +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,15)[SNew(SHorizontalBox)
-                            +SHorizontalBox::Slot().FillWidth(1)[Text(TEXT("Osservazioni e strumenti"),20,Ink,true)]
-                            +SHorizontalBox::Slot().AutoWidth()[Button(TEXT("×"),[D]{if(D.IsValid())D->ClosePage();})]]
-                        +SVerticalBox::Slot().FillHeight(1)[SNew(SScrollBox)+SScrollBox::Slot()[Live([D]{return D.IsValid()?D->GetNotebookText():FString();},18,FLinearColor(.12,.23,.33))]]]
-                ]]];
+                    +SHorizontalBox::Slot().FillWidth(1).Padding(58,38,34,34)[Contents]
+                    +SHorizontalBox::Slot().FillWidth(1).Padding(50,32,34,30)[SNew(SVerticalBox)
+                        +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,12)[SNew(SHorizontalBox)
+                            +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[Text(TEXT("TACCUINO PERSONALE"),12,Muted,true)]
+                            +SHorizontalBox::Slot().AutoWidth()[Button(TEXT("Chiudi"),[D]{if(D.IsValid())D->ClosePage();})]]
+                        +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,20)[Text(Current.Chapter,22,Ink,true)]
+                        +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,14)[Text(
+                            FString::Printf(TEXT("Capitolo %d · pagina %d di %d"),ChapterIndex+1,Current.ChapterPage,ChapterEnd-Chapters[ChapterIndex].Value),13,Muted)]
+                        +SVerticalBox::Slot().FillHeight(1)[SNew(SScrollBox)+SScrollBox::Slot()[
+                            SNew(STextBlock).Text(FText::FromString(Current.Body))
+                                .Font(Font(18)).ColorAndOpacity(Ink).WrapTextAt(TextWidth).LineHeightPercentage(1.25f)]]
+                        +SVerticalBox::Slot().AutoHeight().Padding(0,16,0,10)[SNew(SSeparator)]
+                        +SVerticalBox::Slot().AutoHeight()[SNew(SHorizontalBox)
+                            +SHorizontalBox::Slot().AutoWidth()[PageButton(TEXT("Precedente"),NotebookPage-1,NotebookPage>0)]
+                            +SHorizontalBox::Slot().FillWidth(1).HAlign(HAlign_Center).VAlign(VAlign_Center)[Text(FString::Printf(TEXT("%d / %d"),NotebookPage+1,Count),14,Muted)]
+                            +SHorizontalBox::Slot().AutoWidth()[PageButton(TEXT("Successiva"),NotebookPage+1,NotebookPage+1<Count)]]]
+                ]]]];
         }
         TSharedRef<SWidget> Inventory()
         {
-            auto D=Director;auto Grid=SNew(SUniformGridPanel).SlotPadding(FMargin(7));
-            FClaraStoryItem Selected;int32 Index=0;
-            for(const auto& Item:D->GetItems())
+            auto D=Director;
+            const auto Items=D->GetItems();
+            if(!Items.ContainsByPredicate([this](const FClaraStoryItem& Item){return Item.Id==SelectedItem;})&&!Items.IsEmpty())SelectedItem=Items[0].Id;
+            static const FButtonStyle ItemStyle=FButtonStyle()
+                .SetNormal(FSlateColorBrush(FLinearColor(.075f,.105f,.11f)))
+                .SetHovered(FSlateColorBrush(FLinearColor(.13f,.23f,.23f)))
+                .SetPressed(FSlateColorBrush(FLinearColor(.09f,.29f,.28f)))
+                .SetNormalPadding(FMargin(10)).SetPressedPadding(FMargin(10));
+            const FLinearColor Selection(.32f,.78f,.71f),Quiet(.70f,.77f,.76f);
+            auto Grid=SNew(SUniformGridPanel).SlotPadding(FMargin(5));
+            FClaraStoryItem Selected;int32 Index=0,OwnedCount=0;
+            for(const auto& Item:Items)
             {
-                if(Item.Id==SelectedItem)Selected=Item;
-                Grid->AddSlot(Index%3,Index/3)[SNew(SButton)
-                    .ButtonColorAndOpacity(Item.Id==SelectedItem?FLinearColor(.28,.45,.43):FLinearColor(.17,.22,.23))
-                    .ContentPadding(12).OnClicked_Lambda([this,Id=Item.Id]{SelectedItem=Id;Rebuild();return FReply::Handled();})[
-                        SNew(SVerticalBox)
-                        +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center)[SNew(SItemSketch).Item(Item.Id)]
-                        +SVerticalBox::Slot().AutoHeight().Padding(0,10,0,5)[Text(Item.Label,17,FLinearColor::White,true)]
-                        +SVerticalBox::Slot().AutoHeight()[Text(Item.Owned?TEXT("NEL KIT"):TEXT("DA RACCOGLIERE"),11,Item.Owned?FLinearColor(.57,.81,.70):FLinearColor(.65,.65,.60))]
-                    ]];++Index;
+                if(Item.Owned)++OwnedCount;
+                const bool Active=Item.Id==SelectedItem;
+                if(Active)Selected=Item;
+                Grid->AddSlot(Index%2,Index/2)[SNew(SBorder)
+                    .BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush"))
+                    .BorderBackgroundColor(Active?Selection:FLinearColor(.19f,.25f,.26f)).Padding(2)[
+                    SNew(SButton).ButtonStyle(&ItemStyle).ContentPadding(10)
+                    .ToolTipText(FText::FromString(Item.Label))
+                    .OnClicked_Lambda([this,Id=Item.Id]{SelectedItem=Id;Rebuild();return FReply::Handled();})[
+                        SNew(SHorizontalBox)
+                        +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,10,0)[SNew(SBox).WidthOverride(100).HeightOverride(80)[SNew(SItemSketch).Item(Item.Id)]]
+                        +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[SNew(SVerticalBox)
+                            +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,7)[SNew(STextBlock).Text(FText::FromString(Item.Label)).Font(Font(14)).ColorAndOpacity(FLinearColor::White).AutoWrapText(false).OverflowPolicy(ETextOverflowPolicy::Ellipsis).ToolTipText(FText::FromString(Item.Label))]
+                            +SVerticalBox::Slot().AutoHeight()[Text(Item.Owned?TEXT("NEL KIT"):TEXT("DA RACCOGLIERE"),11,Item.Owned?Selection:Quiet)]]
+                    ]]];++Index;
             }
             auto Details=SNew(SVerticalBox)
-                +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,22)[Text(Selected.Label,25,FLinearColor::White,true)]
-                +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,28)[Text(Selected.Detail,18,FLinearColor(.72,.78,.76))];
-            if(Selected.Id==TEXT("laptop"))
+                +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,10)[Text(Selected.Owned?TEXT("PRONTO ALL’USO"):TEXT("DA RACCOGLIERE"),12,Selection,true)]
+                +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,18)[Text(Selected.Label,20,FLinearColor::White,true)]
+                +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,22)[Text(Selected.Detail,15,Quiet)];
+            if(!Selected.Owned)
+                Details->AddSlot().AutoHeight()[Text(TEXT("Segui l’obiettivo per aggiungerlo al tuo kit."),15,Quiet)];
+            else if(Selected.Id==TEXT("laptop"))
             {
                 Details->AddSlot().AutoHeight().Padding(0,0,0,12)[Button(TEXT("Apri portatile"),[D]{if(D.IsValid()){D->ClosePage();D->OpenLaptopScreen();}},true)];
+                Details->AddSlot().AutoHeight().Padding(0,0,0,12)[Button(TEXT("Esamina le porte"),[D]{if(D.IsValid())D->UseItem(TEXT("inspect_laptop"));})];
                 if(!D->IsCarryingLaptop())Details->AddSlot().AutoHeight()[Button(TEXT("Prendi e porta con te"),[D]{if(D.IsValid())D->UseItem(TEXT("laptop"));})];
-                else Details->AddSlot().AutoHeight()[Text(TEXT("Lo stai portando. T lo apre ovunque.\nQ lo posa se guardi un tavolo."),16,FLinearColor(.67,.75,.72))];
             }
-            else if(Selected.Id==TEXT("badge"))Details->AddSlot().AutoHeight()[Text(TEXT("Il badge resta nella tua borsa."),17,FLinearColor(.67,.75,.72))];
-            else Details->AddSlot().AutoHeight()[Button(Selected.Owned?TEXT("Prendi questo cavo / modulo"):TEXT("Cerca sul banco"),[D,Id=Selected.Id]{if(D.IsValid())D->UseItem(Id);},true)];
-            return SNew(SOverlay)+SOverlay::Slot().HAlign(HAlign_Center).VAlign(VAlign_Center).Padding(32)[SNew(SBox).WidthOverride(1060).HeightOverride(550)[
-                SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(FLinearColor(.045,.065,.068,.98)).Padding(28)[SNew(SVerticalBox)
-                    +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,25)[SNew(SHorizontalBox)
+            else if(Selected.Id==TEXT("badge"))Details->AddSlot().AutoHeight()[Text(TEXT("Il badge resta nella tua borsa."),15,Quiet)];
+            else Details->AddSlot().AutoHeight()[Button(Selected.Id==TEXT("sfp_module")?TEXT("Prendi modulo SFP"):TEXT("Prendi cavo"),[D,Id=Selected.Id]{if(D.IsValid())D->UseItem(Id);},true)];
+            return SNew(SOverlay)+SOverlay::Slot().HAlign(HAlign_Fill).VAlign(VAlign_Fill).Padding(32)[SNew(SScaleBox).Stretch(EStretch::ScaleToFit).StretchDirection(EStretchDirection::DownOnly)[SNew(SBox).WidthOverride(1120).HeightOverride(620)[
+                SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(FLinearColor(.045f,.065f,.068f,.98f)).Padding(28)[SNew(SVerticalBox)
+                    +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,12)[SNew(SHorizontalBox)
                         +SHorizontalBox::Slot().FillWidth(1)[Text(TEXT("LA TUA BORSA"),23,FLinearColor::White,true)]
                         +SHorizontalBox::Slot().AutoWidth()[Button(TEXT("Chiudi · I / Esc"),[D]{if(D.IsValid())D->ClosePage();})]]
+                    +SVerticalBox::Slot().AutoHeight().Padding(5,0,0,16)[Text(FString::Printf(TEXT("%d / %d oggetti nel kit · Seleziona un oggetto per usarlo o conoscerlo."),OwnedCount,Items.Num()),15,Quiet)]
                     +SVerticalBox::Slot().FillHeight(1)[SNew(SHorizontalBox)
-                        +SHorizontalBox::Slot().FillWidth(1.55).Padding(0,0,27,0)[Grid]
-                        +SHorizontalBox::Slot().FillWidth(1).Padding(18,12,0,0)[Details]]
-                ]]];
+                        +SHorizontalBox::Slot().FillWidth(1.8f).Padding(0,0,22,0)[Grid]
+                        +SHorizontalBox::Slot().FillWidth(1).Padding(14,8,0,0)[SNew(SScrollBox)+SScrollBox::Slot()[Details]]]
+                ]]]];
         }
         void Rebuild()
         {
@@ -498,22 +704,43 @@ namespace ClaraStoryUI
             if(Page.IsEmpty()){ChildSlot[SNew(SBox)];return;}
             if(Page==TEXT("notebook")){ChildSlot[Notebook()];return;}
             if(Page==TEXT("inventory")){ChildSlot[Inventory()];return;}
+            if(Page==TEXT("day3report")){ChildSlot[MakeClaraDayThreeReport(D.Get())];return;}
+            if(Page==TEXT("report")&&(D->GetPhase()==16||D->GetPhase()==110)){ChildSlot[MakeClaraDayReport(D.Get())];return;}
+            if(Page==TEXT("daytransition")){ChildSlot[MakeClaraDayTransition(D.Get())];return;}
             if(Page==TEXT("dialogue"))
             {
-                TSharedRef<SHorizontalBox> Actions=SNew(SHorizontalBox);
+                // Battuta in basso, scura e compatta: si legge sopra la scena e sopra il terminale senza coprirli.
+                static const FButtonStyle Ghost=FButtonStyle()
+                    .SetNormal(FSlateColorBrush(FLinearColor(1,1,1,.10f))).SetHovered(FSlateColorBrush(FLinearColor(1,1,1,.22f))).SetPressed(FSlateColorBrush(FLinearColor(1,1,1,.30f)));
+                const FLinearColor Speech(.95f,.96f,.94f,1.f),Voice(.42f,.84f,.78f,1.f);
+                const auto Choice=[Speech](const FString& Label,TFunction<void()> Action)
+                {
+                    return SNew(SButton).ButtonStyle(&Ghost).ContentPadding(FMargin(18,9))
+                        .OnClicked_Lambda([Action=MoveTemp(Action)]{Action();return FReply::Handled();})[SNew(SBox).MaxDesiredWidth(760)[SNew(SScaleBox).Stretch(EStretch::ScaleToFit).StretchDirection(EStretchDirection::DownOnly)[SNew(STextBlock).Text(FText::FromString(Label)).Font(Font(16)).ColorAndOpacity(Speech).AutoWrapText(false).ToolTipText(FText::FromString(Label))]]];
+                };
                 const auto Choices=D->GetChoices();
-                if(Choices.IsEmpty())Actions->AddSlot().AutoWidth()[Button(TEXT("Continua"),[D]{if(D.IsValid())D->ContinueDialogue();},true)];
-                else for(int32 I=0;I<Choices.Num();++I)Actions->AddSlot().FillWidth(1).Padding(0,0,10,0)[Button(Choices[I],[D,I]{if(D.IsValid())D->Choose(I);},I==0)];
-                ChildSlot[SNew(SOverlay)+SOverlay::Slot().HAlign(HAlign_Center).VAlign(VAlign_Bottom).Padding(38,0,38,40)[
-                    SNew(SBox).WidthOverride(980)[CardWrap(SNew(SVerticalBox)
-                        +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,10)[Live([D]{return D.IsValid()?D->GetSpeaker():FString();},16,Teal,true)]
-                        +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,20)[Live([D]{return D.IsValid()?D->GetDialogue():FString();},23)]
-                        +SVerticalBox::Slot().AutoHeight()[Actions],FMargin(28))]
+                TSharedRef<SWrapBox> Actions=SNew(SWrapBox).UseAllottedSize(true)
+                    .HAlign(Choices.IsEmpty()?HAlign_Right:HAlign_Left).InnerSlotPadding(FVector2D(10,8));
+                if(Choices.IsEmpty())Actions->AddSlot()[Choice(TEXT("Continua · Invio"),[D]{if(D.IsValid())D->ContinueDialogue();})];
+                else for(int32 I=0;I<Choices.Num();++I)Actions->AddSlot()[Choice(Choices[I],[D,I]{if(D.IsValid())D->Choose(I);})];
+                ChildSlot[SNew(SOverlay)+SOverlay::Slot().HAlign(HAlign_Center).VAlign(VAlign_Bottom).Padding(38,0,38,30)[
+                    SNew(SBox).WidthOverride(900)[SNew(SHorizontalBox)
+                        +SHorizontalBox::Slot().AutoWidth()[SNew(SBox).WidthOverride(5)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Voice)]]
+                        +SHorizontalBox::Slot().FillWidth(1)[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(FLinearColor(.012f,.03f,.038f,.94f)).Padding(FMargin(24,16,20,14))[
+                            SNew(SVerticalBox)
+                            +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,6)[Live([D]{return D.IsValid()?D->GetSpeaker():FString();},15,Voice,true)]
+                            +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,10)[SNew(SBox).MaxDesiredHeight(220)[SNew(SScrollBox)
+                                +SScrollBox::Slot()[Live([D]{return D.IsValid()?D->GetDialogue():FString();},21,Speech)]]]
+                            +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,8)[SNew(SBox)
+                                .Visibility_Lambda([D]{return D.IsValid()&&D->IsScreenOpen()&&D->GetScreenPage()==TEXT("terminal")?EVisibility::HitTestInvisible:EVisibility::Collapsed;})[
+                                    Text(TEXT("Continua il dialogo per tornare al terminale."),13,FLinearColor(.68f,.76f,.76f))]]
+                            +SVerticalBox::Slot().AutoHeight()[Actions]]]]
                 ]];return;
             }
             const FString Title=Page==TEXT("notebook")?TEXT("Il tuo taccuino"):Page==TEXT("inventory")?TEXT("Inventario"):Page==TEXT("sorting")?TEXT("Riconosci e ordina i cavi"):Page==TEXT("puzzle")?TEXT("Una sequenza da capire"):Page==TEXT("subnet")?TEXT("Indirizzi, un passo alla volta"):TEXT("Rapporto di fine giornata");
-            ChildSlot[SNew(SOverlay)+SOverlay::Slot().HAlign(HAlign_Center).VAlign(VAlign_Center).Padding(36)[
-                SNew(SBox).WidthOverride(1010).HeightOverride(690)[ModalFrame(TEXT("Network Vision / Affiancamento"),Title,ActivityBody(D,Page),D)]
+            ChildSlot[SNew(SOverlay)+SOverlay::Slot().Padding(36)[
+                SNew(SScaleBox).Stretch(EStretch::ScaleToFit).StretchDirection(EStretchDirection::DownOnly)[
+                    SNew(SBox).WidthOverride(1010).HeightOverride(690)[ModalFrame(TEXT("Network Vision / Affiancamento"),Title,ActivityBody(D,Page),D)]]
             ]];
         }
     };
@@ -533,7 +760,7 @@ namespace ClaraStoryUI
     {
         return SNew(SButton).ButtonStyle(&DesktopButtonStyle()).ToolTipText(FText::FromString(Tip))
             .OnClicked_Lambda([Action=MoveTemp(Action)]{Action();return FReply::Handled();})
-            [Text(Label,14,DesktopInk)];
+            [ClaraStoryUI::Label(Label,14,DesktopInk)];
     }
     class SDesktopIcon final:public SLeafWidget
     {
@@ -596,7 +823,7 @@ namespace ClaraStoryUI
         }
     private:
         TWeakObjectPtr<AClaraStoryDirector> Director;
-        FString Page,Feedback,LastApp=TEXT("terminal");
+        FString Page,LastApp=TEXT("terminal");
         bool WindowMaximized=false;
         FString GatewayTab=TEXT("console"),ScenarioPrompt;
         TSharedPtr<SEditableTextBox> ScenarioInput;
@@ -604,8 +831,8 @@ namespace ClaraStoryUI
         {
             auto D=Director;
             TSharedRef<SVerticalBox> Tools=SNew(SVerticalBox);
-            Tools->AddSlot().AutoHeight().Padding(0,0,0,12)[Text(Challenge?TEXT("Ricostruisci e verifica"):TEXT("Osserva i collegamenti"),23,Ink,true)];
-            Tools->AddSlot().AutoHeight().Padding(0,0,0,12)[Text(Challenge?TEXT("Scegli un cavo, poi due dispositivi. Per configurare uno switch collega la console dal portatile e apri il terminale."):TEXT("I collegamenti disegnati provengono dallo stato del laboratorio. Una linea non dimostra da sola il funzionamento del servizio."),18,Muted)];
+            Tools->AddSlot().AutoHeight().Padding(0,0,0,12)[Text(Challenge?TEXT("Ricostruisci e verifica"):TEXT("Osserva i collegamenti"),19,Ink,true)];
+            Tools->AddSlot().AutoHeight().Padding(0,0,0,12)[Text(Challenge?TEXT("Scegli un cavo, poi due dispositivi. Per configurare uno switch collega la console dal portatile e apri il terminale."):TEXT("I collegamenti disegnati provengono dallo stato del laboratorio. Una linea non dimostra da sola il funzionamento del servizio."),15,Muted)];
             if(Challenge)
             {
                 for(const auto& Pair:TArray<TPair<FString,FString>>{{TEXT("ethernet"),TEXT("Cavo Ethernet")},{TEXT("console"),TEXT("Cavo console")},{TEXT(""),TEXT("Solo selezione")}})
@@ -619,21 +846,23 @@ namespace ClaraStoryUI
                 TSharedRef<SEditableTextBox> IP=SNew(SEditableTextBox).Font(Font(20)).HintText(FText::FromString(TEXT("Nuovo IP host selezionato")));
                 Tools->AddSlot().AutoHeight().Padding(0,12,0,7)[IP];
                 Tools->AddSlot().AutoHeight().Padding(0,0,0,12)[Button(TEXT("Applica IP all’host"),[D,IP]{if(D.IsValid())D->SetSimHostIP(D->GetSimSelected(),IP->GetText().ToString());})];
-                Tools->AddSlot().AutoHeight().Padding(0,0,0,8)[Button(TEXT("TEST rete"),[this,D]{if(D.IsValid())Feedback=D->RunChallengeTest();},true)];
+                Tools->AddSlot().AutoHeight().Padding(0,0,0,8)[Button(TEXT("TEST rete"),[D]{if(D.IsValid())D->RunChallengeTest();},true)];
                 Tools->AddSlot().AutoHeight()[SNew(SButton).IsEnabled_Lambda([D]{return D.IsValid()&&D->CanRebootChallenge();}).ButtonColorAndOpacity(Sand).ContentPadding(FMargin(16,11))
-                    .OnClicked_Lambda([D]{if(D.IsValid())D->RebootChallenge();return FReply::Handled();})[Text(TEXT("Riavvio di verifica"),18,Ink,true)]];
+                    .OnClicked_Lambda([D]{if(D.IsValid())D->RebootChallenge();return FReply::Handled();})[Label(TEXT("Riavvio di verifica"),15,Ink,true)]];
             }
             return SNew(SHorizontalBox)
                 +SHorizontalBox::Slot().FillWidth(1.f).Padding(0,0,20,0)[
                     SNew(SVerticalBox)
                     +SVerticalBox::Slot().FillHeight(1.f)[SNew(SNetworkMap).Director(D.Get())]
-                    +SVerticalBox::Slot().AutoHeight().Padding(0,12,0,0)[Live([this,D]{return (D.IsValid()?D->GetSimMessage():FString())+(Feedback.IsEmpty()?TEXT(""):TEXT("\n")+Feedback);},19,Teal,true)]
+                    +SVerticalBox::Slot().AutoHeight().Padding(0,12,0,0)[Live([D]{return D.IsValid()?D->GetSimMessage():FString();},19,Teal,true)]
                 ]
                 +SHorizontalBox::Slot().AutoWidth()[SNew(SBox).WidthOverride(300)[SNew(SScrollBox)+SScrollBox::Slot()[Tools]]];
         }
         TSharedRef<SWidget> Body()
         {
             auto D=Director;
+            if(Page==TEXT("routing"))return MakeClaraDayThreeLab(D.Get());
+            if(Page==TEXT("cyber"))return MakeClaraCyberUI(D.Get());
             if(Page==TEXT("terminal"))return SNew(STerminal).Director(D.Get());
             if(Page==TEXT("puzzle")||Page==TEXT("sorting"))return ActivityBody(D,Page);
             if(Page==TEXT("vision")||Page==TEXT("challenge"))return MapBody(Page==TEXT("challenge"));
@@ -641,8 +870,8 @@ namespace ClaraStoryUI
             {
                 TSharedRef<SEditableTextBox> Answer=AnswerInput(D,26);
                 return SNew(SVerticalBox)
-                    +SVerticalBox::Slot().AutoHeight().Padding(0,10,0,22)[Live([D]{return D.IsValid()?D->GetQuestion():FString();},28,Ink,true)]
-                    +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,22)[Live([D]{return D.IsValid()?D->GetAnswerHint():FString();},21,Muted)]
+                    +SVerticalBox::Slot().AutoHeight().Padding(0,10,0,22)[Live([D]{return D.IsValid()?D->GetQuestion():FString();},23,Ink,true)]
+                    +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,22)[Live([D]{return D.IsValid()?D->GetAnswerHint():FString();},17,Muted)]
                     +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,18)[Answer]
                     +SVerticalBox::Slot().AutoHeight()[Button(TEXT("Verifica questo passaggio"),[D,Answer]{if(D.IsValid()){D->SubmitAnswer(Answer->GetText().ToString());Answer->SetText(FText::GetEmpty());}},true)];
             }
@@ -659,11 +888,13 @@ namespace ClaraStoryUI
         }
         FString AppTitle(const FString& App)const
         {
+            if(App==TEXT("cyber"))return TEXT("Laboratorio Cyber");
             if(App==TEXT("terminal"))return TEXT("Terminale");
             if(App==TEXT("files"))return TEXT("File — /home/tecnico");
             if(App==TEXT("notes"))return TEXT("Taccuino — appunti.txt");
             if(App==TEXT("document"))return TEXT("Documenti — reti.txt");
             if(App==TEXT("mission"))return TEXT("Ticket — richiesta.txt");
+            if(App==TEXT("routing"))return TEXT("Network Vision — routing e collaudo");
             if(App==TEXT("vision"))return TEXT("Network Vision");
             if(App==TEXT("challenge"))return TEXT("Network Vision — ripristino piano 2");
             if(App==TEXT("gateway"))return TEXT("Laboratorio Cisco — Gateway");
@@ -679,13 +910,15 @@ namespace ClaraStoryUI
         }
         TSharedRef<SWidget> DesktopIcon(const FString& Kind,const FString& Label,const FString& App,const FString& Tip)
         {
-            return SNew(SBox).WidthOverride(118).HeightOverride(95)[
+            return SNew(SBox).WidthOverride(128).HeightOverride(95)[
                 SNew(SButton).ButtonStyle(&DesktopButtonStyle()).HAlign(HAlign_Center).VAlign(VAlign_Center)
                 .ToolTipText(FText::FromString(Tip))
                 .OnClicked_Lambda([this,App]{OpenApp(App,App==TEXT("terminal"));return FReply::Handled();})[
                     SNew(SVerticalBox)
                     +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center)[SNew(SDesktopIcon).Kind(Kind)]
-                    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0,7,0,0)[Text(Label,14,DesktopInk)]
+                    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Fill).Padding(0,7,0,0)[
+                        SNew(STextBlock).Text(FText::FromString(Label)).Font(Font(12)).ColorAndOpacity(DesktopInk)
+                            .AutoWrapText(false).OverflowPolicy(ETextOverflowPolicy::Ellipsis).ToolTipText(FText::FromString(Label)).Justification(ETextJustify::Center)]
                 ]
             ];
         }
@@ -694,14 +927,14 @@ namespace ClaraStoryUI
             auto D=Director;
             TSharedRef<SVerticalBox> Rows=SNew(SVerticalBox);
             struct FFile{const TCHAR* Name;const TCHAR* Type;const TCHAR* Page;};
-            for(const FFile& File:TArray<FFile>{{TEXT("Documenti"),TEXT("Cartella"),TEXT("document")},{TEXT("appunti.txt"),TEXT("Documento di testo"),TEXT("notes")},{TEXT("richiesta.txt"),TEXT("Ticket di lavoro"),TEXT("mission")},{TEXT("topologia.net"),TEXT("Network Vision"),TEXT("vision")},{TEXT("laboratorio.cml"),TEXT("Laboratorio Cisco"),TEXT("gateway")}})
+            for(const FFile& File:TArray<FFile>{{TEXT("Documenti"),TEXT("Cartella"),TEXT("document")},{TEXT("appunti.txt"),TEXT("Documento di testo"),TEXT("notes")},{TEXT("richiesta.txt"),TEXT("Ticket di lavoro"),TEXT("mission")},{TEXT("topologia.net"),TEXT("Network Vision"),TEXT("vision")},{TEXT("laboratorio.cml"),TEXT("Lab Cisco"),TEXT("gateway")}})
             {
                 Rows->AddSlot().AutoHeight()[SNew(SButton).ButtonStyle(&DesktopButtonStyle())
                     .OnClicked_Lambda([this,App=FString(File.Page)]{OpenApp(App);return FReply::Handled();})[
                         SNew(SHorizontalBox)
-                        +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,14,0)[Text(FString(File.Type)==TEXT("Cartella")?TEXT("▸"):TEXT("·"),22,Teal)]
-                        +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[Text(File.Name,18,Ink)]
-                        +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[Text(File.Type,15,Muted)]
+                        +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,14,0)[Label(FString(File.Type)==TEXT("Cartella")?TEXT("▸"):TEXT("·"),22,Teal)]
+                        +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[Label(File.Name,16,Ink)]
+                        +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[Label(File.Type,15,Muted)]
                     ]];
             }
             return SNew(SVerticalBox)
@@ -715,7 +948,7 @@ namespace ClaraStoryUI
                     +SHorizontalBox::Slot().FillWidth(1)[SNew(SVerticalBox)
                         +SVerticalBox::Slot().AutoHeight().Padding(8,0,8,10)[SNew(SHorizontalBox)
                             +SHorizontalBox::Slot().FillWidth(1)[Text(TEXT("Nome"),14,Muted,true)]
-                            +SHorizontalBox::Slot().AutoWidth()[Text(TEXT("Tipo"),14,Muted,true)]]
+                            +SHorizontalBox::Slot().AutoWidth()[Label(TEXT("Tipo"),14,Muted,true)]]
                         +SVerticalBox::Slot().AutoHeight()[SNew(SSeparator)]
                         +SVerticalBox::Slot().AutoHeight()[Rows]
                     ]
@@ -730,7 +963,7 @@ namespace ClaraStoryUI
                     .ButtonColorAndOpacity(GatewayTab==Tab.Key?FLinearColor(.06f,.11f,.09f):TerminalBackground)
                     .ButtonStyle(&TerminalButtonStyle()).ForegroundColor(TerminalText).ContentPadding(FMargin(8,5))
                     .OnClicked_Lambda([this,Id=Tab.Key]{GatewayTab=Id;Rebuild();return FReply::Handled();})
-                    [Text(Tab.Value,16,GatewayTab==Tab.Key?TerminalPrompt:TerminalMuted,true)]];
+                    [Label(Tab.Value,14,GatewayTab==Tab.Key?TerminalPrompt:TerminalMuted,true)]];
             TSharedRef<SVerticalBox> Content=SNew(SVerticalBox);
             if(GatewayTab==TEXT("console"))
             {
@@ -747,7 +980,7 @@ namespace ClaraStoryUI
                     });
                 *WeakCommand=Command;
                 Content->AddSlot().AutoHeight().Padding(0,0,0,10)[SNew(SHorizontalBox)
-                    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,12,0)[Text(TEXT("Nodo CML"),16,TerminalMuted)]
+                    +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(0,0,12,0)[Label(TEXT("Nodo CML"),16,TerminalMuted)]
                     +SHorizontalBox::Slot().FillWidth(1)[Node]
                     +SHorizontalBox::Slot().AutoWidth().Padding(8,0,0,0)[TerminalButton(TEXT("Seleziona"),[D,Node]{if(D.IsValid())D->GatewaySetNode(Node->GetText().ToString());})]
                 ];
@@ -817,9 +1050,9 @@ namespace ClaraStoryUI
             return SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(DesktopChrome).Padding(FMargin(12,3))[
                 SNew(SHorizontalBox)
                 +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)[DesktopButton(TEXT("Applicazioni"),[this]{OpenApp(TEXT("desktop"));})]
-                +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(12,0)[Text(TEXT("tecnico@clara-lab"),13,DesktopMuted)]
+                +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(12,0)[Label(TEXT("tecnico@tnes-lab"),13,DesktopMuted)]
                 +SHorizontalBox::Slot().FillWidth(1).HAlign(HAlign_Right).VAlign(VAlign_Center).Padding(8,0)[Text(TEXT("Linux · postazione didattica"),12,DesktopMuted)]
-                +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(12,0)[Live([]{return FDateTime::Now().ToString(TEXT("%H:%M"));},13,DesktopInk)]
+                +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(12,0)[LiveLabel([D]{return D.IsValid()?D->GetOfficeClockTime():FString(TEXT("09:00"));},13,DesktopInk)]
                 +SHorizontalBox::Slot().AutoWidth()[DesktopButton(TEXT("Esci"),[D]{if(D.IsValid())D->CloseLaptopScreen();},TEXT("Torna alla stanza · Esc"))]
             ];
         }
@@ -829,7 +1062,7 @@ namespace ClaraStoryUI
             for(const auto& App:TArray<TPair<FString,FString>>{{TEXT("terminal"),TEXT(">_")},{TEXT("files"),TEXT("File")},{TEXT("vision"),TEXT("Rete")},{TEXT("gateway"),TEXT("CML")},{TEXT("notes"),TEXT("Appunti")}})
                 Apps->AddSlot().AutoWidth().Padding(1,0)[DesktopButton(App.Value,[this,PageId=App.Key]{OpenApp(PageId);},AppTitle(App.Key))];
             Apps->AddSlot().AutoWidth().Padding(18,0,0,0)[DesktopButton(AppTitle(LastApp),[this]{OpenApp(Page==TEXT("desktop")?LastApp:TEXT("desktop"));},TEXT("Mostra o riduci la finestra"))];
-            Apps->AddSlot().FillWidth(1).HAlign(HAlign_Right).VAlign(VAlign_Center).Padding(15,0)[Text(TEXT("PC-LAB  ·  192.168.1.10"),12,DesktopMuted)];
+            Apps->AddSlot().FillWidth(1).HAlign(HAlign_Right).VAlign(VAlign_Center).Padding(15,0)[Text(Director.IsValid()&&Director->GetDay()==3?TEXT("Portatile · console locale / PC2 · rete A"):TEXT("PC-LAB  ·  192.168.1.10"),12,DesktopMuted)];
             return SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(DesktopChrome).Padding(FMargin(9,4))[Apps];
         }
         TSharedRef<SWidget> AppWindow()
@@ -854,14 +1087,15 @@ namespace ClaraStoryUI
             if(Page!=TEXT("desktop"))LastApp=Page;
             TSharedRef<SOverlay> Workspace=SNew(SOverlay)
                 +SOverlay::Slot().HAlign(HAlign_Right).VAlign(VAlign_Center).Padding(40,0)[SNew(SVerticalBox)
-                    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Right)[Text(TEXT("CLARA"),62,FLinearColor(.12f,.23f,.24f),true)]
+                    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Right)[Text(TEXT("TNES"),62,FLinearColor(.12f,.23f,.24f),true)]
                     +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Right).Padding(0,8)[Text(TEXT("LABORATORIO  /  NAPOLI"),13,FLinearColor(.25f,.38f,.37f))]
                 ]
                 +SOverlay::Slot().HAlign(HAlign_Left).VAlign(VAlign_Top).Padding(14,18)[SNew(SVerticalBox)
+                    +SVerticalBox::Slot().AutoHeight()[DesktopIcon(TEXT("files"),TEXT("Cyber"),TEXT("cyber"),TEXT("Apri gli incarichi Cyber"))]
                     +SVerticalBox::Slot().AutoHeight()[DesktopIcon(TEXT("terminal"),TEXT("Terminale"),TEXT("terminal"),TEXT("Apri il terminale Linux del portatile"))]
                     +SVerticalBox::Slot().AutoHeight()[DesktopIcon(TEXT("files"),TEXT("File"),TEXT("files"),TEXT("Cartelle, documenti e richieste di lavoro"))]
                     +SVerticalBox::Slot().AutoHeight()[DesktopIcon(TEXT("vision"),TEXT("Network Vision"),D->GetDay()==2&&D->GetSimNodes().Num()>3?TEXT("challenge"):TEXT("vision"),TEXT("Osserva e verifica i collegamenti"))]
-                    +SVerticalBox::Slot().AutoHeight()[DesktopIcon(TEXT("gateway"),TEXT("Laboratorio Cisco"),TEXT("gateway"),TEXT("Stato e strumenti del gateway Cisco"))]
+                    +SVerticalBox::Slot().AutoHeight()[DesktopIcon(TEXT("gateway"),TEXT("Lab Cisco"),TEXT("gateway"),TEXT("Stato e strumenti del gateway Cisco"))]
                     +SVerticalBox::Slot().AutoHeight()[DesktopIcon(TEXT("notes"),TEXT("Taccuino"),TEXT("notes"),TEXT("Appunti del laboratorio"))]
                 ]
                 +SOverlay::Slot().HAlign(HAlign_Right).VAlign(VAlign_Bottom).Padding(28,18)[SNew(SVerticalBox)
@@ -873,6 +1107,10 @@ namespace ClaraStoryUI
                 SNew(SVerticalBox)
                 +SVerticalBox::Slot().AutoHeight()[TopBar()]
                 +SVerticalBox::Slot().FillHeight(1)[Workspace]
+                +SVerticalBox::Slot().AutoHeight()[SNew(SBorder)
+                    .Visibility_Lambda([D]{return D.IsValid()&&D->GetPage().IsEmpty()&&!D->GetToast().IsEmpty()?EVisibility::HitTestInvisible:EVisibility::Collapsed;})
+                    .BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(FLinearColor(.035f,.10f,.11f)).Padding(FMargin(14,9))[
+                        Live([D]{return D.IsValid()?D->GetToast():FString();},16,DesktopInk)]]
                 +SVerticalBox::Slot().AutoHeight()[Taskbar()]
             ]];
         }
@@ -883,17 +1121,27 @@ namespace ClaraStoryUI
 TSharedRef<SWidget> MakeClaraStoryHUD(AClaraStoryDirector* Director)
 {
     using namespace ClaraStoryUI;TWeakObjectPtr<AClaraStoryDirector>D=Director;
-    return SNew(SOverlay)
+    return SNew(SOverlay).Visibility_Lambda([D]{return D.IsValid()&&AClaraFrontEnd::IsPreparingOffice(D->GetWorld())?EVisibility::Collapsed:EVisibility::SelfHitTestInvisible;})
+        +SOverlay::Slot().HAlign(HAlign_Left).VAlign(VAlign_Bottom).Padding(22,0,0,74)[
+            SNew(SComboButton)
+                .Visibility_Lambda([D]{return D.IsValid()&&D->GetPage().IsEmpty()&&!D->IsScreenOpen()&&!D->IsDeviceInspectionOpen()?EVisibility::Visible:EVisibility::Collapsed;})
+                .ToolTipText(FText::FromString(TEXT("Regola voci, effetti e ambiente")))
+                .ButtonContent()[Label(TEXT("Audio"),14,Ink)]
+                .OnGetMenuContent_Lambda([D]()->TSharedRef<SWidget>{
+                    return SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush"))
+                        .BorderBackgroundColor(Paper).Padding(20)[MakeClaraAudioSettings(D.Get())];
+                })
+        ]
         +SOverlay::Slot().HAlign(HAlign_Left).VAlign(VAlign_Top).Padding(22)[SNew(SBox).WidthOverride(340).Visibility_Lambda([D]{return D.IsValid()&&D->GetPage().IsEmpty()&&!D->IsScreenOpen()&&!D->IsDeviceInspectionOpen()?EVisibility::HitTestInvisible:EVisibility::Collapsed;})[
             SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(FLinearColor(.025f,.045f,.05f,.80f)).Padding(13)[
                 SNew(SVerticalBox)
-                +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,6)[Live([D]{return D.IsValid()?D->GetTitle():TEXT("CLARA");},12,FLinearColor(.72,.77,.64),true)]
+                +SVerticalBox::Slot().AutoHeight().Padding(0,0,0,6)[Live([D]{return D.IsValid()?D->GetTitle():TEXT("TNES");},12,FLinearColor(.72,.77,.64),true)]
                 +SVerticalBox::Slot().AutoHeight()[Live([D]{return D.IsValid()?D->GetObjective():FString();},17,FLinearColor::White,false)]
             ]
         ]]
-        +SOverlay::Slot().HAlign(HAlign_Right).VAlign(VAlign_Top).Padding(25)[SNew(SBox).WidthOverride(390)[
-            SNew(SBorder).Visibility_Lambda([D]{return D.IsValid()&&!D->IsDeviceInspectionOpen()&&!D->GetToast().IsEmpty()?EVisibility::HitTestInvisible:EVisibility::Collapsed;})
-            .BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Teal).Padding(18)[Live([D]{return D.IsValid()?D->GetToast():FString();},18,FLinearColor::White)]
+        +SOverlay::Slot().HAlign(HAlign_Right).VAlign(VAlign_Top).Padding(22)[SNew(SBox).WidthOverride(340)[
+            SNew(SBorder).Visibility_Lambda([D]{return D.IsValid()&&D->GetPage().IsEmpty()&&!D->IsScreenOpen()&&!D->IsDeviceInspectionOpen()&&!D->GetToast().IsEmpty()?EVisibility::HitTestInvisible:EVisibility::Collapsed;})
+            .BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(Teal).Padding(14)[Live([D]{return D.IsValid()?D->GetToast():FString();},16,FLinearColor::White)]
         ]]
         +SOverlay::Slot().HAlign(HAlign_Center).VAlign(VAlign_Bottom).Padding(0,0,0,66)[
             SNew(SBorder).Visibility_Lambda([D]{return D.IsValid()&&!D->GetInteractionLabel().IsEmpty()&&D->GetPage().IsEmpty()&&!D->IsScreenOpen()&&!D->IsDeviceInspectionOpen()?EVisibility::HitTestInvisible:EVisibility::Collapsed;})
@@ -902,17 +1150,25 @@ TSharedRef<SWidget> MakeClaraStoryHUD(AClaraStoryDirector* Director)
         ]
         +SOverlay::Slot().HAlign(HAlign_Center).VAlign(VAlign_Bottom).Padding(0,0,0,22)[
             SNew(SBorder).Visibility_Lambda([D]{return D.IsValid()&&!D->IsDeviceInspectionOpen()&&!D->IsScreenOpen()&&D->GetPage().IsEmpty()?EVisibility::HitTestInvisible:EVisibility::Collapsed;}).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(FLinearColor(.025f,.06f,.075f,.90f)).Padding(FMargin(16,8))[
-                Text(TEXT("E interagisci   ·   N taccuino   ·   I borsa   ·   H indizio   ·   T portatile   ·   Esc chiudi"),13,FLinearColor(.85f,.89f,.86f,1))]
+                SNew(STextBlock).Font(Font(13)).ColorAndOpacity(FLinearColor(.85f,.89f,.86f,1)).Text_Lambda([D]{return FText::FromString(
+                    D.IsValid()&&D->GetPhase()<3?TEXT("WASD cammina   ·   tasto destro: guarda intorno   ·   clic o E: interagisci   ·   H indizio")
+                    :D.IsValid()&&D->GetPhase()<4?TEXT("Clic o E: interagisci   ·   I borsa   ·   N taccuino   ·   H indizio   ·   M audio")
+                    :TEXT("Clic o E: interagisci   ·   T portatile   ·   I borsa   ·   N taccuino   ·   H indizio   ·   M audio"));})]
         ];
 }
 TSharedRef<SWidget> MakeClaraStoryPanel(AClaraStoryDirector* Director)
 {
     return SNew(ClaraStoryUI::SStoryPanel).Director(Director);
 }
+TSharedRef<SWidget> MakeClaraNotebookPaper(TSharedRef<SWidget> Content)
+{
+    return SNew(ClaraStoryUI::SNotebookPaper)[Content];
+}
 TSharedRef<SWidget> MakeClaraStoryScreen(AClaraStoryDirector* Director)
 {
     return SNew(SOverlay)
         +SOverlay::Slot()[SNew(SBorder).BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush")).BorderBackgroundColor(FLinearColor(0,0,0,.65))]
-        +SOverlay::Slot().HAlign(HAlign_Center).VAlign(VAlign_Center).Padding(26)[
-            SNew(SBox).WidthOverride(1140).HeightOverride(710)[SNew(ClaraStoryUI::SStoryScreen).Director(Director)]];
+        +SOverlay::Slot().Padding(26)[
+            SNew(SScaleBox).Stretch(EStretch::ScaleToFit).StretchDirection(EStretchDirection::DownOnly)[
+                SNew(SBox).WidthOverride(1440).HeightOverride(900)[SNew(ClaraStoryUI::SStoryScreen).Director(Director)]]];
 }

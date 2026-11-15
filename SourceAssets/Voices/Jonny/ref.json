@@ -1,0 +1,37 @@
+{
+  "descrizione": "A young man of about twenty-five with a light, lively tenor voice. He is a security analyst: quick, curious and slightly ironic, energetic but not shouting. Clear standard Italian diction, no strong regional accent. Close-microphone studio recording, dry, no reverb, no music.",
+  "testo": "Io sono Jonny. Quando hai un ping che risponde, chiamami: ti faccio vedere quante cose racconta quel piccolo messaggio.",
+  "scelto": "candidato-2.wav",
+  "candidati": [
+    {
+      "file": "candidato-1.wav",
+      "testo_sentito": "Io sono Johnny, quando hai un pin che risponde chiamami, ti faccio vedere quante cose racconta  quel piccolo messaggio.",
+      "corrispondenza": 0.895,
+      "altezza_hz": 191.9,
+      "secondi": 6.8,
+      "caratteri_al_secondo": 17.5,
+      "punteggio": 0.759,
+      "secondi_di_calcolo": 71.6
+    },
+    {
+      "file": "candidato-2.wav",
+      "testo_sentito": "Io sono Johnny, quando hai un pin che risponde chiama mi, ti faccio vedere quante cose racconta  quel piccolo messaggio.",
+      "corrispondenza": 0.821,
+      "altezza_hz": 169.8,
+      "secondi": 7.84,
+      "caratteri_al_secondo": 15.2,
+      "punteggio": 0.917,
+      "secondi_di_calcolo": 92.1
+    },
+    {
+      "file": "candidato-3.wav",
+      "testo_sentito": "Io sono Johnny.  Quando hai un ping che ti risponde chiamami,  ti faccio vedere quante cose racconta quel piccolo messaggio.",
+      "corrispondenza": 0.923,
+      "altezza_hz": 265.0,
+      "secondi": 9.28,
+      "caratteri_al_secondo": 12.8,
+      "punteggio": 0.544,
+      "secondi_di_calcolo": 109.0
+    }
+  ]
+}

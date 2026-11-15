@@ -1,0 +1,378 @@
+# Real Slate route BAB. No model Action/Command/test reset or phase assignment.
+# Start a separate process with -ClaraStoryDay2 -ClaraFreshCyber -ClaraLocalLab -ClaraTour=<file>.
+# Audio is muted only for timing-independent input QA; this tour does not validate dubbing.
+0 mute on
+16 expect phase 100
+0.18 laptop
+0.18 reveal button Applicazioni
+0.18 ui Applicazioni
+0.18 reveal button Cyber
+0.18 ui Cyber
+0.18 expect cyber isolated
+0.18 expect cyber day 1
+0.18 expect cyber scene 0
+0.18 expect cyber offset 0
+0.18 reveal button Avanti
+0.18 ui Avanti
+0.18 expect cyber offset 1
+0.18 reveal button ×
+0.18 ui ×
+0.18 reveal button Cyber
+0.18 ui Cyber
+0.18 expect cyber scene 0
+0.18 expect cyber offset 1
+0.3 shot cyber-1-dialogo-ripreso
+0.18 reveal button Avanti
+0.18 ui Avanti
+0.18 reveal button Avanti
+0.18 ui Avanti
+0.18 expect cyber scene -1
+0.18 reveal button 21 · trasferimento file
+0.18 ui 21 · trasferimento file
+0.18 reveal button 22 · amministrazione remota
+0.18 ui 22 · amministrazione remota
+0.18 reveal button 23 · accesso remoto in chiaro
+0.18 ui 23 · accesso remoto in chiaro
+1.4 expect cyber scene 1
+0.18 reveal button Avanti
+0.18 ui Avanti
+0.18 reveal button Avanti
+0.18 ui Avanti
+1.4 expect cyber scene 2
+0.18 reveal button Avanti
+0.18 ui Avanti
+0.18 reveal button Avanti
+0.18 ui Avanti
+0.18 expect cyber scene -1
+0.18 reveal button Blue · analisi e difesa
+0.18 ui Blue · analisi e difesa
+1.4 expect cyber scene 8
+0.18 reveal button Avanti
+0.18 ui Avanti
+0.18 expect cyber scene -1
+0.18 expect cyber path B
+0.18 reveal field @cyber.command
+0.18 type @cyber.command | ls
+0.18 reveal button Esegui
+0.18 ui Esegui
+0.18 expect cyber transcript guida/
+0.18 expect cyber red 0
+0.18 expect cyber blue 5
+0.18 reveal button Chiedi un indizio
+0.18 ui Chiedi un indizio
+0.18 expect cyber red 0
+0.18 expect cyber blue 5
+0.18 expect cyber finished no
+0.18 reveal field @cyber.command
+0.18 type @cyber.command | scan 192.168.10.20
+0.18 reveal button Esegui
+0.18 ui Esegui
+0.18 expect cyber transcript command not found: scan
+0.18 expect cyber red 0
+0.18 expect cyber blue 5
+0.18 reveal field @cyber.command
+0.18 type @cyber.command | spiega nmap
+0.18 reveal button Esegui
+0.18 ui Esegui
+0.18 expect cyber red 0
+0.18 expect cyber blue 5
+0.18 expect cyber finished no
+0.18 reveal button È normale traffico utente
+0.18 ui È normale traffico utente
+0.18 expect uitext Luca va in un posto solo.
+0.18 expect cyber red 0
+0.18 expect cyber blue 5
+0.18 reveal button La sequenza è anomala: analizza il registro
+0.18 ui La sequenza è anomala: analizza il registro
+1.4 expect cyber scene 9
+0.18 reveal button Avanti
+0.18 ui Avanti
+0.18 expect cyber scene -1
+0.18 reveal button Porta 8080 · ferma
+0.18 ui Porta 8080 · ferma
+0.18 expect cyber feedback Come lo scopriamo?
+0.18 reveal button 8080 · servizio di prova, nessun accesso negli ultimi 90 giorni
+0.18 ui 8080 · servizio di prova, nessun accesso negli ultimi 90 giorni
+0.18 reveal button Porta 443 · ferma
+0.18 ui Porta 443 · ferma
+0.18 expect cyber feedback Le dispense non sono più raggiungibili.
+0.18 reveal widget @cyber.feedback
+0.3 shot cyber-1-B-dispense-interrotte
+0.18 reveal button Apri le dispense
+0.18 ui Apri le dispense
+0.18 expect cyber finished no
+0.18 reveal button Porta 443 · attiva
+0.18 ui Porta 443 · attiva
+0.18 reveal button Porta 22 · ferma
+0.18 ui Porta 22 · ferma
+0.18 expect cyber feedback Il team non riesce più ad amministrare
+0.18 reveal button Porta 22 · attiva
+0.18 ui Porta 22 · attiva
+0.18 reveal button Porta 21 · ferma
+0.18 ui Porta 21 · ferma
+0.18 reveal button Porta 23 · ferma
+0.18 ui Porta 23 · ferma
+0.18 reveal button Porta 8080 · ferma
+0.18 ui Porta 8080 · ferma
+0.18 expect cyber red 0
+0.18 expect cyber blue 15
+0.18 reveal field @cyber.command
+0.18 type @cyber.command | nmap 192.168.10.20
+0.18 reveal button Esegui
+0.18 ui Esegui
+0.18 expect cyber transcript 21 closed
+0.18 expect cyber transcript 22 open
+0.18 reveal button Apri le dispense
+0.18 ui Apri le dispense
+1.4 expect cyber scene 11
+0.18 reveal button Avanti
+0.18 ui Avanti
+0.18 expect cyber scene -1
+0.3 shot cyber-1-B-servizi-verificati
+0.18 reveal button Compila il rapporto
+0.18 ui Compila il rapporto
+1.4 expect cyber scene 13
+0.18 reveal button Avanti
+0.18 ui Avanti
+0.18 expect cyber scene -1
+0.18 expect cyber finished yes
+0.18 expect cyber red 0
+0.18 expect cyber blue 25
+0.3 shot cyber-1-B-rapporto
+0.18 reveal button Leggi l'altra prospettiva
+0.18 ui Leggi l'altra prospettiva
+0.18 expect cyber red 3
+0.18 expect cyber blue 25
+0.18 reveal button Prossimo incarico
+0.18 ui Prossimo incarico
+0.18 expect cyber day 2
+1.4 expect cyber scene 14
+0.18 reveal button Avanti
+0.18 ui Avanti
+0.18 reveal button Avanti
+0.18 ui Avanti
+0.18 reveal button Avanti
+0.18 ui Avanti
+0.18 reveal button Avanti
+0.18 ui Avanti
+0.18 expect cyber scene -1
+0.18 reveal button Leggi la scheda ACL
+0.18 ui Leggi la scheda ACL
+1.4 expect cyber scene 15
+0.18 reveal button Avanti
+0.18 ui Avanti
+0.18 reveal button Avanti
+0.18 ui Avanti
+1.4 expect cyber scene 16
+0.18 reveal button Avanti
+0.18 ui Avanti
+0.18 reveal button Avanti
+0.18 ui Avanti
+0.18 expect cyber scene -1
+0.18 reveal button Red · prova autorizzata
+0.18 ui Red · prova autorizzata
+1.4 expect cyber scene 17
+0.18 reveal button Avanti
+0.18 ui Avanti
+0.18 expect cyber scene -1
+0.18 reveal button 192.168.10.50 reception: atteso passa
+0.18 ui 192.168.10.50 reception: atteso passa
+0.18 reveal button 192.168.10.30 aula: atteso bloccato
+0.18 ui 192.168.10.30 aula: atteso bloccato
+0.18 reveal button 192.168.10.99 ospiti: atteso bloccato
+0.18 ui 192.168.10.99 ospiti: atteso bloccato
+0.18 reveal field @cyber.command
+0.18 type @cyber.command | ping -I 192.168.10.30
+0.18 reveal button Esegui
+0.18 ui Esegui
+0.18 expect cyber busy no
+0.18 expect cyber transcript Uso: ping -I partenza destinazione
+0.18 reveal field @cyber.command
+0.18 type @cyber.command | ping -I 8.8.8.8 192.168.20.10
+0.18 reveal button Esegui
+0.18 ui Esegui
+0.18 expect cyber busy no
+0.18 expect cyber transcript Postazione fuori autorizzazione.
+0.18 expect cyber red 8
+0.18 expect cyber blue 25
+0.18 reveal field @cyber.command
+0.18 type @cyber.command | ping -I 192.168.10.30 192.168.20.10
+0.18 reveal button Esegui
+0.18 ui Esegui
+0.18 expect cyber busy yes
+0.18 expect cyber observed 1 -1
+1.05 expect cyber transcript icmp_seq=1
+0.18 expect cyber observed 1 -1
+0.18 expect cyber red 8
+0.18 expect cyber blue 25
+0.18 key Ctrl+C
+0.18 expect cyber busy no
+0.18 expect cyber observed 1 -1
+0.18 expect cyber transcript nessun risultato registrato.
+0.18 expect cyber red 8
+0.18 expect cyber blue 25
+0.3 shot cyber-2-A-ping-annullato
+0.18 reveal field @cyber.command
+0.18 type @cyber.command | ping -I 192.168.10.50 192.168.20.10
+0.18 reveal button Esegui
+0.18 ui Esegui
+0.18 expect cyber busy yes
+0.2 awaitcyberidle
+0.18 expect cyber busy no
+0.18 expect cyber observed 0 1
+0.18 expect cyber transcript 4 ricevuti, 0% persi.
+0.18 reveal field @cyber.command
+0.18 type @cyber.command | ping -I 192.168.10.30 192.168.20.10
+0.18 reveal button Esegui
+0.18 ui Esegui
+0.18 expect cyber busy yes
+0.2 awaitcyberidle
+0.18 expect cyber busy no
+0.18 expect cyber observed 1 1
+0.18 expect cyber transcript 4 ricevuti, 0% persi.
+0.18 reveal field @cyber.command
+0.18 type @cyber.command | ping -I 192.168.10.99 192.168.20.10
+0.18 reveal button Esegui
+0.18 ui Esegui
+0.18 expect cyber busy yes
+0.2 awaitcyberidle
+0.18 expect cyber busy no
+0.18 expect cyber observed 2 1
+0.18 expect cyber transcript 4 ricevuti, 0% persi.
+1.4 expect cyber scene 19
+0.18 reveal button Avanti
+0.18 ui Avanti
+0.18 expect cyber scene -1
+0.3 shot cyber-2-A-atteso-contro-osservato
+0.18 reveal button La causa è la regola 3
+0.18 ui La causa è la regola 3
+0.18 expect cyber feedback La prima regola corrispondente decide.
+0.18 expect cyber red 18
+0.18 expect cyber blue 25
+0.18 reveal button La causa è la regola 1
+0.18 ui La causa è la regola 1
+0.18 reveal button Compila il rapporto
+0.18 ui Compila il rapporto
+1.4 expect cyber scene 27
+0.18 reveal button Avanti
+0.18 ui Avanti
+0.18 expect cyber scene -1
+0.18 expect cyber finished yes
+0.18 expect cyber red 28
+0.18 expect cyber blue 25
+0.3 shot cyber-2-A-rapporto
+0.18 reveal button Leggi l'altra prospettiva
+0.18 ui Leggi l'altra prospettiva
+0.18 expect cyber red 28
+0.18 expect cyber blue 28
+0.18 reveal button Prossimo incarico
+0.18 ui Prossimo incarico
+0.18 expect cyber day 3
+1.4 expect cyber scene 28
+0.18 reveal button Avanti
+0.18 ui Avanti
+0.18 reveal button Avanti
+0.18 ui Avanti
+0.18 reveal button Avanti
+0.18 ui Avanti
+0.18 expect cyber scene -1
+0.18 reveal button Scheda: credenziali predefinite
+0.18 ui Scheda: credenziali predefinite
+0.18 reveal button Scheda: cifratura dei dati
+0.18 ui Scheda: cifratura dei dati
+1.4 expect cyber scene 29
+0.18 reveal button Avanti
+0.18 ui Avanti
+0.18 reveal button Avanti
+0.18 ui Avanti
+1.4 expect cyber scene 30
+0.18 reveal button Avanti
+0.18 ui Avanti
+0.18 reveal button Avanti
+0.18 ui Avanti
+0.18 expect cyber scene -1
+0.18 reveal button Blue · analisi e difesa
+0.18 ui Blue · analisi e difesa
+1.4 expect cyber scene 36
+0.18 reveal button Avanti
+0.18 ui Avanti
+0.18 expect cyber scene -1
+0.18 reveal button È normale traffico utente
+0.18 ui È normale traffico utente
+0.18 expect uitext Qui sono cinque in due minuti.
+0.18 expect cyber red 28
+0.18 expect cyber blue 33
+0.18 reveal button La sequenza è anomala: analizza il registro
+0.18 ui La sequenza è anomala: analizza il registro
+0.18 reveal field @cyber.new-password
+0.18 type @cyber.new-password | short7!
+0.18 reveal button Aggiorna password
+0.18 ui Aggiorna password
+0.18 expect cyber password no
+0.18 expect field @cyber.new-password | <empty>
+0.18 expect cyber red 28
+0.18 expect cyber blue 38
+0.18 reveal button Disattiva amministratore
+0.18 ui Disattiva amministratore
+0.18 expect cyber admin no
+0.18 expect cyber feedback Non riusciamo più ad amministrare il server.
+0.18 reveal widget @cyber.feedback
+0.3 shot cyber-3-B-team-bloccato
+0.18 reveal button Riattiva amministratore
+0.18 ui Riattiva amministratore
+0.18 reveal field @cyber.new-password
+0.18 type @cyber.new-password | VioletRiver!42
+0.18 reveal button Aggiorna password
+0.18 ui Aggiorna password
+0.18 expect cyber password yes
+0.18 expect cyber tls no
+0.18 expect cyber feedback Bene. E cosa leggerebbe chi osserva la rete
+0.18 expect cyber red 28
+0.18 expect cyber blue 38
+0.18 reveal button Attiva cifratura
+0.18 ui Attiva cifratura
+0.18 expect cyber tls yes
+0.18 expect cyber traffic no
+0.18 reveal field @cyber.command
+0.18 type @cyber.command | curl -I https://192.168.20.10/pannello
+0.18 reveal button Esegui
+0.18 ui Esegui
+0.18 reveal field @cyber.command
+0.18 type @cyber.command | openssl s_client -connect 192.168.20.10:443
+0.18 reveal button Esegui
+0.18 ui Esegui
+0.18 expect cyber traffic no
+0.18 expect cyber red 28
+0.18 expect cyber blue 43
+0.18 reveal button Verifica vecchia password
+0.18 ui Verifica vecchia password
+0.18 reveal button Verifica accesso team tecnico
+0.18 ui Verifica accesso team tecnico
+0.18 reveal button Network Vision: verifica il traffico cifrato
+0.18 ui Network Vision: verifica il traffico cifrato
+1.4 expect cyber scene 39
+0.18 reveal button Avanti
+0.18 ui Avanti
+0.18 expect cyber scene -1
+0.18 expect cyber traffic yes
+0.3 shot cyber-3-B-verifiche-complete
+0.18 reveal button Compila il rapporto
+0.18 ui Compila il rapporto
+1.4 expect cyber scene 41
+0.18 reveal button Avanti
+0.18 ui Avanti
+0.18 expect cyber scene -1
+0.18 expect cyber finished yes
+0.18 expect cyber red 28
+0.18 expect cyber blue 53
+0.3 shot cyber-3-B-rapporto
+0.18 reveal button Leggi l'altra prospettiva
+0.18 ui Leggi l'altra prospettiva
+0.18 expect cyber red 31
+0.18 expect cyber blue 53
+0.18 reveal button Prossimo incarico
+0.18 ui Prossimo incarico
+0.18 expect cyber day 4
+0.18 expect uitext I tre incarichi Cyber sono conclusi.
+0.3 shot cyber-tre-giorni-conclusi
+0.5 quit

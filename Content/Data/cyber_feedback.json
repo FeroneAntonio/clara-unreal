@@ -1,0 +1,518 @@
+[
+  {
+    "speaker": "Jonny",
+    "text": "Accesso consentito con credenziali predefinite. Ora osserva il traffico in Network Vision.",
+    "key": "072143a9acd3ff4c",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Accesso rifiutato. Confronta un'altra coppia del laboratorio, senza modificare la lista.",
+    "key": "3771930486aceb39",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Apri le dispense e verifica che gli utenti possano ancora consultarle.",
+    "key": "ec823685f404f525",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Attiva la connessione cifrata, così chi osserva la rete non legge le credenziali.",
+    "key": "9c253d22a0d05e02",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Aula e ospiti passano ancora. Controlla quale permesso viene letto per primo.",
+    "key": "2dce520940ec7ece",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Bene. E cosa leggerebbe chi osserva la rete mentre il team entra?",
+    "key": "bfb0678828455847",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Cambia password e attiva la cifratura, mantenendo l'account.",
+    "key": "08e4b3ebf3e8ddb7",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Chi la usa, secondo te?",
+    "key": "9505d24d0f2371dd",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Classifica le cinque porte e confronta ciascuna scelta con la descrizione del servizio.",
+    "key": "7728835206aaf5f9",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Completa un ping da ciascuna delle tre postazioni e confronta i risultati.",
+    "key": "d53f4d81579b50ec",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Con la cifratura il contenuto del pacchetto non è leggibile.",
+    "key": "4094d26ca853b142",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Confronta ciò che avevi indicato con i permessi richiesti: solo la reception dovrebbe passare.",
+    "key": "226dba57220c465f",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Confronta con le righe del team tecnico: un tentativo, un successo. Qui sono cinque in due minuti.",
+    "key": "7d216a08ee11f6b9",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Confronta l'ordine delle regole: la reception deve passare, aula e ospiti devono essere bloccati.",
+    "key": "36bf9305b392997f",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Confronta la prima regola con quella che blocca il server.",
+    "key": "f000535d1d2a022f",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Confronta le righe evidenziate con quelle di Luca.",
+    "key": "c300a8ddacd27825",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Confronta origine, frequenza ed esito delle righe del registro prima di intervenire.",
+    "key": "c2f19108a2efb4fb",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Controlla i quattro requisiti della password. Non salviamo il testo che scegli.",
+    "key": "7732d9395de983f8",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Controlla in Network Vision che il traffico sia cifrato.",
+    "key": "ab87f7012f8fbaaa",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Controlla nella guida chi usa la porta 22, prima di compilare il rapporto.",
+    "key": "c600b6470ec0ec9a",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Esamina almeno tre delle cinque porte accese.",
+    "key": "9f02bee11af77cb4",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Esamina almeno tre porte del server, poi scegli il tuo punto di vista.",
+    "key": "a3f5fd4f0f789aa9",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Fermati. Il test copre solo le tre postazioni indicate.",
+    "key": "1fc49a9baac4bada",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Fermati. L'autorizzazione copre solo il server indicato nella scheda del servizio.",
+    "key": "54495bd4f44506e8",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Gli incarichi Cyber sono conclusi. Puoi rileggere il taccuino.",
+    "key": "9537835aab077384",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Gli incarichi sono conclusi.",
+    "key": "0aab30ce6f1f494e",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Guarda cosa mostra la lente sul server.",
+    "key": "cdcc3fc174d51882",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Guarda l'esito dell'ultimo accesso.",
+    "key": "154dae8e4512a703",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Guarda quale regola ha fatto passare il traffico.",
+    "key": "338a108a8269e200",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Guarda quante porte tocca lo stesso indirizzo in pochi secondi.",
+    "key": "7b1eae9c59bc6444",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Hai raccolto le verifiche necessarie. Compila il rapporto.",
+    "key": "df66f0d9be59ea83",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Il canale è protetto, ma la password è ancora quella di tutti. Manca qualcosa.",
+    "key": "874781f98d65c94c",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Il canale è tornato in chiaro. Riattiva la cifratura prima di verificare il traffico.",
+    "key": "c57f20d6cc51285e",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Il firewall si ferma alla prima regola corrispondente.",
+    "key": "1537af091f8050a5",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Il pacchetto didattico mostra le credenziali di esempio in chiaro.",
+    "key": "b3a0aa37796f7338",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Il pannello usa l'utente admin.",
+    "key": "3055af6bb5e8261f",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Il rapporto è pronto. Leggi l'altra prospettiva oppure passa al prossimo incarico.",
+    "key": "275196e47635889d",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Il team non riesce più ad amministrare il server. Riattiva la porta 22.",
+    "key": "572b70cf26d79b56",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Il team tecnico riesce ad accedere con le nuove credenziali.",
+    "key": "e51202dd73df78e2",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "In Network Vision confronta un accesso in chiaro con la versione cifrata.",
+    "key": "2ad3cd73938c51c2",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Indica cosa ti aspetti da ciascuna postazione prima di provare il collegamento.",
+    "key": "24c317abbe27e922",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Indica entrambi i problemi osservati: credenziali predefinite e traffico non cifrato.",
+    "key": "7610af61b488447d",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Indica prima il risultato atteso, poi confrontalo con quello del ping.",
+    "key": "4f169d019d36d167",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Indica quale regola ha consentito il traffico che doveva essere bloccato.",
+    "key": "91b7a4f92e6ba636",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "L'anomalia è stata riconosciuta. Ora confronta i servizi o le regole con ciò che dovrebbe essere consentito.",
+    "key": "63d3b06baff75cd9",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "L'aula non dovrebbe arrivare al server. Leggi quale regola ha consentito la richiesta.",
+    "key": "20dfcfea26a82c2d",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "L'ordine rispetta i permessi richiesti. Verifica ora il risultato dalle tre postazioni.",
+    "key": "a5dad934f907733f",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "La porta 22 serve al team tecnico: va mantenuta e protetta.",
+    "key": "9cca03b2bf0d61bc",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "La prima regola corrispondente decide. Confronta la regola scelta con quella indicata dalle prove.",
+    "key": "47e1da7ed75d582c",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "La reception non riesce più ad aprire le prenotazioni. Il blocco viene letto prima del permesso.",
+    "key": "1ff8c4badb6b3067",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "La vecchia password viene rifiutata.",
+    "key": "1a8221369616e430",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Le dispense non sono più raggiungibili. Riattiva il servizio sulla porta 443.",
+    "key": "2d9610ce80a94f42",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Le dispense si aprono. Il servizio necessario agli utenti è ancora disponibile.",
+    "key": "3cdbbce3c5d11cf5",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Leggi la descrizione: i dati passano in chiaro.",
+    "key": "74d5441f8f19b1d9",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Leggi la scheda ACL, poi scegli il tuo punto di vista.",
+    "key": "6ef9572c469de47a",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Leggi le schede sulle credenziali e sulla cifratura, poi scegli il tuo punto di vista.",
+    "key": "e149970baef244e6",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Luca va in un posto solo. Questo indirizzo bussa a tutte le porte.",
+    "key": "5c38e7a32d188008",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Manca il destinatario. Quale indirizzo vuoi verificare?",
+    "key": "481c801b189a0544",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Manca un dato nella prova. Indica la postazione di partenza e l'indirizzo del server.",
+    "key": "56c9648164d581bb",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Nel registro confronta le righe da 192.168.10.77.",
+    "key": "bbc1a9f0c1ab52bf",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Nel taccuino trovi una lista di credenziali.",
+    "key": "956d741a301746d2",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Nell'amministrazione account cerca la password predefinita.",
+    "key": "7600389a409e0024",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Nella guida cerca la voce sulle porte.",
+    "key": "c992443c4c413260",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Nessun dispositivo risponde a quell'indirizzo. Controlla la scheda del servizio.",
+    "key": "aac7f14981d7768e",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Non ha nemmeno una descrizione. Cosa significa?",
+    "key": "9b0283edb2d52835",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Non riusciamo più ad amministrare il server. Riattiva l'account del team tecnico.",
+    "key": "786b31b0318918ed",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Nota registrata. Puoi cambiarla dopo aver verificato chi usa il servizio.",
+    "key": "2e16254536c70f92",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Partiamo dall'indirizzo: c'e uno strumento che prova le porte?",
+    "key": "9a1c17b88ef5a57a",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Prova le coppie fittizie del laboratorio nel pannello di accesso.",
+    "key": "3be8e7c03669d13f",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Prova una delle coppie admin e confronta i pacchetti.",
+    "key": "10aebe19a151b523",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Può darsi. Ma come lo scopriamo?",
+    "key": "ac8279384b7593a0",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Quella la usa Luca per aprire le dispense. Come potevi saperlo?",
+    "key": "558d5bbac7b7f043",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Riattiva l'account del team: dobbiamo proteggerne l'accesso senza impedirgli di lavorare.",
+    "key": "b2d390e7be0efa50",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Ripeti la scansione dopo le modifiche, per vedere quali porte sono ancora aperte.",
+    "key": "666bc6ff49da588e",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Ripristina i servizi necessari al team e alle dispense, poi verifica quelli inutili.",
+    "key": "d2b61300532c4820",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Scrivi nmap seguito dall'indirizzo del server.",
+    "key": "2c754a80be4d01bf",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Se nessuno lo registra, forse nessuno lo usa. Come lo scopriamo?",
+    "key": "e394a676fc217a9b",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Servizio fermato. Verifica le porte rimaste aperte e l'accesso alle dispense.",
+    "key": "07e76ceab04e10a5",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Servizio riattivato. Verifica che chi lo usa riesca a raggiungerlo.",
+    "key": "c3f592b7d15035c8",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Sicuro? Qualcuno dovrà pure amministrare il server.",
+    "key": "ef958521a6c1a37b",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Sostituisci la password predefinita rispettando i quattro requisiti.",
+    "key": "4820aae9ced24f56",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Tocca le porte con la luce verde.",
+    "key": "5f327890cca9ae1b",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Usa nmap sull'indirizzo del server dei servizi per vedere quali porte rispondono.",
+    "key": "eab6e839bc5606d2",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Verifica che il team tecnico riesca ancora ad accedere.",
+    "key": "c5ef7b4147def61d",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Verifica che la vecchia password venga rifiutata.",
+    "key": "951e04d1bcdc3030",
+    "kind": "cyber-feedback"
+  },
+  {
+    "speaker": "Jonny",
+    "text": "Verifica chi usa i servizi prima di fermarli. La scheda della porta 8080 contiene lo storico degli accessi.",
+    "key": "ea117670d32d364f",
+    "kind": "cyber-feedback"
+  }
+]
